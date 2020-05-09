@@ -9,7 +9,7 @@
           <v-img
             class="white--text align-end"
             height="200px"
-            :src="require('../assets/strawberries.jpg')"
+            :src=farmer.image
           >
             <v-card-title>{{ farmer.name }}</v-card-title>
           </v-img>
@@ -61,18 +61,21 @@ export default {
           name: "Tzachi",
           produce: "Strawberries",
           orderMinimum: 10,
+          image: require("../assets/strawberries.jpg"),
           shipmentArea: "Haruzim",
         },
         {
           name: "Dudi",
           produce: "Mangos",
           orderMinimum: 50,
+          image: require("../assets/mangos.jpg"),
           shipmentArea: "Haruzim",
         },
         {
           name: "Yonni",
           produce: "Kiwis",
           orderMinimum: 20,
+          image: require("../assets/kiwis.jpg"),
           shipmentArea: "Haruzim",
         }
       ]
