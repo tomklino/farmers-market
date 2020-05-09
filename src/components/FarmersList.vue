@@ -44,42 +44,16 @@
 </template>
 
 <script>
+import store from '@/store'
+
 export default {
   name: 'FarmersList',
-  mounted () {
-    this.searchFarmers();
-  },
-  data () {
-    return {
-      farmers: []
+  computed: {
+    farmers() {
+      return store.state.farmersList
     }
   },
   methods: {
-    searchFarmers() {
-      this.farmers = [
-        {
-          name: "Tzachi",
-          produce: "Strawberries",
-          orderMinimum: 10,
-          image: require("../assets/strawberries.jpg"),
-          shipmentArea: "Haruzim",
-        },
-        {
-          name: "Dudi",
-          produce: "Mangos",
-          orderMinimum: 50,
-          image: require("../assets/mangos.jpg"),
-          shipmentArea: "Haruzim",
-        },
-        {
-          name: "Yonni",
-          produce: "Kiwis",
-          orderMinimum: 20,
-          image: require("../assets/kiwis.jpg"),
-          shipmentArea: "Haruzim",
-        }
-      ]
-    }
   }
 }
 </script>
