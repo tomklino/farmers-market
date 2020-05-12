@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Tzachi",
+    "produce": "Strawberries",
+    "orderMinimum": 10,
+    "image": "/images/strawberries.jpg",
+    "shipmentArea": "Haruzim"
+  },
+  {
+    "name": "Oleg",
+    "produce": "Mangos",
+    "orderMinimum": 50,
+    "image": "/images/mangos.jpg",
+    "shipmentArea": "Haruzim"
+  },
+  {
+    "name": "Yonni",
+    "produce": "Kiwis",
+    "orderMinimum": 20,
+    "image": "/images/kiwis.jpg",
+    "shipmentArea": "Haruzim"
+  }
+]
