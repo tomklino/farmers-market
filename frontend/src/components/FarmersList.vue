@@ -45,9 +45,17 @@
 
 <script>
 import store from '@/store'
+import axios from 'axios';
 
 export default {
   name: 'FarmersList',
+  mounted () {
+    axios.get("/api/farmers")
+      .then(response => {
+        console.log("got data:", response.data)
+        store.commit("updateFarmers", response.data)
+      })
+  },
   computed: {
     farmers() {
       return store.state.farmersList

@@ -30,6 +30,9 @@ export default new Vuex.Store({
     ]
   },
   mutations: {
+    updateFarmers(state, farmers) {
+      state.farmersList = farmers;
+    }
   },
   actions: {
   },
