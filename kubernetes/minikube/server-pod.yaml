@@ -10,6 +10,9 @@ spec:
     name: server
     workingDir: /workspace
     command: [ "npm", "start" ]
+    env:
+      - name: MONGO__CONNECTION_STRING
+        value: "mongodb://mongodb:27017"
     volumeMounts:
     - mountPath: /workspace
       name: server
