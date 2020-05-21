@@ -11,4 +11,8 @@ spec:
         backend:
           serviceName: server
           servicePort: 80
+      - path: /images
+        backend:
+          serviceName: server
+          servicePort: 80
 
