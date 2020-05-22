@@ -27,6 +27,18 @@
             </v-combobox>
           </v-row>
           <v-row>
+            <v-combobox
+              v-model="area"
+              :items="areaOptions"
+              :rules="areaRules"
+              hide-selected
+              deletable-chips
+              label="Area"
+            >
+
+            </v-combobox>
+          </v-row>
+          <v-row>
             <v-col md="3">
               <v-text-field
                 v-model="packageSize"
@@ -120,6 +132,11 @@ export default {
     produceRules: [
       v => !!v || 'Produce is required',
     ],
+    area: "",
+    areaOptions: [ "Haruzim" ],
+    areaRules: [
+      v => !!v || 'Area is required',
+    ],
     price: 50,
     priceRules: [
       v => v > 0 || 'Price has to be set',
@@ -150,7 +167,8 @@ export default {
         selectedPicture: this.selectedPicture,
         minimumOrders: this.minimumOrders,
         arrivalDates: this.arrivalDates,
-        price: this.price
+        price: this.price,
+        area: this.area,
       }
       console.log(payload);
     },
