@@ -27,7 +27,7 @@
             </v-combobox>
           </v-row>
           <v-row>
-            <v-col md="5">
+            <v-col md="3">
               <v-text-field
                 v-model="packageSize"
                 label="Package Size"
@@ -41,7 +41,17 @@
                 label="Unit"
               ></v-select>
             </v-col>
-            <v-col md="5">
+            <v-col md="4">
+              <v-text-field
+                v-model="price"
+                label="Price"
+                :rules="priceRules"
+                hint="₪"
+                persistent-hint
+                type="number"
+              />
+            </v-col>
+            <v-col md="3">
               <v-text-field
                 v-model="minimumOrders"
                 label="Minimum Orders"
@@ -110,6 +120,10 @@ export default {
     produceRules: [
       v => !!v || 'Produce is required',
     ],
+    price: 50,
+    priceRules: [
+      v => v > 0 || 'Price has to be set',
+    ],
     packageSize: 1,
     packageUnit: "kg",
     arrivalDates: [],
@@ -135,7 +149,8 @@ export default {
         packageUnit: this.packageUnit,
         selectedPicture: this.selectedPicture,
         minimumOrders: this.minimumOrders,
-        arrivalDates: this.arrivalDates
+        arrivalDates: this.arrivalDates,
+        price: this.price
       }
       console.log(payload);
     },
