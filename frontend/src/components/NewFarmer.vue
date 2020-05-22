@@ -164,11 +164,12 @@ export default {
         name: this.name,
         packageSize: this.packageSize,
         packageUnit: this.packageUnit,
-        selectedPicture: this.selectedPicture,
-        minimumOrders: this.minimumOrders,
+        image: this.selectedPicture,
+        orderMinimum: this.minimumOrders,
         arrivalDates: this.arrivalDates,
         price: this.price,
-        area: this.area,
+        shipmentArea: this.area,
+        produce: this.produce,
       }
       console.log(payload);
     },
