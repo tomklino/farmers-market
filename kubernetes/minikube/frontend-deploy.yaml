@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: frontend
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: frontend
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        run: frontend
+    spec:
+      containers:
+      - image: node:14.2-stretch-slim
+        name: frontend
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        resources:
+          requests:
+            cpu: 400m
+            memory: 400Mi
+          limits:
+            cpu: 1600m
+            memory: 400Mi
+        workingDir: /workspace
+        command: [ "npm", "run", "serve" ]
+        volumeMounts:
+          - mountPath: /workspace
+            name: frontend
+      volumes:
+        - name: frontend
+          hostPath:
+            path: /hosthome/tomk/workspace/farmers-market/frontend
+            type: Directory
+      dnsPolicy: ClusterFirst
+status: {}
