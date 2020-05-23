@@ -1,115 +1,133 @@
 <template>
-  <v-form v-model="valid">
-    <v-container grid-list-md text-xs-center>
-      <v-layout row wrap>
-        <v-flex xs6>
-          <v-row>
-            <v-text-field
-              v-model="name"
-              :rules="nameRules"
-              label="Name"
-              required
-            ></v-text-field>
-          </v-row>
-
-          <v-row>
-            <v-combobox
-              v-model="produce"
-              :items="commonProduce"
-              :rules="produceRules"
-              hide-selected
-              deletable-chips
-              hint="What do you want to offer?"
-              label="Produce"
-              persistent-hint
-            >
-
-            </v-combobox>
-          </v-row>
-          <v-row>
-            <v-combobox
-              v-model="area"
-              :items="areaOptions"
-              :rules="areaRules"
-              hide-selected
-              deletable-chips
-              label="Area"
-            >
-
-            </v-combobox>
-          </v-row>
-          <v-row>
-            <v-col md="3">
+  <div>
+    <v-dialog
+      v-model="createdDialogOpened"
+      width="500"
+    >
+      <v-card>
+        <v-card-title>Success!</v-card-title>
+      </v-card>
+    </v-dialog>
+    <v-form v-model="valid">
+      <v-container grid-list-md text-xs-center>
+        <v-layout row wrap>
+          <v-flex xs6>
+            <v-row>
               <v-text-field
-                v-model="packageSize"
-                label="Package Size"
-                type="number"
-              />
-            </v-col>
-            <v-col md="2">
-              <v-select
-                v-model="packageUnit"
-                :items="units"
-                label="Unit"
-              ></v-select>
-            </v-col>
-            <v-col md="4">
-              <v-text-field
-                v-model="price"
-                label="Price"
-                :rules="priceRules"
-                hint="₪"
+                v-model="name"
+                :rules="nameRules"
+                :disabled="isDisabled"
+                label="Name"
+                required
+              ></v-text-field>
+            </v-row>
+
+            <v-row>
+              <v-combobox
+                v-model="produce"
+                :items="commonProduce"
+                :rules="produceRules"
+                :disabled="isDisabled"
+                hide-selected
+                deletable-chips
+                hint="What do you want to offer?"
+                label="Produce"
                 persistent-hint
-                type="number"
-              />
-            </v-col>
-            <v-col md="3">
-              <v-text-field
-                v-model="minimumOrders"
-                label="Minimum Orders"
-                type="number"
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-layout row wrap>
-              <v-flex xs3 v-for="image in imageChoices"
-                v-bind:key="image"
-                >
-                <v-card ripple class="mx-auto"
-                  v-on:click="selectPicture(image)"
-                  :elevation="selectedPicture === image ? 18 : 1"
-                  :outlined="selectedPicture === image ? true : false"
-                >
-                  <v-img :src="image"></v-img>
-                </v-card>
-              </v-flex>
-            </v-layout>
-          </v-row>
-        </v-flex>
-        <v-flex xs6>
-          <v-row justify="center">
-            <v-card>
-              <v-card-title>When can you arrive?</v-card-title>
-              <v-date-picker
-                v-model="arrivalDates"
-                multiple
-                >
-              </v-date-picker>
-            </v-card>
-          </v-row>
-        </v-flex>
-      </v-layout>
-      <v-btn
-        large
-        color="success"
-        v-bind:disabled="!complete"
-        v-on:click="create"
-        >
-        Create
-      </v-btn>
-    </v-container>
-  </v-form>
+              >
+
+              </v-combobox>
+            </v-row>
+            <v-row>
+              <v-combobox
+                v-model="area"
+                :items="areaOptions"
+                :rules="areaRules"
+                :disabled="isDisabled"
+                hide-selected
+                deletable-chips
+                label="Area"
+              >
+
+              </v-combobox>
+            </v-row>
+            <v-row>
+              <v-col md="3">
+                <v-text-field
+                  v-model="packageSize"
+                  :disabled="isDisabled"
+                  label="Package Size"
+                  type="number"
+                />
+              </v-col>
+              <v-col md="2">
+                <v-select
+                  v-model="packageUnit"
+                  :items="units"
+                  :disabled="isDisabled"
+                  label="Unit"
+                ></v-select>
+              </v-col>
+              <v-col md="4">
+                <v-text-field
+                  v-model="price"
+                  label="Price"
+                  :rules="priceRules"
+                  :disabled="isDisabled"
+                  hint="₪"
+                  persistent-hint
+                  type="number"
+                />
+              </v-col>
+              <v-col md="3">
+                <v-text-field
+                  v-model="minimumOrders"
+                  :disabled="isDisabled"
+                  label="Minimum Orders"
+                  type="number"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-layout row wrap>
+                <v-flex xs3 v-for="image in imageChoices"
+                  v-bind:key="image"
+                  >
+                  <v-card ripple class="mx-auto"
+                    v-on:click="selectPicture(image)"
+                    :elevation="selectedPicture === image ? 18 : 1"
+                    :outlined="selectedPicture === image ? true : false"
+                  >
+                    <v-img :src="image"></v-img>
+                  </v-card>
+                </v-flex>
+              </v-layout>
+            </v-row>
+          </v-flex>
+          <v-flex xs6>
+            <v-row justify="center">
+              <v-card>
+                <v-card-title>When can you arrive?</v-card-title>
+                <v-date-picker
+                  v-model="arrivalDates"
+                  :disabled="isDisabled"
+                  multiple
+                  >
+                </v-date-picker>
+              </v-card>
+            </v-row>
+          </v-flex>
+        </v-layout>
+        <v-btn
+          large
+          color="success"
+          v-bind:disabled="!complete || isDisabled"
+          v-on:click="create"
+          >
+          Create
+        </v-btn>
+      </v-container>
+    </v-form>
+  </div>
 </template>
 
 <script>
@@ -118,6 +136,8 @@ import axios from 'axios';
 export default {
   name: 'NewFarmer',
   data: () => ({
+    createdDialogOpened: false,
+    isDisabled: false,
     commonProduce: [ "Strawberries", "Kiwis", "Mangos", "Pineapples" ],
     imageChoices: [
       "/images/strawberries.jpg",
@@ -170,8 +190,10 @@ export default {
         shipmentArea: this.area,
         produce: this.produce,
       }
+      this.isDisabled = true;
       let creationResponse = await axios.post('/api/farmers/new', payload);
       console.log("created:", creationResponse);
+      this.createdDialogOpened = true;
     },
     selectPicture(img) {
       this.selectedPicture = img;
