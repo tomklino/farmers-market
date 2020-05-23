@@ -21,9 +21,10 @@ router.post('/new', async function(req, res, next) {
   let db = mongoClient.db(db_name);
   let payload = req.body;
   debug("got request for a new farmer");
-  if(!validateFarmerJSON(payload)) {
+  let [ validated, violations ] = validateFarmerJSON(payload);
+  if(!validated) {
     debug("refusing to add an invalid farmer");
-    res.status(400).send("invalid JSON");
+    res.status(400).send("invalid JSON: " + violations);
     return;
   }
   let err = await insertFarmer(payload, db);
@@ -36,11 +37,45 @@ router.post('/new', async function(req, res, next) {
 });
 
 function validateFarmerJSON(farmerJSON) {
-  let mustContain = [
-    "name", "packageSize", "packageUnit", "image", "produce",
-    "orderMinimum", "arrivalDates", "price", "shipmentArea"
-  ]
-  return mustContain.every(key => farmerJSON[key] !== undefined)
+  let rules = {
+    name: [
+      v => typeof v === 'string' || "name must be a string",
+    ],
+    packageSize: [
+      v => typeof v === 'number' || "packageSize must be a number",
+    ],
+    packageUnit: [
+      v => [ "Kg", "gr" ].includes(v) || "packageUnit must be on of 'Kg', 'gr'",
+    ],
+    produce: [
+      v => typeof v === 'string' || "produce must be a string",
+    ],
+    orderMinimum: [
+      v => typeof v === 'number' || "orderMinimum must be a number",
+    ],
+    arrivalDates: [
+      v => Array.isArray(v) || "arrivalDates must be an array",
+      // TODO check valid dates
+    ],
+    price: [
+      v => typeof v === 'number' || "price must be a number",
+    ],
+    shipmentArea: [
+      v => typeof v === 'string' || "shipmentArea must be a string",
+    ]
+  }
+
+  let violations = [];
+  for(let [key, ruleSet] of Object.entries(rules)) {
+    for (rule of ruleSet) {
+      let outcome = rule(farmerJSON[key]);
+      if (typeof outcome === 'string') {
+        violations.push(outcome);
+      }
+    }
+  }
+
+  return [ violations.length === 0, violations ];
 }
 
 function insertFarmer(farmerJSON, db) {

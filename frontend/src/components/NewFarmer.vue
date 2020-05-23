@@ -142,7 +142,7 @@ export default {
       v => v > 0 || 'Price has to be set',
     ],
     packageSize: 1,
-    packageUnit: "kg",
+    packageUnit: "Kg",
     arrivalDates: [],
     name: '',
     nameRules: [
