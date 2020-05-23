@@ -26,10 +26,10 @@ spec:
           periodSeconds: 3
         resources:
           requests:
-            cpu: 400m
+            cpu: 800m
             memory: 400Mi
           limits:
-            cpu: 1600m
+            cpu: 3200m
             memory: 400Mi
         workingDir: /workspace
         command: [ "npm", "run", "serve" ]
