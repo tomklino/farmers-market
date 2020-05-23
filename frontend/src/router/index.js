@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import FarmersListView from '../views/FarmersListView.vue'
 import NewFarmerView from '../views/NewFarmerView'
+import ManageFarmersView from '../views/ManageFarmersView'
+
 Vue.use(VueRouter)
 
   const routes = [
@@ -15,6 +17,11 @@ Vue.use(VueRouter)
     path: '/new/farmer',
     name: 'NewFarmer',
     component: NewFarmerView
+  },
+  {
+    path: '/manage',
+    name: 'ManageFarmers',
+    component: ManageFarmersView
   },
   {
     path: '/farmers',
