@@ -113,8 +113,7 @@
 </template>
 
 <script>
-// import store from '@/store'
-// import axios from 'axios';
+import axios from 'axios';
 
 export default {
   name: 'NewFarmer',
@@ -159,7 +158,7 @@ export default {
     console.log("STUB");
   },
   methods: {
-    create() {
+    async create() {
       var payload = {
         name: this.name,
         packageSize: this.packageSize,
@@ -171,7 +170,8 @@ export default {
         shipmentArea: this.area,
         produce: this.produce,
       }
-      console.log(payload);
+      let creationResponse = await axios.post('/api/farmers/new', payload);
+      console.log("created:", creationResponse);
     },
     selectPicture(img) {
       this.selectedPicture = img;

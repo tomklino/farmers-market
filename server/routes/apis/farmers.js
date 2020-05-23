@@ -57,7 +57,7 @@ function validateFarmerJSON(farmerJSON) {
       v => typeof v === 'string' || "name must be a string",
     ],
     packageSize: [
-      v => typeof v === 'number' || "packageSize must be a number",
+      v => typeof v !== 'undefined' || "packageSize must be set",
     ],
     packageUnit: [
       v => [ "Kg", "gr" ].includes(v) || "packageUnit must be on of 'Kg', 'gr'",
@@ -66,14 +66,14 @@ function validateFarmerJSON(farmerJSON) {
       v => typeof v === 'string' || "produce must be a string",
     ],
     orderMinimum: [
-      v => typeof v === 'number' || "orderMinimum must be a number",
+      v => typeof v !== 'undefined' || "orderMinimum must be set",
     ],
     arrivalDates: [
       v => Array.isArray(v) || "arrivalDates must be an array",
       // TODO check valid dates
     ],
     price: [
-      v => typeof v === 'number' || "price must be a number",
+      v => typeof v !== 'undefined' || "price must be set",
     ],
     shipmentArea: [
       v => typeof v === 'string' || "shipmentArea must be a string",
