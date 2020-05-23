@@ -7,8 +7,8 @@
       <v-card>
         <v-card-title>Are you sure you want to delete?</v-card-title>
         <v-card-text>
-          <v-btn large color="red darken-2">Delete</v-btn>
-          <v-btn large color="grey lighten-1" v-on:click="verifyDeletion = false">
+          <v-btn large color="red darken-2" v-on:click="performDeletion">Delete</v-btn>
+          <v-btn large color="grey lighten-1" v-on:click="cancelDeletion">
             Cancel
           </v-btn>
         </v-card-text>
@@ -49,7 +49,8 @@ import axios from 'axios';
 export default {
   name: 'ManageFarmers',
   data: () => ({
-    verifyDeletion: false
+    verifyDeletion: false,
+    pendingDeletion: "",
   }),
   computed: {
     farmers() {
@@ -57,16 +58,31 @@ export default {
     }
   },
   mounted () {
-    axios.get("/api/farmers")
-      .then(response => {
-        console.log("got data:", response.data)
-        store.commit("updateFarmers", response.data)
-      })
+    this.refreshFarmers();
   },
   methods: {
+    refreshFarmers() {
+      axios.get("/api/farmers")
+        .then(response => {
+          console.log("got data:", response.data)
+          store.commit("updateFarmers", response.data)
+        })
+    },
+    async performDeletion() {
+      let farmerToDelete = this.pendingDeletion;
+      this.pendingDeletion = "";
+      this.verifyDeletion = false;
+      await axios.delete('/api/farmers/' + farmerToDelete);
+      console.log("deleted successfuly:", farmerToDelete);
+      this.refreshFarmers();
+    },
+    cancelDeletion() {
+      this.verifyDeletion = false;
+      this.pendingDeletion = "";
+    },
     requestDeletion(farmerID) {
       this.verifyDeletion = true;
-      console.log("are you sure you want to delete " + farmerID);
+      this.pendingDeletion = farmerID;
     }
   }
 }
