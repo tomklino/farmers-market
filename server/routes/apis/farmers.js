@@ -3,6 +3,7 @@ var fs = require('fs');
 var express = require('express');
 var router = express.Router();
 var mongo = require('../../utils/mongo');
+const { ObjectId } = require('mongodb'); // or ObjectID
 var debug = require('debug')('server:farmers');
 
 const db_name         = "farmers";
@@ -30,6 +31,20 @@ router.post('/new', async function(req, res, next) {
   let err = await insertFarmer(payload, db);
   if (err) {
     debug("encountered error while trying to insert farmer", err);
+    res.status(500).send("Internal Error");
+    return;
+  }
+  res.send("Done");
+});
+
+router.delete('/:id', async function(req, res, next) {
+  let mongoClient = mongo.getClient();
+  let db = mongoClient.db(db_name);
+  let id = req.params.id;
+  let err = await deleteFarmer(id, db);
+  debug("requesting to delete", id);
+  if (err) {
+    debug("encountered an error while trying to delete farmer", err);
     res.status(500).send("Internal Error");
     return;
   }
@@ -76,6 +91,16 @@ function validateFarmerJSON(farmerJSON) {
   }
 
   return [ violations.length === 0, violations ];
+}
+
+function deleteFarmer(id, db) {
+  return new Promise((resolve) => {
+    const collection = db.collection(collection_name)
+    collection.findOneAndDelete({ _id: new ObjectId(id) }, (err, r) => {
+      debug("farmer deleted", r);
+      resolve(err);
+    })
+  })
 }
 
 function insertFarmer(farmerJSON, db) {
