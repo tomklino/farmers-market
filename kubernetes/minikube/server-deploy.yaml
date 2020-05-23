@@ -30,6 +30,8 @@ spec:
         env:
           - name: MONGO__CONNECTION_STRING
             value: "mongodb://mongodb:27017"
+          - name: DEBUG
+            value: "server:*"
         volumeMounts:
           - mountPath: /workspace
             name: server
