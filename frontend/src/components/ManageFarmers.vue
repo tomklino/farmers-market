@@ -58,16 +58,9 @@ export default {
     }
   },
   mounted () {
-    this.refreshFarmers();
+    store.dispatch('refreshFarmers');
   },
   methods: {
-    refreshFarmers() {
-      axios.get("/api/farmers")
-        .then(response => {
-          console.log("got data:", response.data)
-          store.commit("updateFarmers", response.data)
-        })
-    },
     async performDeletion() {
       let farmerToDelete = this.pendingDeletion;
       this.pendingDeletion = "";
