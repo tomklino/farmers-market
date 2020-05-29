@@ -11,8 +11,8 @@
 
 <script>
 import store from '@/store'
-// import axios from 'axios';
-
+// TODO add buttons to table to remove, or edit:
+// https://vuetifyjs.com/en/components/data-tables/#crud-actions
 export default {
   name: 'ManageOrders',
   data: () => ({
