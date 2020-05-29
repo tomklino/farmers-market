@@ -7,29 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     displayedFarmer: {},
-    farmersList: [
-      {
-        name: "Tzachi",
-        produce: "Strawberries",
-        orderMinimum: 10,
-        image: require("../assets/strawberries.jpg"),
-        shipmentArea: "Haruzim",
-      },
-      {
-        name: "Oleg",
-        produce: "Mangos",
-        orderMinimum: 50,
-        image: require("../assets/mangos.jpg"),
-        shipmentArea: "Haruzim",
-      },
-      {
-        name: "Yonni",
-        produce: "Kiwis",
-        orderMinimum: 20,
-        image: require("../assets/kiwis.jpg"),
-        shipmentArea: "Haruzim",
-      }
-    ]
+    farmersList: [],
+    ordersList: []
   },
   mutations: {
     updateFarmers(state, farmers) {
@@ -37,6 +16,18 @@ export default new Vuex.Store({
     },
     displayedFarmer(state, farmer) {
       state.displayedFarmer = farmer;
+    },
+    updateOrders(state, orders) {
+      let ordersFromState = state.ordersList;
+      // merge new orders into orders in state
+      orders.forEach((order) => {
+        let indexInState = ordersFromState.findIndex(o => o._id === order._id)
+        if (indexInState !== -1) {
+          ordersFromState.splice(indexInState, 1)
+        }
+        ordersFromState.push(order)
+      });
+      state.ordersList = ordersFromState;
     }
   },
   actions: {
@@ -59,6 +50,11 @@ export default new Vuex.Store({
       let response = await axios.get("/api/farmers")
       console.log("got data:", response.data)
       context.commit("updateFarmers", response.data)
+    },
+    async fetchOrdersOfFarmer({ commit }, farmer_id) {
+      let response = await axios.get(`/api/orders/${farmer_id}`);
+      console.log("got data:", response.data)
+      commit("updateOrders", response.data);
     }
   },
   modules: {

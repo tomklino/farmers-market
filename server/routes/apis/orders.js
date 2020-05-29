@@ -10,10 +10,10 @@ const db_name         = "farmers";
 const collection_name = "orders";
 const farmers_collection_name = "farmers";
 
-router.get('/', async function(req, res, next) {
+router.get('/:farmerID', async function(req, res, next) {
   let mongoClient = mongo.getClient();
   let db = mongoClient.db(db_name);
-  payload = await findDocuments(db);
+  payload = await findDocuments(db, req.params.farmerID);
   res.json(payload);
 });
 
@@ -96,12 +96,12 @@ function insertOrder(orderJSON, db) {
   })
 }
 
-function findDocuments(db) {
+function findDocuments(db, farmerID) {
   // Get the documents collection
   return new Promise((resolve) => {
     const collection = db.collection(collection_name);
     // Find some documents
-    collection.find({}).toArray((err, docs) => {
+    collection.find({ farmerID: farmerID }).toArray((err, docs) => {
       debug("Found the following records");
       debug(docs)
       resolve(docs);
