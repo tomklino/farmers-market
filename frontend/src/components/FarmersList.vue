@@ -9,7 +9,7 @@
           <v-img
             class="white--text align-end"
             height="200px"
-            :src=farmer.image
+            :src="farmer.image"
           >
             <v-card-title>{{ farmer.name }}</v-card-title>
           </v-img>
@@ -26,6 +26,7 @@
             <v-btn
               color="orange"
               text
+              @click="routeToFarmer(farmer._id)"
             >
               Order
             </v-btn>
@@ -57,6 +58,9 @@ export default {
     }
   },
   methods: {
+    routeToFarmer(farmerID) {
+      this.$router.push(`/farmer/${farmerID}`);
+    }
   }
 }
 </script>
