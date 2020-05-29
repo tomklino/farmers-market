@@ -43,6 +43,7 @@
             large
             color="success"
             v-bind:disabled="!valid"
+            @click="commitOrder"
             >Complete Order</v-btn>
         </v-form>
       </v-card-text>
@@ -52,6 +53,7 @@
 
 <script>
 import store from '@/store'
+import axios from 'axios';
 
 export default {
   name: 'FarmerOrderForm',
@@ -59,6 +61,21 @@ export default {
     console.log(this.$route.params.farmer_id);
     store.dispatch("setDisplayedFarmer", this.$route.params.farmer_id);
     console.log(store.state.displayedFarmer);
+  },
+  methods: {
+    async commitOrder() {
+      let payload = {
+        name: this.name,
+        quantity: this.quantity,
+        phone: this.phone,
+        produce: this.farmer.produce,
+        farmerID: this.farmer._id
+      }
+
+      console.log(payload);
+      let newOrderResponse = await axios.post('/api/orders/new', payload);
+      console.log("order submitted:", newOrderResponse);
+    }
   },
   data: () => ({
     name: "",
