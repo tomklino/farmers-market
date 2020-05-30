@@ -21,7 +21,6 @@ function connect() {
 }
 
 async function getClient() {
-  //TODO if not connected - connect
   if(!mongoClient || !mongoClient.isConnected()) {
     await connect();
   }
