@@ -10,7 +10,7 @@ const db_name         = "farmers";
 const collection_name = "farmers";
 
 router.get('/', async function(req, res, next) {
-  let mongoClient = mongo.getClient();
+  let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);
   payload = await findDocuments(db);
   // payload = JSON.parse(fs.readFileSync("samples/farmers.json", "utf8"));
@@ -18,7 +18,7 @@ router.get('/', async function(req, res, next) {
 });
 
 router.post('/new', async function(req, res, next) {
-  let mongoClient = mongo.getClient();
+  let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);
   let payload = req.body;
   debug("got request for a new farmer");
@@ -38,7 +38,7 @@ router.post('/new', async function(req, res, next) {
 });
 
 router.delete('/:id', async function(req, res, next) {
-  let mongoClient = mongo.getClient();
+  let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);
   let id = req.params.id;
   let err = await deleteFarmer(id, db);

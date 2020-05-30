@@ -11,14 +11,14 @@ const collection_name = "orders";
 const farmers_collection_name = "farmers";
 
 router.get('/:farmerID', async function(req, res, next) {
-  let mongoClient = mongo.getClient();
+  let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);
   payload = await findDocuments(db, req.params.farmerID);
   res.json(payload);
 });
 
 router.post('/new', async function(req, res, next) {
-  let mongoClient = mongo.getClient();
+  let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);
   let payload = req.body;
   debug("got request for a new order");
@@ -37,8 +37,8 @@ router.post('/new', async function(req, res, next) {
   res.send("Done");
 });
 
-function validateFarmerID(farmerID) {
-  let mongoClient = mongo.getClient();
+async function validateFarmerID(farmerID) {
+  let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);
   let collection = db.collection(farmers_collection_name);
   return new Promise((resolve) => {

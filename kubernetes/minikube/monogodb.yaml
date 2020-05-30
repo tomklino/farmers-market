@@ -35,6 +35,17 @@ spec:
           ports:
             - containerPort: 27017
               name: mongo
+          readinessProbe:
+            exec:
+              command:
+                - mongo
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
           volumeMounts:
             - name: data
               mountPath: /data/db
