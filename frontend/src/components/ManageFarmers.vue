@@ -31,7 +31,12 @@
           <v-list-item-action>
             <v-btn icon>
               <v-icon
-                color="red darken-2"
+                v-on:click='routeToFarmerOrders(farmer._id)'
+              >mdi-format-list-bulleted</v-icon>
+            </v-btn>
+            <v-btn icon>
+              <v-icon
+                color="red"
                 v-on:click='requestDeletion(farmer._id)'
               >mdi-delete</v-icon>
             </v-btn>
@@ -68,6 +73,9 @@ export default {
       await axios.delete('/api/farmers/' + farmerToDelete);
       console.log("deleted successfuly:", farmerToDelete);
       this.refreshFarmers();
+    },
+    routeToFarmerOrders(farmerID) {
+      this.$router.push(`/orders/${farmerID}`);
     },
     cancelDeletion() {
       this.verifyDeletion = false;
