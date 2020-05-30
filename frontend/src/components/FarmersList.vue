@@ -54,7 +54,7 @@ export default {
   },
   computed: {
     farmers() {
-      return store.state.farmersList
+      return store.state.farmersList;
     }
   },
   methods: {

@@ -17,6 +17,14 @@ router.get('/:farmerID', async function(req, res, next) {
   res.json(payload);
 });
 
+router.get('/byid/:orderID', async function(req, res, next) {
+  let mongoClient = await mongo.getClient();
+  let db = mongoClient.db(db_name);
+  payload = await findOrder(db, req.params.orderID);
+  payloadArray = [ payload ];
+  res.json(payloadArray);
+});
+
 router.post('/new', async function(req, res, next) {
   let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);
@@ -92,6 +100,19 @@ function insertOrder(orderJSON, db) {
     collection.insertOne(orderJSON, (err, r) => {
       debug("order inserted successfully", r);
       resolve(err);
+    })
+  })
+}
+
+function findOrder(db, orderID) {
+  return new Promise((resolve) => {
+    const collection = db.collection(collection_name);
+    collection.findOne({ _id: new ObjectId(orderID) }, (err, result) => {
+      if(err) {
+        console.log("error while trying to fetch order", err);
+      }
+      debug("found the following order", result);
+      resolve(result)
     })
   })
 }

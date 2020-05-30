@@ -7,6 +7,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     displayedFarmer: {},
+    displayedOrder: {},
     farmersList: [],
     ordersList: []
   },
@@ -17,8 +18,13 @@ export default new Vuex.Store({
     displayedFarmer(state, farmer) {
       state.displayedFarmer = farmer;
     },
-    updateOrders(state, orders) {
+    updateOrders(state, { orders, farmerID }) {
       let ordersFromState = state.ordersList;
+      if(farmerID) {
+        // if orders are for a specific farmer, remove all previous orders from
+        // that farmer before merging to reflect deleted orders
+        ordersFromState = ordersFromState.filter(o => o._id !== farmerID)
+      }
       // merge new orders into orders in state
       orders.forEach((order) => {
         let indexInState = ordersFromState.findIndex(o => o._id === order._id)
@@ -28,16 +34,29 @@ export default new Vuex.Store({
         ordersFromState.push(order)
       });
       state.ordersList = ordersFromState;
+    },
+    displayedOrder(state, order) {
+      state.displayedOrder = order;
     }
   },
   actions: {
+    async setDisplayedOrder({ commit, state, dispatch }, order_id) {
+      let displayedOrder = state.ordersList.find(o => o._id === order_id);
+      if(!displayedOrder) {
+        await dispatch('fetchOrder', order_id); // TODO implement this
+        displayedOrder = state.ordersList.find(o => o._id === order_id);
+      }
+      if(displayedOrder) {
+        commit('displayedOrder', displayedOrder);
+      }
+    },
     async setDisplayedFarmer({ commit, state, dispatch }, farmer_id) {
       let displayedFarmer = state.farmersList.find(f => f._id === farmer_id);
       console.log("setting displayedFarmer", farmer_id);
       if(!displayedFarmer) {
         await dispatch('refreshFarmers');
+        displayedFarmer = state.farmersList.find(f => f._id === farmer_id);
       }
-      displayedFarmer = state.farmersList.find(f => f._id === farmer_id);
       console.log("displayedFarmerObject:", displayedFarmer);
       if(displayedFarmer) {
         commit('displayedFarmer', displayedFarmer);
@@ -46,15 +65,23 @@ export default new Vuex.Store({
     clearDisplayedFarmer({ commit }) {
       commit('displayedFarmer', {});
     },
-    async refreshFarmers(context) {
-      let response = await axios.get("/api/farmers")
-      console.log("got data:", response.data)
-      context.commit("updateFarmers", response.data)
+    clearDisplayedOrder( { commit } ){
+      commit('displayedOrder', {});
+    },
+    async fetchOrder({ commit }, order_id) {
+      let response = await axios.get(`/api/orders/byid/${order_id}`);
+      console.log("got data", response.data);
+      commit("updateOrders", { orders: response.data });
+    },
+    async refreshFarmers({ commit }) {
+      let response = await axios.get("/api/farmers");
+      console.log("got data:", response.data);
+      commit("updateFarmers", response.data);
     },
     async fetchOrdersOfFarmer({ commit }, farmer_id) {
       let response = await axios.get(`/api/orders/${farmer_id}`);
       console.log("got data:", response.data)
-      commit("updateOrders", response.data);
+      commit("updateOrders", { orders: response.data, farmerID: farmer_id });
     }
   },
   modules: {
