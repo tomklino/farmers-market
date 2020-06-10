@@ -1,0 +1,50 @@
+<mjml>
+  <mj-head>
+    <mj-font name="Open Sans" href="https://fonts.googleapis.com/css?family=Open+Sans" />
+    <mj-attributes>
+      <mj-all font-family="Open Sans" padding="4" align="center"></mj-all>
+      <mj-section padding-top="15px" background-color="#51b55f"></mj-section>
+      <mj-text color="#FFF"></mj-text>
+      <mj-class name="header" font-size="32" color="#FFF" text-transform="uppercase"></mj-class>
+      <mj-class name="column-header" font-size="19px" font-family="Ubuntu, Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="20px"></mj-class>
+      <mj-class name="column-text" font-size="15px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px"></mj-class>
+    </mj-attributes>
+  </mj-head>
+  <mj-body>
+    <mj-container>
+      <mj-section :background-url="header_image_url" background-size="cover">
+        <mj-column >
+          <mj-text mj-class="header" padding-bottom="74" font-weight="300">Order Summary</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section direction="rtl">
+        <mj-column>
+          <mj-text mj-class="column-header"><strong>Produce</strong></mj-text>
+          <mj-text mj-class="column-text" v-for="(order,index) in orders" :key="index">{{order.produce}}</mj-text>
+        </mj-column>
+        <mj-column>
+          <mj-text mj-class="column-header"><strong>Quantity</strong></mj-text>
+          <mj-text mj-class="column-text" v-for="(order,index) in orders" :key="index">{{order.quantity}}</mj-text>
+        </mj-column>
+        <mj-column>
+          <mj-text mj-class="column-header"><strong>Price</strong></mj-text>
+          <mj-text mj-class="column-text" v-for="(order,index) in orders" :key="index">{{order.price}}</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section>
+        <mj-column>
+          <mj-text mj-class="column-header">Sub Total</mj-text>
+        </mj-column>
+        <mj-column>
+          <mj-text mj-class="column-text" font-size="26px">{{ sub_total }}</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section>
+        <mj-column>
+          <mj-image height="200px" width="200px" :src="qr_src" />
+          <mj-button background-color="#f59218" font-family="Ubuntu" font-weight="900" :href="receipt_link">Modify order</mj-button>
+        </mj-column>
+      </mj-section>
+    </mj-container>
+  </mj-body>
+</mjml>
