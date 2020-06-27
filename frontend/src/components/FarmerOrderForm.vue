@@ -29,22 +29,26 @@
           <v-card-title>{{ farmer.name }}</v-card-title>
         </v-img>
         <v-card-title>{{ farmer.produce }}</v-card-title>
-        <v-card-text class="text-left">
-          <p class="text--primary">
-            Selling in units of {{ farmer.packageSize }} {{farmer.packageUnit }}
-          </p>
-          <p class="text--primary">
-            Unit price: {{ farmer.price }}₪
-          </p>
-        </v-card-text>
         <v-card-text>
           <v-form class="px-3" v-model="valid">
-            <v-text-field
-              v-model="quantity"
-              type="number"
-              label="How many"
-              :disabled="isDisabled"
-              ></v-text-field>
+            <v-layout row wrap>
+              <v-row v-for="(produce, i) in farmer.products" :key="produce.name">
+                <v-col md-2>
+                  <v-checkbox
+                    v-model="farmer.products[i].want"
+                    :label="produce.text"
+                  ></v-checkbox>
+                </v-col>
+                <v-col md-10>
+                <v-text-field
+                  v-model="farmer.products[i].quantity"
+                  type="number"
+                  label="How many"
+                  :disabled="isDisabled"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-layout>
             <v-text-field
               v-model="name"
               type="text"
@@ -90,9 +94,8 @@ export default {
     async commitOrder() {
       let payload = {
         name: this.name,
-        quantity: this.quantity,
         phone: this.phone,
-        produce: this.farmer.produce,
+        products: this.farmer.products.filter(p => p.want),
         farmerID: this.farmer._id
       }
 
@@ -104,6 +107,7 @@ export default {
     }
   },
   data: () => ({
+    checkbox: false,
     completedDialogOpened: false,
     isDisabled: false,
     name: "",

@@ -66,15 +66,12 @@ async function validateOrderJSON(orderJSON) {
     name: [
       v => typeof v === 'string' || "name must be a string",
     ],
-    quantity: [
-      v => !!v || "quantity must be defined",
-    ],
     phone: [
       v => !!v || "phone must be defined",
       // TODO verify with regex
     ],
-    produce: [
-      v => typeof v === 'string' || "produce must be a string",
+    products: [
+      v => Array.isArray(v) || "products must be an array",
     ],
     farmerID: [
       validateFarmerID
