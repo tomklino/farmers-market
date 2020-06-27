@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-md>
     <v-layout row wrap>
-      <v-flex v-for="farmer in farmers" xs4 :key="farmer.id">
+      <v-flex v-for="farmer in farmers" md4 xs12 :key="farmer.id">
         <v-card
           class="mx-auto"
           max-width="400"
