@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: frontend
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "https://klino-farmers.fra1.cdn.digitaloceanspaces.com/$1"
+spec:
+  rules:
+  - host: ion.klino.me
+    http:
+      paths:
+      - path: /(.*)
+        backend:
+          serviceName: none
+          servicePort: 8000
