@@ -62,8 +62,8 @@ function validateFarmerJSON(farmerJSON) {
     packageUnit: [
       v => [ "Kg", "gr" ].includes(v) || "packageUnit must be on of 'Kg', 'gr'",
     ],
-    produce: [
-      v => typeof v === 'string' || "produce must be a string",
+    products: [
+      v => Array.isArray(v) || "products must be an array",
     ],
     orderMinimum: [
       v => typeof v !== 'undefined' || "orderMinimum must be set",
