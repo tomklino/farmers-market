@@ -8,8 +8,76 @@
         <v-card-title>Success!</v-card-title>
       </v-card>
     </v-dialog>
+
+    <v-dialog
+      v-model="newProduceDialogOpened"
+      width="500"
+    >
+      <v-card>
+        <v-card-title>Add a produce to sell</v-card-title>
+        <v-container grid-list-md text-xs-center>
+          <v-form v-model="produceValid">
+
+            <v-flex xs12>
+              <v-layout row wrap>
+                <v-col md="12">
+                  <v-text-field
+                    v-model="produceName"
+                    :rules="produceNameRules"
+                    :disabled="isDisabled"
+                    label="Name"
+                  />
+                </v-col>
+                <v-col md="3">
+                  <v-text-field
+                    v-model="packageSize"
+                    :disabled="isDisabled"
+                    label="Package Size"
+                    type="number"
+                  />
+                </v-col>
+                <v-col md="2">
+                  <v-select
+                    v-model="packageUnit"
+                    :items="units"
+                    :disabled="isDisabled"
+                    label="Unit"
+                  ></v-select>
+                </v-col>
+                <v-col md="4">
+                  <v-text-field
+                    v-model="price"
+                    label="Price"
+                    :rules="priceRules"
+                    :disabled="isDisabled"
+                    hint="₪"
+                    persistent-hint
+                    type="number"
+                  />
+                </v-col>
+              </v-layout>
+            </v-flex>
+          </v-form>
+        </v-container>
+        <v-card-actions>
+          <v-btn
+            color="green"
+            @click="addProduce()"
+          >
+            Add
+          </v-btn>
+
+          <v-btn
+            color="grey"
+            @click="newProduceDialogOpened = false"
+          >
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-form v-model="valid">
-      <v-container grid-list-md text-xs-center>
+      <v-container grid-list-md>
         <v-layout row wrap>
           <v-flex xs6>
             <v-row>
@@ -24,21 +92,6 @@
 
             <v-row>
               <v-combobox
-                v-model="produce"
-                :items="commonProduce"
-                :rules="produceRules"
-                :disabled="isDisabled"
-                hide-selected
-                deletable-chips
-                hint="What do you want to offer?"
-                label="Produce"
-                persistent-hint
-              >
-
-              </v-combobox>
-            </v-row>
-            <v-row>
-              <v-combobox
                 v-model="area"
                 :items="areaOptions"
                 :rules="areaRules"
@@ -51,42 +104,44 @@
               </v-combobox>
             </v-row>
             <v-row>
-              <v-col md="3">
-                <v-text-field
-                  v-model="packageSize"
-                  :disabled="isDisabled"
-                  label="Package Size"
-                  type="number"
-                />
-              </v-col>
-              <v-col md="2">
-                <v-select
-                  v-model="packageUnit"
-                  :items="units"
-                  :disabled="isDisabled"
-                  label="Unit"
-                ></v-select>
-              </v-col>
-              <v-col md="4">
-                <v-text-field
-                  v-model="price"
-                  label="Price"
-                  :rules="priceRules"
-                  :disabled="isDisabled"
-                  hint="₪"
-                  persistent-hint
-                  type="number"
-                />
-              </v-col>
-              <v-col md="3">
-                <v-text-field
-                  v-model="minimumOrders"
-                  :disabled="isDisabled"
-                  label="Minimum Orders"
-                  type="number"
-                />
-              </v-col>
+              <v-text-field
+                v-model="minimumOrders"
+                :disabled="isDisabled"
+                label="Minimum Orders"
+                type="number"
+              />
             </v-row>
+
+            <v-row>
+              <v-container class="with-rounded-border">
+                <v-row>Products</v-row>
+                <v-row>
+                  <v-col
+                    class="d-flex justify-start"
+                  >
+                    <v-btn class="mx-2" fab dark small color="indigo"
+                      @click="newProduceDialogOpened = true"
+                    >
+                      <v-icon dark>mdi-plus</v-icon>
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    v-for="(produce, i) in products"
+                    :key="produce.text"
+                    class="shrink d-flex justify-start"
+                  >
+                    <v-chip
+                      close
+                      @click:close="products.splice(i, 1)"
+                    >
+
+                      {{ produce.text }}
+                    </v-chip>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-row>
+
             <v-row>
               <v-layout row wrap>
                 <v-flex xs3 v-for="image in imageChoices"
@@ -136,6 +191,10 @@ import axios from 'axios';
 export default {
   name: 'NewFarmer',
   data: () => ({
+    products: [],
+    produceValid: false,
+    newProduceDialogOpened: false,
+
     createdDialogOpened: false,
     isDisabled: false,
     commonProduce: [ "Strawberries", "Kiwis", "Mangos", "Pineapples" ],
@@ -148,7 +207,8 @@ export default {
     units: [ "Kg", "gr" ],
     minimumOrders: 20,
     produce: "",
-    produceRules: [
+    produceName: "",
+    produceNameRules: [
       v => !!v || 'Produce is required',
     ],
     area: "",
@@ -171,13 +231,37 @@ export default {
   }),
   computed: {
     complete() {
-      return this.valid && this.selectedPicture && this.arrivalDates.length > 0
+      return this.valid &&
+        this.selectedPicture &&
+        this.arrivalDates.length > 0 &&
+        this.products.length > 0
     }
   },
   mounted () {
     console.log("STUB");
   },
   methods: {
+    addProduce() {
+      if(!this.produceValid) {
+        return;
+      }
+      let name = this.produceName;
+      let packageSize = this.packageSize;
+      let packageUnit = this.packageUnit;
+      let price = this.price;
+
+      let produce = { name, packageSize, packageUnit, price };
+
+      produce.text = `${name} - ${packageSize}${packageUnit} - ${price}`
+      this.products.push(produce);
+
+      //clear and close dialog
+      this.produceName = "";
+      this.packageSize = 1;
+      this.packageUnit = "Kg";
+      this.price = 50;
+      this.newProduceDialogOpened = false;
+    },
     async create() {
       var payload = {
         name: this.name,
@@ -188,7 +272,7 @@ export default {
         arrivalDates: this.arrivalDates,
         price: this.price,
         shipmentArea: this.area,
-        produce: this.produce,
+        products: this.products,
       }
       this.isDisabled = true;
       let creationResponse = await axios.post('/api/farmers/new', payload);
@@ -202,3 +286,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.with-rounded-border {
+  padding: 16px;
+  margin: 4px;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 9px;
+  border-color: #1976d2 ;
+}
+</style>
