@@ -28,8 +28,8 @@ export default {
         value: "phone",
       },
       {
-        text: "Quantity",
-        value: "quantity"
+        text: "Summary",
+        value: "summary"
       }
     ]
   }),
@@ -38,9 +38,14 @@ export default {
   },
   computed: {
     orders() {
-      return store.state.ordersList.filter((o) => {
+      let fetchedOrders = store.state.ordersList.filter((o) => {
         return o.farmerID === this.$route.params.farmer_id;
       });
+      console.log("fetched", fetchedOrders);
+      fetchedOrders.forEach((order) => {
+        order.summary = order.products.map(p => `${p.name} ${p.packageSize}${p.packageUnit} (${p.quantity})`).join(", ");
+      })
+      return fetchedOrders;
     }
   },
   methods: {
