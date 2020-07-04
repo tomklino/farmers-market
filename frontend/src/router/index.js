@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 import FarmersListView from '../views/FarmersListView.vue'
 import NewFarmerView from '../views/NewFarmerView'
 import ManageFarmersView from '../views/ManageFarmersView'
@@ -14,7 +13,7 @@ Vue.use(VueRouter)
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: FarmersListView
   },
   {
     path: '/new/farmer',

@@ -2,9 +2,9 @@
   <v-app>
     <div id="app">
       <div id="nav">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link> |
-        <router-link to="/farmers">Farmers</router-link>
+        <v-toolbar dark color="orange">
+          <router-link class="title" to="/"><v-toolbar-title class="title">Farmers</v-toolbar-title></router-link>
+        </v-toolbar>
       </div>
       <router-view/>
     </div>
@@ -18,6 +18,16 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+.title {
+  color: white;
+  text-decoration: none;
+}
+
+.title:visited {
+  color: white;
+  text-decoration: none;
 }
 
 #nav {
