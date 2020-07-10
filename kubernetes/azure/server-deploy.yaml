@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: server
+  name: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        run: server
+    spec:
+      containers:
+      - image: farmersregistry.azurecr.io/farmers-server:0.1.0
+        name: server
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50Mi
+          limits:
+            cpu: 400m
+            memory: 50Mi
+        workingDir: /workspace
+        command: [ "npm", "start" ]
+        env:
+          - name: MONGO__CONNECTION_STRING
+            value: "mongodb://mongodb:27017"
+          - name: DEBUG
+            value: "server:*"
+      dnsPolicy: ClusterFirst
+status: {}

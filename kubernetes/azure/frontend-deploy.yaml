@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: frontend
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: frontend
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        run: frontend
+    spec:
+      containers:
+      - image: farmersregistry.azurecr.io/farmers-frontend:0.1.2
+        name: frontend
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 30
+        resources:
+          requests:
+            cpu: 200m
+            memory: 400Mi
+          limits:
+            cpu: 800m
+            memory: 400Mi
+      dnsPolicy: ClusterFirst
+status: {}
