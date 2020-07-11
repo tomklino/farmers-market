@@ -3,12 +3,14 @@ const express          = require('express');
 const { renderEmail }  = require('./src/mail-render');
 const { sendMail }     = require('./src/sender');
 
-// const fs               = require('fs');
+const config           = require('nice-config-loader')();
+
+const port = config.get("port") || 3000;
 
 const server = express();
 server.use(express.json());
 
-server.get('*', async (req, res) => {
+server.post('*', async (req, res) => {
   const { templateName, data, destination } = req.body;
   if(typeof templateName !== 'string') {
     res.status(400).send("template name must be provided");
@@ -22,8 +24,7 @@ server.get('*', async (req, res) => {
   const renderedMailHTML = await renderEmail(templateName, data);
 
   sendMail(destination, "test", renderedMailHTML);
-  // fs.writeFileSync("/tmp/example-email.html", renderedMailHTML, "utf-8");
   res.send("done");
 });
 
-server.listen(8080);
+server.listen(port);

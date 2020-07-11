@@ -1,8 +1,18 @@
 const sgMail = require("@sendgrid/mail");
+const config = require("nice-config-loader")();
 
+const SENDGRID__API_KEY = config.get("sendgrid:api_key");
+const SENDGRID__FROM_ADDRESS = config.get("sendgrid:from_address");
 
-const SENDGRID__API_KEY = "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";
-const SENDGRID__FROM_ADDRESS = "farmers@klino.me";
+if (typeof SENDGRID__API_KEY !== "string") {
+  console.error("FATAL: No sendgrid api key set");
+  process.exit(1);
+}
+
+if (typeof SENDGRID__FROM_ADDRESS !== "string") {
+  console.error("FATAL: No sendgrid from address set");
+  process.exit(1);
+}
 
 sgMail.setApiKey(SENDGRID__API_KEY);
 
