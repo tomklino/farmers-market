@@ -22,6 +22,7 @@ router.get('/byid/:orderID', async function(req, res, next) {
   let db = mongoClient.db(db_name);
   payload = await findOrder(db, req.params.orderID);
   payloadArray = [ payload ];
+  debug("orders/byid - response:", payloadArray);
   res.json(payloadArray);
 });
 
@@ -104,6 +105,7 @@ function insertOrder(orderJSON, db) {
 function findOrder(db, orderID) {
   return new Promise((resolve) => {
     const collection = db.collection(collection_name);
+    debug("trying to find order with id", orderID);
     collection.findOne({ _id: new ObjectId(orderID) }, (err, result) => {
       if(err) {
         console.log("error while trying to fetch order", err);

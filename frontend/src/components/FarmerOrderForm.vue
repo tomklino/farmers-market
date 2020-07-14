@@ -28,7 +28,7 @@
         >
           <v-card-title>{{ farmer.name }}</v-card-title>
         </v-img>
-        <v-card-title>{{ farmer.produce }}</v-card-title>
+        <v-card-title>{{ farmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
         <v-card-text>
           <v-form class="px-3" v-model="valid">
             <v-layout row wrap>

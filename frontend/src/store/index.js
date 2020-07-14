@@ -43,7 +43,8 @@ export default new Vuex.Store({
     async setDisplayedOrder({ commit, state, dispatch }, order_id) {
       let displayedOrder = state.ordersList.find(o => o._id === order_id);
       if(!displayedOrder) {
-        await dispatch('fetchOrder', order_id); // TODO implement this
+        await dispatch('fetchOrder', order_id);
+        console.log("orders list", state.ordersList);
         displayedOrder = state.ordersList.find(o => o._id === order_id);
       }
       if(displayedOrder) {
