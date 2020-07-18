@@ -9,7 +9,11 @@ export default new Vuex.Store({
     displayedFarmer: {},
     displayedOrder: {},
     farmersList: [],
-    ordersList: []
+    ordersList: [],
+    loggedInUser: {
+      loggedIn: false,
+      username: ""
+    }
   },
   mutations: {
     updateFarmers(state, farmers) {
@@ -37,6 +41,15 @@ export default new Vuex.Store({
     },
     displayedOrder(state, order) {
       state.displayedOrder = order;
+    },
+    updateLoggedInUser(state, whoamiRespone) {
+      if (typeof whoamiRespone.user === 'string') {
+        state.loggedInUser.loggedIn = true;
+        state.loggedInUser.username = whoamiRespone.user;
+      } else {
+        state.loggedInUser.loggedIn = false;
+        state.loggedInUser.username = "";
+      }
     }
   },
   actions: {
@@ -83,6 +96,17 @@ export default new Vuex.Store({
       let response = await axios.get(`/api/orders/${farmer_id}`);
       console.log("got data:", response.data)
       commit("updateOrders", { orders: response.data, farmerID: farmer_id });
+    },
+    async refreshLoggedInUser({ commit }) {
+      try {
+        let response = await axios.get("/users/whoami");
+        console.log("got data:", response.data);
+        commit("updateLoggedInUser", response.data);
+      } catch(e) {
+        if (e.response.status === 401) {
+          commit("updateLoggedInUser", "");
+        }
+      }
     }
   },
   modules: {

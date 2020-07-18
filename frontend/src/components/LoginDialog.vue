@@ -3,17 +3,24 @@
     v-model="loginDialogOpened"
     width="500">
     <v-card width="500">
-      <v-card-title>Login</v-card-title>
+      <v-card-title>{{ loginString }}</v-card-title>
       <v-card-text>
         <v-text-field
+          v-if="!isLoggedIn()"
           v-model="devadminPassword"
           type="password"
           label="password"></v-text-field>
       </v-card-text>
       <v-card-actions>
         <v-btn large color="green"
+          v-if="!isLoggedIn()"
           @click="login"
-          >submit
+          >Submit
+        </v-btn>
+        <v-btn large color="grey"
+          v-if="isLoggedIn()"
+          @click="logout">
+          Logout
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -22,6 +29,7 @@
 
 <script>
 import axios from 'axios';
+import store from '@/store';
 
 export default {
   name: "LoginDialog",
@@ -29,6 +37,13 @@ export default {
     value: Boolean
   },
   computed: {
+    loginString() {
+      let loginString = this.isLoggedIn() ?
+        store.state.loggedInUser.username :
+        "Login"
+      console.log("login string is", loginString);
+      return loginString
+    },
     loginDialogOpened: {
       get () {
         return this.value;
@@ -42,11 +57,20 @@ export default {
     devadminPassword: ''
   }),
   methods: {
+    isLoggedIn() {
+      return store.state.loggedInUser.loggedIn;
+    },
+    async logout() {
+      await axios.post('/users/logout');
+      await store.dispatch('refreshLoggedInUser');
+      this.$emit('input', false);
+    },
     async login() {
       await axios.post('/users/login/devadmin', {
         password: this.devadminPassword
       })
-      console.log("done");
+      await store.dispatch('refreshLoggedInUser');
+      this.$emit('input', false);
     }
   }
 }

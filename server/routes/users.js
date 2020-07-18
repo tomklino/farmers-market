@@ -13,6 +13,15 @@ router.get('/whoami', function(req, res, next) {
   res.json(payload);
 });
 
+router.post('/logout', function(req, res, next) {
+  console.log("got a logout request");
+  let payload = {};
+  req.session.logged_in = false;
+  req.session.user = "";
+  payload.message = "Logged out";
+  res.json(payload);
+})
+
 if(process.env["ENVIRONMENT"] === "DEV") {
   console.log("WARNING: environment is set to dev - enabling dev admin user");
   let payload = {};
