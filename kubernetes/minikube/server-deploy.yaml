@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,6 +29,10 @@ spec:
         workingDir: /workspace
         command: [ "npm", "start" ]
         env:
+          - name: ENVIRONMENT
+            value: "DEV"
+          - name: COOKIE_SECRET
+            value: "notArealSECRET_dev_only"
           - name: MONGO__CONNECTION_STRING
             value: "mongodb://mongodb:27017"
           - name: DEBUG

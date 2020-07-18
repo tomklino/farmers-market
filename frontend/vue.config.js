@@ -1,5 +1,6 @@
 module.exports = {
   "devServer": {
+    "sockHost": 'farmers.local',
     "disableHostCheck": true,
     "watchOptions": {
       "aggregateTimeout": 300,

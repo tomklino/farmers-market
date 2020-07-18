@@ -1,15 +1,40 @@
 <template>
   <v-app>
     <div id="app">
+      <LoginDialog v-model="loginDialogOpened" />
       <div id="nav">
         <v-toolbar dark color="orange">
           <router-link class="title" to="/"><v-toolbar-title class="title">Farmers</v-toolbar-title></router-link>
+          <v-btn text
+            @click="openLoginDialog"
+          >Login</v-btn>
         </v-toolbar>
       </div>
       <router-view/>
     </div>
   </v-app>
 </template>
+
+<script>
+  import LoginDialog from '@/components/LoginDialog.vue'
+
+  export default {
+    name: "app",
+    components: {
+      LoginDialog
+    },
+    methods: {
+      openLoginDialog() {
+        this.loginDialogOpened = true;
+      }
+    },
+    data() {
+      return {
+        loginDialogOpened: false,
+      }
+    }
+  }
+</script>
 
 <style>
 #app {
