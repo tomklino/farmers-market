@@ -28,7 +28,7 @@
         >
           <v-card-title>{{ farmer.name }}</v-card-title>
         </v-img>
-        <v-card-title>{{ farmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
+        <v-card-title v-if="typeof farmer.products !== 'undefined'">{{ farmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
         <v-card-text>
           <v-form class="px-3" v-model="valid">
             <v-layout row wrap>
@@ -102,6 +102,7 @@ export default {
       console.log(payload);
       this.isDisabled = true;
       let newOrderResponse = await axios.post('/api/orders/new', payload);
+      //TODO reflect error to user
       console.log("order submitted:", newOrderResponse);
       this.completedDialogOpened = true;
     }

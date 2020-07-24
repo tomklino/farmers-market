@@ -50,9 +50,25 @@ export default new Vuex.Store({
         state.loggedInUser.loggedIn = false;
         state.loggedInUser.username = "";
       }
+    },
+    markOrderCompleted(state, orderID) {
+      state.ordersList.find(o => o._id === orderID).completed = "true";
     }
   },
   actions: {
+    async completeOrder({ commit }, order_id) {
+      try {
+        let response = await axios.post('/api/orders/complete', { orderID: order_id })
+        if (response.data.message === "done") {
+          commit("markOrderCompleted", order_id);
+        } else {
+          console.log("unexpected response while trying to complete order", response)
+        }
+      }
+      catch(err) {
+        console.log("error from server while trying to complete order", err);
+      }
+    },
     async setDisplayedOrder({ commit, state, dispatch }, order_id) {
       let displayedOrder = state.ordersList.find(o => o._id === order_id);
       if(!displayedOrder) {

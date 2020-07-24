@@ -33,6 +33,12 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+    <v-card-actions class="justify-center">
+      <v-btn raised color="green"
+        @click="completeOrder(order._id)"
+        :disabled="isLoading || order.completed === 'true'"
+        >{{ order.completed === "true" ? "Completed" : "Complete Order" }}</v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -41,9 +47,6 @@ import store from '@/store'
 
 export default {
   name: 'OrderSummary',
-  mounted() {
-    store.dispatch('setDisplayedOrder', this.$route.params.order_id);
-  },
   computed: {
     order() {
       return store.state.displayedOrder;
@@ -56,8 +59,17 @@ export default {
       return total;
     }
   },
+  methods: {
+    async completeOrder(orderID) {
+      console.log("will complete", orderID);
+      this.isLoading = true;
+      await store.dispatch("completeOrder", orderID);
+      this.isLoading = false;
+      //TODO reflect error to the user
+    }
+  },
   data: () => ({
-
+    isLoading: false,
   })
 }
 </script>
