@@ -24,11 +24,24 @@
     </template>
     <template v-slot:item.actions="{ item }">
       <v-icon
-        small
         class="mr-2"
         @click="openItem(item)"
       >
         mdi-pencil
+      </v-icon>
+      <v-icon
+        v-if="item.completed !== 'true'"
+        class="mr-2"
+        @click="completeOrder(item._id)"
+      >
+        mdi-check-circle-outline
+      </v-icon>
+      <v-icon
+        v-if="item.completed === 'true'"
+        class="mr-2"
+        @click="unCompleteOrder(item._id)"
+      >
+        mdi-check-circle
       </v-icon>
     </template>
     <template v-slot:no-data>
@@ -91,6 +104,12 @@ export default {
     openItem(item) {
       store.dispatch('setDisplayedOrder', item._id);
       this.dialog = true;
+    },
+    async completeOrder(orderID) {
+      await store.dispatch("completeOrder", orderID);
+    },
+    async unCompleteOrder(orderID) {
+      await store.dispatch("unCompleteOrder", orderID);
     }
   }
 }
