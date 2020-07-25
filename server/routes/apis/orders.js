@@ -1,10 +1,8 @@
-var fs = require('fs');
-
-var express = require('express');
-var router = express.Router();
-var mongo = require('../../utils/mongo');
+const express = require('express');
+const router = express.Router();
+const mongo = require('../../utils/mongo');
 const { ObjectId } = require('mongodb'); // or ObjectID
-var debug = require('debug')('server:orders');
+const debug = require('debug')('server:orders');
 
 const db_name         = "farmers";
 const orders_collection_name = "orders";
@@ -27,7 +25,6 @@ router.get('/byid/:orderID', async function(req, res, next) {
 });
 
 router.post('/new', async function(req, res, next) {
-  // TODO check session is logged in
   let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);
   let payload = req.body;
@@ -73,6 +70,10 @@ router.post("/uncomplete", async function(req, res, next) {
     res.status(500).json({ message: "failed" });
   }
 })
+
+async function emailOrder(order, destination) {
+
+}
 
 async function unCompleteOrder(orderID) {
   let mongoClient = await mongo.getClient();
