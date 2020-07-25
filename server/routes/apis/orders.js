@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const mongo = require('../../utils/mongo');
+const request = require('request');
+
 const { ObjectId } = require('mongodb'); // or ObjectID
 const debug = require('debug')('server:orders');
 
@@ -41,6 +43,8 @@ router.post('/new', async function(req, res, next) {
     res.status(500).send("Internal Error");
     return;
   }
+  // TODO: require the order-email util and send an email for successful order
+
   res.send("Done");
 });
 
@@ -70,10 +74,6 @@ router.post("/uncomplete", async function(req, res, next) {
     res.status(500).json({ message: "failed" });
   }
 })
-
-async function emailOrder(order, destination) {
-
-}
 
 async function unCompleteOrder(orderID) {
   let mongoClient = await mongo.getClient();

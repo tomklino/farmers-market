@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: mailer
+  name: mailer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: mailer
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        run: mailer
+    spec:
+      containers:
+      - image: node:14.2-stretch-slim
+        name: mailer
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+          limits:
+            cpu: 400m
+            memory: 200Mi
+        workingDir: /workspace
+        command: [ "npm", "start" ]
+        volumeMounts:
+          - mountPath: /workspace
+            name: mailer
+        env:
+          - name: SENDGRID__API_KEY # TODO in prod, take this from a secret
+            value: "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"
+          - name: SENDGRID__FROM_ADDRESS
+            value: "farmers@klino.me"
+      volumes:
+        - name: mailer
+          hostPath:
+            path: /hosthome/tomk/workspace/farmers-market/mailer
+            type: Directory
+      dnsPolicy: ClusterFirst
+status: {}
