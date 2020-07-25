@@ -20,7 +20,7 @@
       </v-toolbar>
     </template>
     <template v-slot:item.name="{ item }">
-      <span :style="item.completed ? 'text-decoration: line-through;' : '' ">{{ item.name }}</span>
+      <span :style="item.completed === 'true' ? 'text-decoration: line-through;' : '' ">{{ item.name }}</span>
     </template>
     <template v-slot:item.actions="{ item }">
       <v-icon

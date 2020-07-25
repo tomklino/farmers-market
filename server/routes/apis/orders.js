@@ -61,6 +61,30 @@ router.post("/complete", async function(req, res, next) {
   }
 });
 
+router.post("/uncomplete", async function(req, res, next) {
+  let payload = req.body;
+
+  try {
+    let result = (await unCompleteOrder(payload.orderID)).result;
+    debug("undo complete order:", result);
+    res.json({ message: "done" });
+  } catch (err) {
+    debug("error while trying to uncomplete order", err);
+    res.status(500).json({ message: "failed" });
+  }
+})
+
+async function unCompleteOrder(orderID) {
+  let mongoClient = await mongo.getClient();
+  let db = mongoClient.db(db_name);
+  let collection = db.collection(orders_collection_name);
+
+  return collection.updateOne(
+    { _id: ObjectId(orderID) },
+    { $set: { "completed": "false" }}
+  );
+}
+
 async function completeOrder(orderID) {
   let mongoClient = await mongo.getClient();
   let db = mongoClient.db(db_name);

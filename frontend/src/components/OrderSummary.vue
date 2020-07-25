@@ -38,6 +38,11 @@
         @click="completeOrder(order._id)"
         :disabled="isLoading || order.completed === 'true'"
         >{{ order.completed === "true" ? "Completed" : "Complete Order" }}</v-btn>
+      <v-btn raised color="red"
+        v-if="order.completed === 'true'"
+        :disabled="isLoading"
+        @click="unCompleteOrder(order._id)"
+        >Uncomplete</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -66,6 +71,12 @@ export default {
       await store.dispatch("completeOrder", orderID);
       this.isLoading = false;
       //TODO reflect error to the user
+    },
+    async unCompleteOrder(orderID) {
+      this.isLoading = true;
+      await store.dispatch("unCompleteOrder", orderID);
+      this.isLoading = false;
+      //TODO: reflect error to the user
     }
   },
   data: () => ({

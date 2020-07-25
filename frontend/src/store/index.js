@@ -51,22 +51,33 @@ export default new Vuex.Store({
         state.loggedInUser.username = "";
       }
     },
-    markOrderCompleted(state, orderID) {
-      state.ordersList.find(o => o._id === orderID).completed = "true";
+    markOrderCompleted(state, { orderID, isCompleted = "true" }) {
+      state.ordersList.find(o => o._id === orderID).completed = isCompleted;
     }
   },
   actions: {
-    async completeOrder({ commit }, order_id) {
+    async completeOrder({ commit }, orderID) {
       try {
-        let response = await axios.post('/api/orders/complete', { orderID: order_id })
+        let response = await axios.post('/api/orders/complete', { orderID })
         if (response.data.message === "done") {
-          commit("markOrderCompleted", order_id);
+          commit("markOrderCompleted", { orderID });
         } else {
-          console.log("unexpected response while trying to complete order", response)
+          console.log("unexpected response while trying to complete order", response);
         }
-      }
-      catch(err) {
+      } catch(err) {
         console.log("error from server while trying to complete order", err);
+      }
+    },
+    async unCompleteOrder({ commit }, orderID) {
+      try {
+        let response = await axios.post('/api/orders/uncomplete', { orderID })
+        if (response.data.message === "done") {
+          commit("markOrderCompleted", { orderID, isCompleted: "false" });
+        } else {
+          console.log("unexpected response while trying to uncomplete order", response);
+        }
+      } catch(err) {
+        console.log("error from server while trying to uncomplete order", err);
       }
     },
     async setDisplayedOrder({ commit, state, dispatch }, order_id) {
