@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const mongo = require('../../utils/mongo');
 const request = require('request');
+const mongo = require('../../utils/mongo');
+const { emailOrder } = require('../../utils/order-email');
 
 const { ObjectId } = require('mongodb'); // or ObjectID
 const debug = require('debug')('server:orders');
@@ -45,6 +46,9 @@ router.post('/new', async function(req, res, next) {
   }
   // TODO: require the order-email util and send an email for successful order
 
+  emailOrder(payload, "lutraman@gmail.com")
+    .then(() => debug("emailed successfully"))
+    .catch((err) => debug("error trying to send email:", err));
   res.send("Done");
 });
 

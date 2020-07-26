@@ -4,17 +4,16 @@ module.exports = {
   emailOrder
 }
 
-const mailer_uri = process.env['MAILER__HOSTNAME'] +
+const mailer_uri = "http://" + process.env['MAILER__HOSTNAME'] +
     ":" + (process.env['MAILER__PORT'] ?? "80");
 
 const mailer_request_template = {
-  templateName: process.env['MAILER__DEFAULT_ORDER_TEMPLATE'];
+  templateName: process.env['MAILER__DEFAULT_ORDER_TEMPLATE']
 }
 
 const receipt_link_prefix = process.env['SELF_HOSTNAME'] + "/order/";
 
 function emailOrder(order, destination) {
-  console.log("mailer debug, order object is");
   console.log(order);
 
   return new Promise(function(resolve, reject) {
@@ -23,6 +22,7 @@ function emailOrder(order, destination) {
     }
 
     let mailer_request = Object.assign({}, mailer_request_template);
+    mailer_request.destination = destination;
 
     mailer_request.data = {
       orders: []
@@ -30,14 +30,17 @@ function emailOrder(order, destination) {
 
     order.products.forEach((product) => {
       mailer_request.data.orders.push({
-        produce: product.text,
-        quantity,
+        produce: product.name,
+        packageSize: product.packageSize,
+        packageUnit: product.packageUnit,
+        quantity: product.quantity,
         price: (product.price * product.quantity) + "₪"
       })
     })
 
-    mailer_request.data.sub_total =
-        order.products.reduce((sum, p) => sum += (p.price * p.quantity)) + "₪";
+    let total = 0;
+    order.products.forEach(p => total += (p.price * p.quantity));
+    mailer_request.data.sub_total = total + "₪";
 
     mailer_request.receipt_link = receipt_link_prefix + order._id;
 
@@ -50,7 +53,7 @@ function emailOrder(order, destination) {
     request.post({
       url: mailer_uri,
       method: 'POST',
-      json: order_request
+      json: mailer_request
     }, (error, response, body) => {
       if (error) {
         reject(error)

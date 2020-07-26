@@ -20,7 +20,7 @@
       <mj-section direction="rtl">
         <mj-column>
           <mj-text mj-class="column-header"><strong>Order</strong></mj-text>
-          <mj-text mj-class="column-text" v-for="(order,index) in orders" :key="index">{{order.produce}} - {{order.quantity}} - {{order.price}}</mj-text>
+          <mj-text mj-class="column-text" v-for="(order,index) in orders" :key="index">{{order.produce}} {{order.packageSize}}{{order.packegeUnit}} ({{order.quantity}}) - {{order.price}}</mj-text>
         </mj-column>
       </mj-section>
       <mj-section>
