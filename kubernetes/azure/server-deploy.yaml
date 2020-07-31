@@ -31,5 +31,13 @@ spec:
             value: "mongodb://mongodb:27017"
           - name: DEBUG
             value: "server:*"
+          - name: MAILER__HOSTNAME
+            value: "mailer"
+          - name: MAILER__PORT
+            value: "80"
+          - name: MAILER__DEFAULT_ORDER_TEMPLATE
+            value: "receipt-full.mjml"
+          - name: SELF_HOSTNAME
+            value: "farmers.local"
       dnsPolicy: ClusterFirst
 status: {}

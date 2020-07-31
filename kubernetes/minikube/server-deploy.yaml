@@ -43,6 +43,8 @@ spec:
             value: "80"
           - name: MAILER__DEFAULT_ORDER_TEMPLATE
             value: "receipt-full.mjml"
+          - name: SELF_HOSTNAME
+            value: "farmers.local"
         volumeMounts:
           - mountPath: /workspace
             name: server

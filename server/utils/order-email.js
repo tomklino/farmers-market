@@ -42,13 +42,13 @@ function emailOrder(order, destination) {
     order.products.forEach(p => total += (p.price * p.quantity));
     mailer_request.data.sub_total = total + "₪";
 
-    mailer_request.receipt_link = receipt_link_prefix + order._id;
+    mailer_request.data.receipt_link = receipt_link_prefix + order._id;
 
     //TODO this is hardcoded - take from the farmer entry instead
-    mailer_request.header_image_url = "https://klino-farmers.fra1.cdn.digitaloceanspaces.com/strawberries.jpg";
+    mailer_request.data.header_image_url = "https://klino-farmers.fra1.cdn.digitaloceanspaces.com/strawberries.jpg";
 
     // TODO: this is hardcoded - generate from receipt_link instead
-    mailer_request.qr_src = "https://klino-farmers.fra1.digitaloceanspaces.com/qr-farmers-example-email.png";
+    mailer_request.data.qr_src = "https://klino-farmers.fra1.digitaloceanspaces.com/qr-farmers-example-email.png";
 
     request.post({
       url: mailer_uri,
