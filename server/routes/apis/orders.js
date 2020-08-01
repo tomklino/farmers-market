@@ -44,11 +44,15 @@ router.post('/new', async function(req, res, next) {
     res.status(500).send("Internal Error");
     return;
   }
-  // TODO: require the order-email util and send an email for successful order
 
-  emailOrder(payload, "lutraman@gmail.com")
+  // TODO: check for a valid email address before sending
+  if(typeof payload.email === 'undefined') {
+    console.log("Warning: received an order with no email", payload);
+  } else {
+    emailOrder(payload, payload.email)
     .then(() => debug("emailed successfully"))
     .catch((err) => debug("error trying to send email:", err));
+  }
   res.send("Done");
 });
 

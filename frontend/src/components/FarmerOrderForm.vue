@@ -127,6 +127,7 @@ export default {
     async commitOrder() {
       let payload = {
         name: this.name,
+        email: this.email,
         phone: this.phone,
         products: this.farmer.products.filter(p => p.want),
         farmerID: this.farmer._id
@@ -150,8 +151,13 @@ export default {
       v => !!v || 'Email address is requried',
       (v) => {
         let atIndex = v.indexOf("@");
-        let dotIndex = v.indexOf(".");
-        return (atIndex > 0 && (atIndex + 1) < dotIndex && dotIndex < (v.length - 1) ? true : "Invalid Email address")
+        if (atIndex <= 0) {
+          return "Invalid Email address"
+        }
+        let userPart = v.split("@")[0];
+        let domainPart = v.split("@")[1];
+        let dotIndex = domainPart.indexOf(".");
+        return (userPart.length > 0 && dotIndex !== -1 && dotIndex < (domainPart.length - 1))
       }
     ],
     nameRules: [
