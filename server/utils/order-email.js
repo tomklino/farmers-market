@@ -22,6 +22,12 @@ function emailOrder(order, destination) {
   console.log(order);
 
   return new Promise(async function(resolve, reject) {
+    if (typeof process.env['FEATURE_FLAG__EMAIL'] === 'string' &&
+        process.env['FEATURE_FLAG__EMAIL'].toLowerCase === "false") {
+      resolve();
+      return;
+    }
+
     if (typeof destination !== 'string') {
       reject(new Error("NO DESTINATION PROVIDED"))
     }
