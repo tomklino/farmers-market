@@ -23,6 +23,10 @@ export default new Vuex.Store({
       state.displayedFarmer = farmer;
     },
     updateOrders(state, { orders, farmerID }) {
+      orders.forEach((order) => { // explicitly setting the completed state of each order
+        order.completed = typeof order.completed === 'undefined' ? "false" : order.completed;
+      });
+
       let ordersFromState = state.ordersList;
       if(farmerID) {
         // if orders are for a specific farmer, remove all previous orders from
