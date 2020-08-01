@@ -47,6 +47,8 @@ spec:
             value: "farmers.local"
           - name: STATIC_HOST_URI
             value: "https://farmersstatic.blob.core.windows.net"
+          - name: "FEATURE_FLAG__EMAIL"
+            value: "false"
         volumeMounts:
           - mountPath: /workspace
             name: server

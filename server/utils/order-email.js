@@ -23,7 +23,9 @@ function emailOrder(order, destination) {
 
   return new Promise(async function(resolve, reject) {
     if (typeof process.env['FEATURE_FLAG__EMAIL'] === 'string' &&
-        process.env['FEATURE_FLAG__EMAIL'].toLowerCase === "false") {
+        process.env['FEATURE_FLAG__EMAIL'].toLowerCase() === "false") {
+
+      debug("email is disabled with feature flag")
       resolve();
       return;
     }
