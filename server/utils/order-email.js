@@ -1,4 +1,8 @@
 const request = require('request');
+const mongo   = require('./mongo');
+const debug = require('debug')('server:farmers');
+
+const { ObjectId } = require('mongodb'); // or ObjectID
 
 module.exports = {
   emailOrder
@@ -12,13 +16,14 @@ const mailer_request_template = {
 }
 
 const receipt_link_prefix = process.env['SELF_HOSTNAME'] + "/order/";
+const static_host_uri     = process.env['STATIC_HOST_URI'];
 
 function emailOrder(order, destination) {
   console.log(order);
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(async function(resolve, reject) {
     if (typeof destination !== 'string') {
-      reject(new Error(""))
+      reject(new Error("NO DESTINATION PROVIDED"))
     }
 
     let mailer_request = Object.assign({}, mailer_request_template);
@@ -44,8 +49,8 @@ function emailOrder(order, destination) {
 
     mailer_request.data.receipt_link = receipt_link_prefix + order._id;
 
-    //TODO this is hardcoded - take from the farmer entry instead
-    mailer_request.data.header_image_url = "https://klino-farmers.fra1.cdn.digitaloceanspaces.com/strawberries.jpg";
+    let farmerImage = await getFarmerImage(order.farmerID);
+    mailer_request.data.header_image_url = static_host_uri + farmerImage
 
     // TODO: this is hardcoded - generate from receipt_link instead
     mailer_request.data.qr_src = "https://klino-farmers.fra1.digitaloceanspaces.com/qr-farmers-example-email.png";
@@ -61,5 +66,31 @@ function emailOrder(order, destination) {
       }
       resolve(body);
     })
+  });
+}
+
+function getFarmerImage(farmerID) {
+  return new Promise(async function(resolve, reject) {
+    let db_name         = "farmers";
+    let farmers_collection_name = "farmers";
+
+    let mongoClient = await mongo.getClient();
+    let db = mongoClient.db(db_name);
+    let collection = db.collection(farmers_collection_name);
+
+    collection.findOne({ _id: new ObjectId(farmerID) }, (err, result) => {
+      if(err) {
+        reject(err);
+        return;
+      }
+
+      if (typeof result['image'] !== 'string') {
+        reject(new Error("IMAGE URI NOT FOUND"));
+        return;
+      }
+
+      debug("found the following farmer image", result['image'])
+      resolve(result['image']);
+    });
   });
 }

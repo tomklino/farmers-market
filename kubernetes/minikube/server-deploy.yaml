@@ -45,6 +45,8 @@ spec:
             value: "receipt-full.mjml"
           - name: SELF_HOSTNAME
             value: "farmers.local"
+          - name: STATIC_HOST_URI
+            value: "https://farmersstatic.blob.core.windows.net"
         volumeMounts:
           - mountPath: /workspace
             name: server
