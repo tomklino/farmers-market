@@ -57,6 +57,13 @@
               :disabled="isDisabled"
               ></v-text-field>
             <v-text-field
+              v-model="email"
+              type="text"
+              label="Email address"
+              :rules="emailRules"
+              :disabled="isDisabled"
+              ></v-text-field>
+            <v-text-field
               v-model="phone"
               type="text"
               label="Phone number"
@@ -112,6 +119,15 @@ export default {
     completedDialogOpened: false,
     isDisabled: false,
     name: "",
+    email: "",
+    emailRules: [
+      v => !!v || 'Email address is requried',
+      (v) => {
+        let atIndex = v.indexOf("@");
+        let dotIndex = v.indexOf(".");
+        return (atIndex > 0 && (atIndex + 1) < dotIndex && dotIndex < (v.length - 1) ? true : "Invalid Email address")
+      }
+    ],
     nameRules: [
       v => !!v || 'Name is required'
     ],
