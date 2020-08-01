@@ -36,6 +36,7 @@
                 <v-col md-2>
                   <v-checkbox
                     v-model="farmer.products[i].want"
+                    @change="wantCheckboxChanged(i)"
                     :label="produce.text"
                   ></v-checkbox>
                 </v-col>
@@ -43,6 +44,7 @@
                 <v-text-field
                   v-model="farmer.products[i].quantity"
                   type="number"
+                  @input="quantityChanged(i)"
                   label="How many"
                   :disabled="isDisabled"
                   ></v-text-field>
@@ -95,6 +97,30 @@ export default {
     console.log(store.state.displayedFarmer);
   },
   methods: {
+    wantCheckboxChanged(i) {
+      if(this.farmer.products[i].want) { //ticked
+        let quantity = Number.parseFloat(this.farmer.products[i].quantity);
+        if(!Number.isInteger(quantity) || quantity <= 0) {
+          this.farmer.products[i].quantity = 1;
+        }
+      } else { //unticked
+        this.farmer.products[i].quantity = 0;
+      }
+    },
+    quantityChanged(i) {
+      let quantity = Number.parseFloat(this.farmer.products[i].quantity);
+      if(!Number.isInteger(quantity)) {
+        this.farmer.products[i].quantity = Number.parseInt(this.farmer.products[i].quantity);
+      }
+
+      if(quantity <= 0) {
+        // NOTE bug in vuetify: this does not work when changing the value to negative using the arrows
+        this.farmer.products[i].quantity = 0;
+        this.farmer.products[i].want = false;
+      } else {
+        this.farmer.products[i].want = true;
+      }
+    },
     routeToFarmers() {
       this.$router.push("/farmers");
     },
