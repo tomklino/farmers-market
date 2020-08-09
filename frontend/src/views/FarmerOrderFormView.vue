@@ -5,13 +5,17 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import store from '@/store'
 import FarmerOrderForm from '@/components/FarmerOrderForm.vue'
 
 export default {
   name: 'FarmerOrderFormView',
   components: {
     FarmerOrderForm
+  },
+  beforeMount() {
+    store.dispatch("setDisplayedFarmer", this.$route.params.farmer_id);
+    store.dispatch("clearDisplayedOrder");
   }
 }
 </script>

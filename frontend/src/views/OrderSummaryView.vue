@@ -1,21 +1,24 @@
 <template>
   <div>
-    <OrderSummary />
+    <FarmerOrderForm />
   </div>
 </template>
 
 <script>
 import store from '@/store'
 
-import OrderSummary from '@/components/OrderSummary.vue'
+import FarmerOrderForm from '@/components/FarmerOrderForm.vue'
 
 export default {
   name: 'OrderSummaryView',
   components: {
-    OrderSummary
+    FarmerOrderForm
   },
-  mounted() {
-    store.dispatch('setDisplayedOrder', this.$route.params.order_id);
+  async beforeCreate() {
+    await store.dispatch('setDisplayedOrder', this.$route.params.order_id);
+    let farmerID = store.state.displayedOrder.farmerID;
+    console.log("setting displayed farmer to", farmerID)
+    await store.dispatch('setDisplayedFarmer', farmerID);
   }
 }
 </script>

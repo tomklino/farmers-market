@@ -97,6 +97,20 @@ export default {
     console.log(store.state.displayedFarmer);
   },
   methods: {
+    loadFromDisplayedOrder() {
+      let order = store.state.displayedOrder;
+
+      this.name = order.name;
+      this.email = order.email;
+      this.phone = order.phone;
+      for(let product of this.farmer.products) {
+        let orderedProduct = order.products.find(orderedProduct => orderedProduct.name === product.name);
+        if(typeof orderedProduct !== undefined) {
+          product.want = true;
+          product.quantity = orderedProduct.quantity;
+        }
+      }
+    },
     wantCheckboxChanged(i) {
       if(this.farmer.products[i].want) { //ticked
         let quantity = Number.parseFloat(this.farmer.products[i].quantity);
@@ -172,8 +186,27 @@ export default {
     quantity: 1,
   }),
   computed: {
+    displayedOrder() {
+      return store.state.displayedOrder;
+    },
     farmer() {
-      return store.state.displayedFarmer
+      return store.state.displayedFarmer;
+    }
+  },
+  watch: {
+    displayedOrder() {
+      if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.farmer._id !== 'undefined') {
+        this.loadFromDisplayedOrder();
+      } else {
+        //TODO clear form
+      }
+    },
+    farmer() {
+      if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.farmer._id !== 'undefined') {
+        this.loadFromDisplayedOrder();
+      } else {
+        //TODO clear form
+      }
     }
   }
 }
