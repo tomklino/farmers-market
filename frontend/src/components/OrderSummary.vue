@@ -33,7 +33,9 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-    <v-card-actions class="justify-center">
+    <v-card-actions class="justify-center"
+      v-if="loggedInUser.loggedIn"
+    >
       <v-btn raised color="green"
         @click="completeOrder(order._id)"
         :disabled="isLoading || order.completed === 'true'"
@@ -53,6 +55,9 @@ import store from '@/store'
 export default {
   name: 'OrderSummary',
   computed: {
+    loggedInUser() {
+      return store.state.loggedInUser
+    },
     order() {
       return store.state.displayedOrder;
     },
