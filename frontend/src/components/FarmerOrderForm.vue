@@ -76,8 +76,16 @@
               large
               color="success"
               v-bind:disabled="!valid || isDisabled"
+              v-if="typeof displayedOrder._id === 'undefined'"
               @click="commitOrder"
               >Complete Order</v-btn>
+            <v-btn
+              large
+              color="success"
+              v-bind:disabled="!valid || isDisabled"
+              v-if="typeof displayedOrder._id !== 'undefined'"
+              @click="modifyOrder"
+              >Modify Order</v-btn>
           </v-form>
         </v-card-text>
       </v-card>
@@ -138,6 +146,22 @@ export default {
     routeToFarmers() {
       this.$router.push("/farmers");
     },
+    async modifyOrder() {
+      let payload = {
+        orderID: this.displayedOrder._id,
+        name: this.name,
+        email: this.email,
+        phone: this.phone,
+        products: this.farmer.products.filter(p => p.want),
+        farmerID: this.farmer._id
+      }
+      console.log(payload);
+
+      this.isDisabled = true;
+      let modifiedOrderResponse = await axios.post('/api/orders/modify', payload);
+      console.log("order modified:", modifiedOrderResponse);
+      this.completedDialogOpened = true;
+    },
     async commitOrder() {
       let payload = {
         name: this.name,
@@ -147,7 +171,6 @@ export default {
         farmerID: this.farmer._id
       }
 
-      console.log(payload);
       this.isDisabled = true;
       let newOrderResponse = await axios.post('/api/orders/new', payload);
       //TODO reflect error to user
