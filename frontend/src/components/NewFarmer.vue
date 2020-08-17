@@ -252,7 +252,7 @@ export default {
 
       let produce = { name, packageSize, packageUnit, price };
 
-      produce.text = `${name} - ${packageSize}${packageUnit} - ${price}`
+      produce.text = `${name} - ${packageSize}${packageUnit} - ${price}&#8362;`
       this.products.push(produce);
 
       //clear and close dialog

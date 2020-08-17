@@ -19,7 +19,7 @@
     <v-container grid-list-md text-xs-center>
       <v-card
         class="mx-auto"
-        max-width="480"
+        max-width="600"
         >
         <v-img
           class="white--text align-end"
@@ -31,16 +31,16 @@
         <v-card-title v-if="typeof farmer.products !== 'undefined'">{{ farmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
         <v-card-text>
           <v-form class="px-3" v-model="valid">
-            <v-layout row wrap>
-              <v-row v-for="(produce, i) in farmer.products" :key="produce.name">
-                <v-col md-2>
+            <v-row v-for="(produce, i) in farmer.products" :key="produce.name">
+              <v-layout row wrap>
+                <v-flex xs12 md6>
                   <v-checkbox
                     v-model="farmer.products[i].want"
                     @change="wantCheckboxChanged(i)"
-                    :label="produce.text"
+                    :label="produceLabel(produce)"
                   ></v-checkbox>
-                </v-col>
-                <v-col md-10>
+                </v-flex>
+                <v-flex xs8 md4>
                 <v-text-field
                   v-model="farmer.products[i].quantity"
                   type="number"
@@ -48,8 +48,18 @@
                   label="How many"
                   :disabled="isDisabled"
                   ></v-text-field>
-                </v-col>
-              </v-row>
+                </v-flex>
+                <v-flex xs4 md2>
+                  <v-chip
+                  :color="farmer.products[i].quantity ? 'green' : 'light-grey'"
+                  class="ma-0">{{farmer.products[i].quantity || "0"}} x {{farmer.products[i].price}}&#8362;</v-chip>
+                </v-flex>
+              </v-layout>
+            </v-row>
+            <v-layout row>
+              <v-flex md12>
+                <v-chip large>Your order total is {{orderTotal}}&#8362;</v-chip>
+              </v-flex>
             </v-layout>
             <v-text-field
               v-model="name"
@@ -105,6 +115,9 @@ export default {
     console.log(store.state.displayedFarmer);
   },
   methods: {
+    produceLabel(produce) {
+      return `${produce.name} [${produce.packageSize}${produce.packageUnit}]`
+    },
     loadFromDisplayedOrder() {
       let order = store.state.displayedOrder;
 
@@ -209,6 +222,13 @@ export default {
     quantity: 1,
   }),
   computed: {
+    orderTotal() {
+      let sum = 0;
+      this.farmer.products.forEach((p) => {
+        sum += Number.parseFloat(p.price) * Number.parseInt(p.quantity || 0)
+      });
+      return sum;
+    },
     displayedOrder() {
       return store.state.displayedOrder;
     },
