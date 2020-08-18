@@ -33,26 +33,32 @@
           <v-form class="px-3" v-model="valid">
             <v-row v-for="(produce, i) in farmer.products" :key="produce.name">
               <v-layout row wrap>
-                <v-flex xs12 md6>
+                <v-flex xs12 md8>
                   <v-checkbox
                     v-model="farmer.products[i].want"
                     @change="wantCheckboxChanged(i)"
                     :label="produceLabel(produce)"
                   ></v-checkbox>
                 </v-flex>
-                <v-flex xs8 md4>
-                <v-text-field
-                  v-model="farmer.products[i].quantity"
-                  type="number"
-                  @input="quantityChanged(i)"
-                  label="How many"
-                  :disabled="isDisabled"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs4 md2>
-                  <v-chip
-                  :color="farmer.products[i].quantity ? 'green' : 'light-grey'"
-                  class="ma-0">{{farmer.products[i].quantity || "0"}} x {{farmer.products[i].price}}&#8362;</v-chip>
+                <v-flex xs12 md4>
+                  <v-layout row>
+                    <v-flex xs3 md3>
+                      <v-btn @click="quantityMinus(i)" class="mx-2" fab dark x-small color="indigo">
+                        <v-icon dark>mdi-minus</v-icon>
+                      </v-btn>
+                    </v-flex>
+                    <v-flex xs6 md6>
+                      <v-chip
+                      :color="farmer.products[i].quantity ? 'green' : 'light-grey'"
+                      class="ma-0">{{farmer.products[i].quantity || "0"}} x {{farmer.products[i].price}}&#8362;
+                      </v-chip>
+                    </v-flex>
+                    <v-flex xs3 md3>
+                      <v-btn @click="quantityPlus(i)" class="mx-2" fab dark x-small color="indigo">
+                        <v-icon dark>mdi-plus</v-icon>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
                 </v-flex>
               </v-layout>
             </v-row>
@@ -132,14 +138,29 @@ export default {
         }
       }
     },
+    setProductQuantity(i, val) {
+      //NOTE due to array reactivity caveats in vue, changes to array must be done via $set - or unexpected behaviour will occur
+      let product = this.farmer.products[i];
+      product.quantity = val;
+      this.$set(this.farmer.products, i, product);
+      this.quantityChanged(i);
+    },
+    quantityPlus(i) {
+      let quantity = Number.parseInt(this.farmer.products[i].quantity) || 0;
+      this.setProductQuantity(i, quantity + 1);
+    },
+    quantityMinus(i) {
+      let quantity = Number.parseInt(this.farmer.products[i].quantity) || 0;
+      this.setProductQuantity(i, Math.max(0, quantity - 1));
+    },
     wantCheckboxChanged(i) {
       if(this.farmer.products[i].want) { //ticked
         let quantity = Number.parseFloat(this.farmer.products[i].quantity);
         if(!Number.isInteger(quantity) || quantity <= 0) {
-          this.farmer.products[i].quantity = 1;
+          this.setProductQuantity(i, 1);
         }
       } else { //unticked
-        this.farmer.products[i].quantity = 0;
+        this.setProductQuantity(i, 0);
       }
     },
     quantityChanged(i) {
@@ -223,6 +244,9 @@ export default {
   }),
   computed: {
     orderTotal() {
+      if(typeof this.farmer === 'undefined' || typeof this.farmer.products === 'undefined') {
+        return 0;
+      }
       let sum = 0;
       this.farmer.products.forEach((p) => {
         sum += Number.parseFloat(p.price) * Number.parseInt(p.quantity || 0)
