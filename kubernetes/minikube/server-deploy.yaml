@@ -29,7 +29,7 @@ spec:
         workingDir: /workspace
         command: [ "npm", "start" ]
         env:
-          - name: ENVIRONMENT
+          - name: ENVIRONMENT # NOTE this allows to login using the devadmin user
             value: "DEV"
           - name: COOKIE_SECRET
             value: "notArealSECRET_dev_only"
