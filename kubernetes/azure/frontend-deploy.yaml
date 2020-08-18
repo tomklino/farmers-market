@@ -17,7 +17,7 @@ spec:
         run: frontend
     spec:
       containers:
-      - image: farmersregistry.azurecr.io/farmers-frontend:0.2.0
+      - image: farmersregistry.azurecr.io/farmers-frontend:0.2.1
         name: frontend
         readinessProbe:
           httpGet:
