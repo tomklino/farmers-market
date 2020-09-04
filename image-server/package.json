@@ -1,0 +1,20 @@
+{
+  "name": "image-server",
+  "version": "0.1.0",
+  "description": "receives and serves images",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "image",
+    "upload"
+  ],
+  "author": "Tom Klinovsky",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nice-config-loader": "^0.1.2"
+  }
+}

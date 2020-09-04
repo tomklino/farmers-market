@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: image-server
+  name: image-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: image-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        run: image-server
+    spec:
+      containers:
+      - image: node:14.2-stretch-slim
+        name: image-server
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50Mi
+          limits:
+            cpu: 400m
+            memory: 50Mi
+        workingDir: /workspace
+        command: [ "npm", "start" ]
+        env:
+          - name: "DESTINATION_DIR"
+            value: "/images"
+        volumeMounts:
+          - mountPath: /workspace
+            name: image-server
+          - mountPath: /images
+            name: images
+      volumes:
+        - name: images
+          emptyDir: {}
+        - name: image-server
+          hostPath:
+            path: /hosthome/tomk/workspace/farmers-market/image-server
+            type: Directory
+      dnsPolicy: ClusterFirst

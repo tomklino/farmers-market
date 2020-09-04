@@ -143,6 +143,7 @@
             </v-row>
 
             <v-row>
+              <v-file-input accept="image/*" label="File input" @change="uploadImage"></v-file-input>
               <v-layout row wrap>
                 <v-flex xs3 v-for="image in imageChoices"
                   v-bind:key="image"
@@ -241,6 +242,15 @@ export default {
     console.log("STUB");
   },
   methods: {
+    async uploadImage(file) {
+      console.log("STUB", file);
+      let response = await axios.post('/images/upload', file, {
+        headers: {
+          'Content-Type': file.type
+        }
+      });
+      console.log("upload done. response:", response);
+    },
     addProduce() {
       if(!this.produceValid) {
         return;
