@@ -4,13 +4,15 @@ const path        = require('path');
 
 const config      = require('nice-config-loader')();
 
-const port = config.get("port") || 3000;
+const port            = config.get("port") || 3000;
 const destination_dir = config.get("destination_dir");
+const self_hostname   = config.get("self_hostname");
+
+const { getReadableStream, getWritableStream } = require('./storage_plugins/fs-storage-plugin.js');
 
 const server = express();
 
-var imageRouter = express.Router();
-const imageNameIterator = generateImageName();
+const imageRouter = express.Router();
 
 imageRouter.post('/upload', async(req, res) => {
   if(!req.is("image/*")) {
@@ -19,47 +21,44 @@ imageRouter.post('/upload', async(req, res) => {
     res.status("400").send(errorMessage);
     return;
   }
-  let imageID = imageNameIterator.next().value;
+
   let imageType = req.get("Content-Type").split('/')[1]; //TODO this is a security risk, validate before using
-  let imageDestination = path.join(destination_dir, imageID + "." + imageType);
-  console.log(`saving image to ${imageDestination}`);
-  let writeStream = fs.createWriteStream(imageDestination);
+  let [ err, writeStream ] = await getWritableStream({ suffix: imageType });
+  if (err) {
+    console.log("error while trying to write", err);
+    return res.status(500).end();
+  }
+
+  let imageName = writeStream.getID();
   req.on('end', () => {
     req.unpipe();
     writeStream.close();
-    res.end();
-  })
+    res.json({
+      imageRelativeLink: `/images/${imageName}`,
+      imageFullLink: `${self_hostname}/images/${imageName}`
+    });
+  });
   req.pipe(writeStream);
 });
 
 imageRouter.get('/:id', async(req, res) => {
-  let readStream = fs.createReadStream(path.join(destination_dir, req.params['id']));
-  readStream.on('error', (err) => {
+  let [ err, readStream ] = await getReadableStream(req.params['id']);
+  if(err) {
     if(err.code === "ENOENT") {
-      res.status(404).send("file not found: " + req.params['id']);
-      console.log("404 - file not found " + req.params['id']);
-      readStream.close();
-      return;
+      let message = `404 - ${req.params['id']} not found`;
+      console.log(message);
+      return res.status(404).send(message);
     }
-    res.status(500).send("unknown server error");
-    console.log("error while trying to serve image", err.code, err.message);
-    readStream.close();
-    return;
-  });
+    console.log("error while trying to fetch image", err);
+    return res.status(500).send("error while trying to fetch image");
+  }
+
   readStream.pipe(res);
 });
 
 imageRouter.get('/', async(req, res) => {
-
+  //TODO list images
 });
 
 server.use('/images', imageRouter);
 server.listen(port);
-
-function* generateImageName() {
-  let i = 1;
-  while(true) {
-    yield "image-" + i;
-    i++;
-  }
-}

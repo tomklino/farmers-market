@@ -31,6 +31,8 @@ spec:
         env:
           - name: "DESTINATION_DIR"
             value: "/images"
+          - name: "SELF_HOSTNAME"
+            value: "http://farmers.local"
         volumeMounts:
           - mountPath: /workspace
             name: image-server
