@@ -38,15 +38,15 @@ imageRouter.get('/:id', async(req, res) => {
     if(err.code === "ENOENT") {
       res.status(404).send("file not found: " + req.params['id']);
       console.log("404 - file not found " + req.params['id']);
+      readStream.close();
       return;
     }
     res.status(500).send("unknown server error");
     console.log("error while trying to serve image", err.code, err.message);
+    readStream.close();
     return;
   });
-  readStream.on('readable', () => {
-    readStream.pipe(res);
-  });
+  readStream.pipe(res);
 });
 
 imageRouter.get('/', async(req, res) => {
