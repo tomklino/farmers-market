@@ -1,5 +1,6 @@
 const fs          = require('fs');
 const path        = require('path');
+const { v4: uuidv4 }  = require('uuid');
 
 const config      = require('nice-config-loader')();
 
@@ -11,10 +12,8 @@ module.exports = {
 }
 
 function* generateImageName() {
-  let i = 1;
   while(true) {
-    yield "image-" + i;
-    i++;
+    yield uuidv4();
   }
 }
 const imageNameIterator = generateImageName();
