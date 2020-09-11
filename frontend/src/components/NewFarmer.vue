@@ -143,7 +143,7 @@
             </v-row>
 
             <v-row>
-              <v-file-input accept="image/*" label="File input" @change="uploadImage"></v-file-input>
+              <v-file-input accept="image/*" label="Upload an image" @change="uploadImage"></v-file-input>
               <v-layout row wrap>
                 <v-flex xs3 v-for="image in imageChoices"
                   v-bind:key="image"
@@ -249,6 +249,7 @@ export default {
           'Content-Type': file.type
         }
       });
+      this.imageChoices.push(response.data.imageRelativeLink);
       console.log("upload done. response:", response);
     },
     addProduce() {
