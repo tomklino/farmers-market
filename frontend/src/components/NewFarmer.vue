@@ -305,6 +305,6 @@ export default {
   border-style: solid;
   border-width: 2px;
   border-radius: 9px;
-  border-color: #1976d2 ;
+  border-color: #1976d2;
 }
 </style>
