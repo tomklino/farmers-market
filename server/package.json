@@ -9,6 +9,7 @@
     "cookie-session": "^1.4.0",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "google-auth-library": "^6.0.6",
     "mongodb": "^3.5.7",
     "morgan": "~1.9.1",
     "request": "^2.88.2"

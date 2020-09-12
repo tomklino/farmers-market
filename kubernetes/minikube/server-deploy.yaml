@@ -29,6 +29,16 @@ spec:
         workingDir: /workspace
         command: [ "npm", "start" ]
         env:
+          - name: GOOGLE_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: farmers-google-app
+                key: appid
+          - name: GOOGLE_APP_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: farmers-google-app
+                key: secret
           - name: ENVIRONMENT # NOTE this allows to login using the devadmin user
             value: "DEV"
           - name: COOKIE_SECRET

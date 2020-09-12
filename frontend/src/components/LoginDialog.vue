@@ -71,11 +71,15 @@ export default {
     }
   }),
   methods: {
-    googleOnSuccess(googleUser) {
+    async googleOnSuccess(googleUser) {
       let id_token = googleUser.getAuthResponse().id_token;
-
       console.log("success, google user is", googleUser);
       console.log("the id_token is", id_token);
+      await axios.post("/users/google-signin", {
+        id_token
+      });
+      await store.dispatch('refreshLoggedInUser');
+      this.$emit('input', false);
     },
     googleOnFailure(obj) {
       console.log("failure to login", obj);
