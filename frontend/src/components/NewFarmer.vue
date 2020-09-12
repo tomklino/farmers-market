@@ -199,11 +199,7 @@ export default {
     createdDialogOpened: false,
     isDisabled: false,
     commonProduce: [ "Strawberries", "Kiwis", "Mangos", "Pineapples" ],
-    imageChoices: [
-      "/images/strawberries.jpg",
-      "/images/kiwis.jpg",
-      "/images/mangos.jpg"
-    ],
+    imageChoices: [],
     selectedPicture: "",
     units: [ "Kg", "gr" ],
     minimumOrders: 20,
