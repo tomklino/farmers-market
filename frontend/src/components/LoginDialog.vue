@@ -4,19 +4,34 @@
     width="500">
     <v-card width="500">
       <v-card-title>{{ loginString }}</v-card-title>
-      <v-card-text>
+      <v-card-text v-if="!isLoggedIn() && loginAsAdmin">
         <v-text-field
-          v-if="!isLoggedIn()"
           v-model="devadminPassword"
           type="password"
           label="password"></v-text-field>
       </v-card-text>
-      <v-card-text>
+      <v-card-text v-if="!isLoggedIn()">
+        <v-btn large color="grey"
+          @click="loginAsAdmin = true;"
+          >Login As Admin
+        </v-btn>
+      </v-card-text>
+      <v-card-text v-if="!isLoggedIn()">
+        Not logged in
         <GoogleLogin
           :params="googleParams"
+          :renderParams="googleRenderParams"
           :onSuccess="googleOnSuccess"
           :onFailure="googleOnFailure"
         >Login</GoogleLogin>
+      </v-card-text>
+      <v-card-text v-if="isLoggedIn()">
+        <GoogleLogin
+          :logoutButton="true"
+          :params="googleParams"
+          :onSuccess="googleLogoutOnSuccess"
+          :onFailure="googleLogoutOnFailure"
+        >Logout</GoogleLogin>
       </v-card-text>
       <v-card-actions>
         <v-btn large color="green"
@@ -65,9 +80,14 @@ export default {
     }
   },
   data: () => ({
+    loginAsAdmin: false,
     devadminPassword: '',
     googleParams: {
       client_id: "573809548678-m51b16050trf1hpd5o6nlv4u5irjbntt.apps.googleusercontent.com"
+    },
+    googleRenderParams: {
+      width: 200,
+      height: 50
     }
   }),
   methods: {
@@ -78,6 +98,12 @@ export default {
       });
       await store.dispatch('refreshLoggedInUser');
       this.$emit('input', false);
+    },
+    async googleLogoutOnSuccess() {
+      await this.logout();
+    },
+    async googleLogoutOnFailure(obj) {
+      console.log("google failure to logout", obj);
     },
     googleOnFailure(obj) {
       console.log("failure to login", obj);
