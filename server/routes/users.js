@@ -14,15 +14,18 @@ router.get('/whoami', function(req, res, next) {
     return;
   }
 
-  payload.user = req.session['user']
+  payload.user = req.session['user'];
+  payload.admin = req.session['admin'];
   res.json(payload);
 });
 
 router.post('/logout', function(req, res, next) {
   console.log("got a logout request");
-  let payload = {};
   req.session.logged_in = false;
   req.session.user = "";
+  req.session.admin = false;
+
+  let payload = {};
   payload.message = "Logged out";
   res.json(payload);
 });
@@ -34,18 +37,30 @@ router.post('/google-signin', async function(req, res, next) {
     return res.status(400).json({error: "Bad request"});
   }
 
-  let user_id = await googleVerify(id_token);
-  console.log("google-signin point reached, verified to the following user_id:", user_id);
+  let googleResponse = await googleVerify(id_token);
+  let userID = googleResponse['sub'];
+  let userEmail = googleResponse['email'];
+  console.log(`google-signin point reached, verified to the following user_id and email: ${userID} ${userEmail}`);
+
+  req.session.logged_in = true;
+  req.session.user = userEmail;
+  req.session.admin = false;
+
+  let payload = {};
+  payload.message = `logged in as ${userEmail}`;
   res.json({ message: "success" });
 });
 
 if(process.env["ENVIRONMENT"] === "DEV") {
   console.log("WARNING: environment is set to dev - enabling dev admin user");
-  let payload = {};
+
   router.post('/login/devadmin', function(req, res, next) {
     if(req.body.password === "DevAdmin1590") {
       req.session.logged_in = true;
       req.session.user = "devadmin";
+      req.session.admin = "true";
+
+      let payload = {};
       payload.message = "logged in as devadmin";
       res.json(payload);
       return;
@@ -59,15 +74,10 @@ if(process.env["ENVIRONMENT"] === "DEV") {
 async function googleVerify(id_token) {
   const ticket = await client.verifyIdToken({
       idToken: id_token,
-      audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-      // Or, if multiple clients access the backend:
-      //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+      audience: CLIENT_ID
   });
   const payload = ticket.getPayload();
-  const userid = payload['sub'];
-  // If request specified a G Suite domain:
-  // const domain = payload['hd'];
-  return userid;
+  return payload;
 }
 
 module.exports = router;

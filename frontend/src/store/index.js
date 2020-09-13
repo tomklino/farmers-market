@@ -12,7 +12,8 @@ export default new Vuex.Store({
     ordersList: [],
     loggedInUser: {
       loggedIn: false,
-      username: ""
+      username: "",
+      admin: false
     }
   },
   mutations: {
@@ -50,9 +51,11 @@ export default new Vuex.Store({
       if (typeof whoamiRespone.user === 'string') {
         state.loggedInUser.loggedIn = true;
         state.loggedInUser.username = whoamiRespone.user;
+        state.loggedInUser.admin = whoamiRespone.admin == "true";
       } else {
         state.loggedInUser.loggedIn = false;
         state.loggedInUser.username = "";
+        state.loggedInUser.admin = false;
       }
     },
     markOrderCompleted(state, { orderID, isCompleted = "true" }) {

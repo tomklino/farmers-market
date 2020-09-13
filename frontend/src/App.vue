@@ -6,9 +6,9 @@
         <v-toolbar dark color="orange">
           <router-link class="title" to="/"><v-toolbar-title class="title">Farmers</v-toolbar-title></router-link>
           <v-spacer></v-spacer>
-          <router-link v-if="isLoggedIn()" to="/new/farmer">
+          <router-link v-if="isAdmin()" to="/new/farmer">
             <v-btn text>Create Farmer</v-btn></router-link>
-          <router-link v-if="isLoggedIn()" to="/manage">
+          <router-link v-if="isAdmin()" to="/manage">
             <v-btn text>Manage Farmers</v-btn></router-link>
           <v-btn text
             @click="openLoginDialog"
@@ -35,6 +35,9 @@ export default {
   methods: {
     isLoggedIn() {
       return store.state.loggedInUser.loggedIn;
+    },
+    isAdmin() {
+      return store.state.loggedInUser.admin;
     },
     openLoginDialog() {
       this.loginDialogOpened = true;
