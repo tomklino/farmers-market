@@ -16,8 +16,7 @@
           >Login As Admin
         </v-btn>
       </v-card-text>
-      <v-card-text v-if="!isLoggedIn()">
-        Not logged in
+      <v-card-text>
         <GoogleLogin
           :params="googleParams"
           :renderParams="googleRenderParams"
@@ -25,7 +24,7 @@
           :onFailure="googleOnFailure"
         >Login</GoogleLogin>
       </v-card-text>
-      <v-card-text v-if="isLoggedIn()">
+      <v-card-text v-if="isLoggedIn() && withGoogle">
         <GoogleLogin
           :logoutButton="true"
           :params="googleParams"
@@ -63,6 +62,9 @@ export default {
     GoogleLogin
   },
   computed: {
+    withGoogle() {
+      return store.state.loggedInUser.withGoogle;
+    },
     loginString() {
       let loginString = this.isLoggedIn() ?
         store.state.loggedInUser.username :

@@ -16,6 +16,7 @@ router.get('/whoami', function(req, res, next) {
 
   payload.user = req.session['user'];
   payload.admin = req.session['admin'];
+  payload.with_google = req.session['with_google'] ? "true" : "false";
   res.json(payload);
 });
 
@@ -24,6 +25,7 @@ router.post('/logout', function(req, res, next) {
   req.session.logged_in = false;
   req.session.user = "";
   req.session.admin = false;
+  req.session.with_google = false;
 
   let payload = {};
   payload.message = "Logged out";
@@ -45,6 +47,7 @@ router.post('/google-signin', async function(req, res, next) {
   req.session.logged_in = true;
   req.session.user = userEmail;
   req.session.admin = false;
+  req.session.with_google = true;
 
   let payload = {};
   payload.message = `logged in as ${userEmail}`;

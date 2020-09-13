@@ -13,7 +13,8 @@ export default new Vuex.Store({
     loggedInUser: {
       loggedIn: false,
       username: "",
-      admin: false
+      admin: false,
+      with_google: false
     }
   },
   mutations: {
@@ -52,10 +53,12 @@ export default new Vuex.Store({
         state.loggedInUser.loggedIn = true;
         state.loggedInUser.username = whoamiRespone.user;
         state.loggedInUser.admin = whoamiRespone.admin == "true";
+        state.loggedInUser.withGoogle = whoamiRespone.with_google == "true"
       } else {
         state.loggedInUser.loggedIn = false;
         state.loggedInUser.username = "";
         state.loggedInUser.admin = false;
+        state.loggedInUser.withGoogle = false;
       }
     },
     markOrderCompleted(state, { orderID, isCompleted = "true" }) {
