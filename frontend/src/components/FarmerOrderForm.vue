@@ -121,6 +121,11 @@ export default {
     console.log(this.$route.params.farmer_id);
     store.dispatch("setDisplayedFarmer", this.$route.params.farmer_id);
     console.log(store.state.displayedFarmer);
+
+    let { loggedInUser } = store.state;
+    if(loggedInUser.loggedIn && loggedInUser.email.length > 0) {
+      this.email = loggedInUser.email;
+    }
   },
   methods: {
     produceLabel(produce) {
