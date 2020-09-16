@@ -13,6 +13,7 @@ export default new Vuex.Store({
     loggedInUser: {
       loggedIn: false,
       username: "",
+      email: "",
       admin: false,
       withGoogle: false
     }
@@ -49,17 +50,21 @@ export default new Vuex.Store({
       state.displayedOrder = order;
     },
     updateLoggedInUser(state, whoamiRespone) {
+      let newLoggedInUser = {}
       if (typeof whoamiRespone.user === 'string') {
-        state.loggedInUser.loggedIn = true;
-        state.loggedInUser.username = whoamiRespone.user;
-        state.loggedInUser.admin = whoamiRespone.admin == "true";
-        state.loggedInUser.withGoogle = whoamiRespone.with_google == "true"
+        newLoggedInUser.loggedIn = true;
+        newLoggedInUser.username = whoamiRespone.user;
+        newLoggedInUser.email = typeof whoamiRespone.email === "string" ? whoamiRespone.email : "";
+        newLoggedInUser.admin = whoamiRespone.admin == "true";
+        newLoggedInUser.withGoogle = whoamiRespone.with_google == "true"
       } else {
-        state.loggedInUser.loggedIn = false;
-        state.loggedInUser.username = "";
-        state.loggedInUser.admin = false;
-        state.loggedInUser.withGoogle = false;
+        newLoggedInUser.loggedIn = false;
+        newLoggedInUser.username = "";
+        newLoggedInUser.email = "";
+        newLoggedInUser.admin = false;
+        newLoggedInUser.withGoogle = false;
       }
+      Vue.set(state, 'loggedInUser', newLoggedInUser);
     },
     markOrderCompleted(state, { orderID, isCompleted = "true" }) {
       state.ordersList.find(o => o._id === orderID).completed = isCompleted;

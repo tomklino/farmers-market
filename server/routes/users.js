@@ -15,6 +15,9 @@ router.get('/whoami', function(req, res, next) {
   }
 
   payload.user = req.session['user'];
+  if (typeof req.session['email'] === "string") {
+    payload.email = req.session['email'];
+  }
   payload.admin = req.session['admin'];
   payload.with_google = req.session['with_google'] ? "true" : "false";
   res.json(payload);
@@ -46,6 +49,7 @@ router.post('/google-signin', async function(req, res, next) {
 
   req.session.logged_in = true;
   req.session.user = userEmail;
+  req.session.email = userEmail;
   req.session.admin = false;
   req.session.with_google = true;
 

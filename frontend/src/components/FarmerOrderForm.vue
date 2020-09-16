@@ -31,6 +31,27 @@
         <v-card-title v-if="typeof farmer.products !== 'undefined'">{{ farmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
         <v-card-text>
           <v-form class="px-3" v-model="valid">
+            <v-text-field
+              v-model="name"
+              type="text"
+              label="Your full name"
+              :rules="nameRules"
+              :disabled="isDisabled"
+              ></v-text-field>
+            <v-text-field
+              v-model="email"
+              type="text"
+              label="Email address"
+              :rules="emailRules"
+              :disabled="isDisabled"
+              ></v-text-field>
+            <v-text-field
+              v-model="phone"
+              type="text"
+              label="Phone number"
+              :rules="phoneRules"
+              :disabled="isDisabled"
+              ></v-text-field>
             <v-row v-for="(produce, i) in farmer.products" :key="produce.name">
               <v-layout row wrap>
                 <v-flex xs12 md8>
@@ -67,27 +88,7 @@
                 <v-chip large>Your order total is {{orderTotal}}&#8362;</v-chip>
               </v-flex>
             </v-layout>
-            <v-text-field
-              v-model="name"
-              type="text"
-              label="Your full name"
-              :rules="nameRules"
-              :disabled="isDisabled"
-              ></v-text-field>
-            <v-text-field
-              v-model="email"
-              type="text"
-              label="Email address"
-              :rules="emailRules"
-              :disabled="isDisabled"
-              ></v-text-field>
-            <v-text-field
-              v-model="phone"
-              type="text"
-              label="Phone number"
-              :rules="phoneRules"
-              :disabled="isDisabled"
-              ></v-text-field>
+
             <v-btn
               large
               color="success"
@@ -110,7 +111,8 @@
 </template>
 
 <script>
-import store from '@/store'
+import store from '@/store';
+import { mapState } from 'vuex';
 import axios from 'axios';
 
 export default {
@@ -243,6 +245,7 @@ export default {
     quantity: 1,
   }),
   computed: {
+    ...mapState(['loggedInUser']),
     orderTotal() {
       if(typeof this.farmer === 'undefined' || typeof this.farmer.products === 'undefined') {
         return 0;
@@ -261,6 +264,12 @@ export default {
     }
   },
   watch: {
+    loggedInUser() {
+      let { loggedInUser } = store.state;
+      if(loggedInUser.loggedIn && loggedInUser.email.length > 0) {
+        this.email = loggedInUser.email;
+      }
+    },
     displayedOrder() {
       if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.farmer._id !== 'undefined') {
         this.loadFromDisplayedOrder();
