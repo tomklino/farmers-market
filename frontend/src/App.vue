@@ -10,6 +10,14 @@
             <v-btn text>Create Farmer</v-btn></router-link>
           <router-link v-if="isAdmin()" to="/manage">
             <v-btn text>Manage Farmers</v-btn></router-link>
+          <GoogleLogin
+            :key="googleComponentKey"
+            :logoutButton="isSignedInWithGoogle()"
+            :params="googleParams"
+            :renderParams="googleRenderParams"
+            :onSuccess="isSignedInWithGoogle() ? googleLogoutOnSuccess : googleOnSuccess"
+            :onFailure="isSignedInWithGoogle() ? googleLogoutOnFailure : googleOnFailure"
+          >{{ isSignedInWithGoogle() ? "Logout" : "Login" }}</GoogleLogin>
           <v-btn text
             @click="openLoginDialog"
           >{{ loginButtonString }}</v-btn>
@@ -22,17 +30,46 @@
 
 <script>
 import LoginDialog from '@/components/LoginDialog.vue'
+import GoogleLogin from 'vue-google-login';
+import axios from 'axios';
 import store from '@/store'
 
 export default {
   name: "app",
   components: {
-    LoginDialog
+    LoginDialog,
+    GoogleLogin
   },
   mounted() {
     this.refreshLoggedInUser();
   },
   methods: {
+    forceGoogleRerender() {
+      this.googleComponentKey++;
+      console.log("force google to re-render", this.googleComponentKey);
+    },
+    async googleOnSuccess(googleUser) {
+      console.log("google success - signing in to farmers", googleUser);
+      let id_token = googleUser.getAuthResponse().id_token;
+      await axios.post("/users/google-signin", {
+        id_token
+      });
+      await store.dispatch('refreshLoggedInUser');
+      this.$emit('input', false);
+    },
+    async googleLogoutOnSuccess() {
+      await this.logout();
+    },
+    async googleLogoutOnFailure(obj) {
+      console.log("google failure to logout", obj);
+    },
+    googleOnFailure(obj) {
+      console.log("failure to login", obj);
+    },
+    isSignedInWithGoogle() {
+      console.log("signed in with google?", store.state.loggedInUser.withGoogle);
+      return store.state.loggedInUser.withGoogle
+    },
     isLoggedIn() {
       return store.state.loggedInUser.loggedIn;
     },
@@ -41,6 +78,12 @@ export default {
     },
     openLoginDialog() {
       this.loginDialogOpened = true;
+    },
+    async logout() {
+      await axios.post('/users/logout');
+      await store.dispatch('refreshLoggedInUser');
+      this.forceGoogleRerender(); // HACK due to a bug in google login button - this is used to force a rerender after logout
+      this.$emit('input', false);
     },
     async refreshLoggedInUser() {
       await store.dispatch('refreshLoggedInUser');
@@ -55,6 +98,14 @@ export default {
   data() {
     return {
       loginDialogOpened: false,
+      googleComponentKey: 1, // HACK due to a bug in google login button - this is used to force a rerender after logout
+      googleParams: {
+        client_id: "573809548678-m51b16050trf1hpd5o6nlv4u5irjbntt.apps.googleusercontent.com"
+      },
+      googleRenderParams: {
+        width: 200,
+        height: 50
+      }
     }
   }
 }

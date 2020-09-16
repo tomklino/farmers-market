@@ -14,7 +14,7 @@ export default new Vuex.Store({
       loggedIn: false,
       username: "",
       admin: false,
-      with_google: false
+      withGoogle: false
     }
   },
   mutations: {

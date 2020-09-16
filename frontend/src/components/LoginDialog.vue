@@ -16,22 +16,6 @@
           >Login As Admin
         </v-btn>
       </v-card-text>
-      <v-card-text>
-        <GoogleLogin
-          :params="googleParams"
-          :renderParams="googleRenderParams"
-          :onSuccess="googleOnSuccess"
-          :onFailure="googleOnFailure"
-        >Login</GoogleLogin>
-      </v-card-text>
-      <v-card-text v-if="isLoggedIn() && withGoogle">
-        <GoogleLogin
-          :logoutButton="true"
-          :params="googleParams"
-          :onSuccess="googleLogoutOnSuccess"
-          :onFailure="googleLogoutOnFailure"
-        >Logout</GoogleLogin>
-      </v-card-text>
       <v-card-actions>
         <v-btn large color="green"
           v-if="!isLoggedIn()"
@@ -50,7 +34,6 @@
 
 <script>
 import axios from 'axios';
-import GoogleLogin from 'vue-google-login';
 import store from '@/store';
 
 export default {
@@ -58,11 +41,9 @@ export default {
   props: {
     value: Boolean
   },
-  components: {
-    GoogleLogin
-  },
   computed: {
     withGoogle() {
+      console.log("withGoogle:", store.state.loggedInUser.withGoogle);
       return store.state.loggedInUser.withGoogle;
     },
     loginString() {
@@ -83,33 +64,9 @@ export default {
   },
   data: () => ({
     loginAsAdmin: false,
-    devadminPassword: '',
-    googleParams: {
-      client_id: "573809548678-m51b16050trf1hpd5o6nlv4u5irjbntt.apps.googleusercontent.com"
-    },
-    googleRenderParams: {
-      width: 200,
-      height: 50
-    }
+    devadminPassword: ''
   }),
   methods: {
-    async googleOnSuccess(googleUser) {
-      let id_token = googleUser.getAuthResponse().id_token;
-      await axios.post("/users/google-signin", {
-        id_token
-      });
-      await store.dispatch('refreshLoggedInUser');
-      this.$emit('input', false);
-    },
-    async googleLogoutOnSuccess() {
-      await this.logout();
-    },
-    async googleLogoutOnFailure(obj) {
-      console.log("google failure to logout", obj);
-    },
-    googleOnFailure(obj) {
-      console.log("failure to login", obj);
-    },
     isLoggedIn() {
       return store.state.loggedInUser.loggedIn;
     },
