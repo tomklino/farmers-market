@@ -29,6 +29,7 @@
 </template>
 
 <script>
+//TODO move the login logic - including google login and all related methods to its own component
 import LoginDialog from '@/components/LoginDialog.vue'
 import GoogleLogin from 'vue-google-login';
 import axios from 'axios';
