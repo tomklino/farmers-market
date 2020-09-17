@@ -17,7 +17,7 @@ spec:
         run: frontend
     spec:
       containers:
-      - image: farmersregistry.azurecr.io/farmers-frontend:0.2.1
+      - image: farmersregistry.azurecr.io/farmers-frontend:0.3.0
         name: frontend
         readinessProbe:
           httpGet:
@@ -28,9 +28,9 @@ spec:
         resources:
           requests:
             cpu: 200m
-            memory: 400Mi
+            memory: 300Mi
           limits:
             cpu: 800m
-            memory: 400Mi
+            memory: 300Mi
       dnsPolicy: ClusterFirst
 status: {}

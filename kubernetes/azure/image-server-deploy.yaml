@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: image-server
+  name: image-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: image-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        run: image-server
+    spec:
+      containers:
+      - image: farmersregistry.azurecr.io/farmers-image-server:0.3.0
+        name: image-server
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50Mi
+          limits:
+            cpu: 400m
+            memory: 50Mi
+        env:
+          - name: "DESTINATION_DIR"
+            value: "/images"
+          - name: "SELF_HOSTNAME"
+            value: "http://farmers.klino.me"
+        volumeMounts:
+          - mountPath: /images
+            name: images
+      volumes:
+      - name: images
+        persistentVolumeClaim:
+          claimName: farmers-images
+      dnsPolicy: ClusterFirst
+status: {}
