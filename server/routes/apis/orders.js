@@ -1,35 +1,27 @@
+const debug = require('debug')('server:orders');
+
 const express = require('express');
 const router = express.Router();
 const request = require('request');
-const mongo = require('../../utils/mongo');
+
+const ordersData = require('../../data-modules/orders-data');
+const farmersData = require('../../data-modules/farmers-data');
+
 const { emailOrder } = require('../../utils/order-email');
 
-const { ObjectId } = require('mongodb'); // or ObjectID
-const debug = require('debug')('server:orders');
-
-const db_name         = "farmers";
-const orders_collection_name = "orders";
-const farmers_collection_name = "farmers";
-
 router.get('/:farmerID', async function(req, res, next) {
-  let mongoClient = await mongo.getClient();
-  let db = mongoClient.db(db_name);
-  payload = await findOrders(db, req.params.farmerID);
+  payload = await ordersData.findOrders(req.params.farmerID);
   res.json(payload);
 });
 
 router.get('/byid/:orderID', async function(req, res, next) {
-  let mongoClient = await mongo.getClient();
-  let db = mongoClient.db(db_name);
-  payload = await findOrder(db, req.params.orderID);
+  payload = await ordersData.findOrder(req.params.orderID);
   payloadArray = [ payload ];
   debug("orders/byid - response:", payloadArray);
   res.json(payloadArray);
 });
 
 router.post('/modify', async function(req, res, next) {
-  let mongoClient = await mongo.getClient();
-  let db = mongoClient.db(db_name);
   let payload = req.body;
   debug("got a request to modify order", payload);
 
@@ -39,7 +31,7 @@ router.post('/modify', async function(req, res, next) {
     res.status(400).send("invalid JSON: " + violations);
     return;
   }
-  let err = await modifyOrder(payload, db);
+  let err = await ordersData.modifyOrder(payload);
   if (err) {
     debug("encountered error while trying to modify order", err);
     res.status(500).send("Internal Error");
@@ -59,8 +51,6 @@ router.post('/modify', async function(req, res, next) {
 });
 
 router.post('/new', async function(req, res, next) {
-  let mongoClient = await mongo.getClient();
-  let db = mongoClient.db(db_name);
   let payload = req.body;
   debug("got request for a new order");
 
@@ -70,7 +60,7 @@ router.post('/new', async function(req, res, next) {
     res.status(400).send("invalid JSON: " + violations);
     return;
   }
-  let err = await insertOrder(payload, db);
+  let err = await ordersData.insertOrder(payload);
   if (err) {
     debug("encountered error while trying to insert order", err);
     res.status(500).send("Internal Error");
@@ -93,7 +83,7 @@ router.post("/complete", async function(req, res, next) {
   let payload = req.body;
 
   try {
-    let result = (await completeOrder(payload.orderID)).result;
+    let result = (await ordersData.completeOrder(payload.orderID)).result;
     debug("completed order:", result);
     res.json({ message: "done" });
   } catch (err) {
@@ -106,7 +96,7 @@ router.post("/uncomplete", async function(req, res, next) {
   let payload = req.body;
 
   try {
-    let result = (await unCompleteOrder(payload.orderID)).result;
+    let result = (await ordersData.unCompleteOrder(payload.orderID)).result;
     debug("undo complete order:", result);
     res.json({ message: "done" });
   } catch (err) {
@@ -114,44 +104,6 @@ router.post("/uncomplete", async function(req, res, next) {
     res.status(500).json({ message: "failed" });
   }
 });
-
-async function unCompleteOrder(orderID) {
-  let mongoClient = await mongo.getClient();
-  let db = mongoClient.db(db_name);
-  let collection = db.collection(orders_collection_name);
-
-  return collection.updateOne(
-    { _id: ObjectId(orderID) },
-    { $set: { "completed": "false" }}
-  );
-}
-
-async function completeOrder(orderID) {
-  let mongoClient = await mongo.getClient();
-  let db = mongoClient.db(db_name);
-  let collection = db.collection(orders_collection_name);
-
-  return collection.updateOne(
-    { _id: ObjectId(orderID) },
-    { $set: { "completed": "true" }}
-  );
-}
-
-async function validateFarmerID(farmerID) {
-  let mongoClient = await mongo.getClient();
-  let db = mongoClient.db(db_name);
-  let collection = db.collection(farmers_collection_name);
-  return new Promise((resolve) => {
-    collection.findOne({ _id: farmerID }, (err, doc) => {
-      if(err) {
-        debug("error while trying to verify farmer")
-        resolve(err.toString())
-        return;
-      }
-      resolve(true);
-    })
-  })
-}
 
 async function validateOrderJSON(orderJSON) {
   let rules = {
@@ -166,7 +118,7 @@ async function validateOrderJSON(orderJSON) {
       v => Array.isArray(v) || "products must be an array",
     ],
     farmerID: [
-      validateFarmerID
+      farmersData.validateFarmerID
     ]
   }
 
@@ -181,53 +133,6 @@ async function validateOrderJSON(orderJSON) {
   }
 
   return [ violations.length === 0, violations ];
-}
-
-function modifyOrder(orderJSON, db) {
-  return new Promise((resolve) => {
-    const collection = db.collection(orders_collection_name);
-    collection.updateOne(
-      { _id: ObjectId(orderJSON.orderID) },
-      { $set: orderJSON });
-    resolve();
-  });
-}
-
-function insertOrder(orderJSON, db) {
-  return new Promise((resolve) => {
-    const collection = db.collection(orders_collection_name);
-    collection.insertOne(orderJSON, (err, r) => {
-      debug("order inserted successfully", r);
-      resolve(err);
-    })
-  });
-}
-
-function findOrder(db, orderID) {
-  return new Promise((resolve) => {
-    const collection = db.collection(orders_collection_name);
-    debug("trying to find order with id", orderID);
-    collection.findOne({ _id: new ObjectId(orderID) }, (err, result) => {
-      if(err) {
-        console.log("error while trying to fetch order", err);
-      }
-      debug("found the following order", result);
-      resolve(result)
-    })
-  })
-}
-
-function findOrders(db, farmerID) {
-  // Get the documents collection
-  return new Promise((resolve) => {
-    const collection = db.collection(orders_collection_name);
-    // Find some documents
-    collection.find({ farmerID: farmerID }).toArray((err, docs) => {
-      debug("Found the following records");
-      debug(docs)
-      resolve(docs);
-    });
-  })
 }
 
 module.exports = router;
