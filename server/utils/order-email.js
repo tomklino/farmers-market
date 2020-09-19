@@ -1,9 +1,7 @@
 const debug = require('debug')('server:farmers');
 
 const request = require('request');
-const mongo   = require('../data-modules/mongo');
-
-const { ObjectId } = require('mongodb'); // or ObjectID
+const farmersData = require('../data-modules/farmers-data');
 
 module.exports = {
   emailOrder
@@ -58,7 +56,7 @@ function emailOrder(order, destination) {
 
     mailer_request.data.receipt_link = receipt_link_prefix + order._id;
 
-    let farmerImage = await getFarmerImage(order.farmerID);
+    let farmerImage = await farmersData.getFarmerImage(order.farmerID);
     mailer_request.data.header_image_url = static_host_uri + farmerImage
 
     // TODO: this is hardcoded - generate from receipt_link instead
@@ -75,31 +73,5 @@ function emailOrder(order, destination) {
       }
       resolve(body);
     })
-  });
-}
-
-function getFarmerImage(farmerID) {
-  return new Promise(async function(resolve, reject) {
-    let db_name         = "farmers";
-    let farmers_collection_name = "farmers";
-
-    let mongoClient = await mongo.getClient();
-    let db = mongoClient.db(db_name);
-    let collection = db.collection(farmers_collection_name);
-
-    collection.findOne({ _id: new ObjectId(farmerID) }, (err, result) => {
-      if(err) {
-        reject(err);
-        return;
-      }
-
-      if (typeof result['image'] !== 'string') {
-        reject(new Error("IMAGE URI NOT FOUND"));
-        return;
-      }
-
-      debug("found the following farmer image", result['image'])
-      resolve(result['image']);
-    });
   });
 }

@@ -13,7 +13,8 @@ module.exports = {
   validateFarmerID,
   findFarmers,
   insertFarmer,
-  deleteFarmer
+  deleteFarmer,
+  getFarmerImage
 }
 
 async function validateFarmerID(farmerID) {
@@ -61,6 +62,27 @@ async function deleteFarmer(id) {
     collection.findOneAndDelete({ _id: new ObjectId(id) }, (err, r) => {
       debug("farmer deleted", r);
       resolve(err);
+    });
+  });
+}
+
+async function getFarmerImage(farmerID) {
+  const collection = await mongo.getCollection(db_name, farmers_collection_name);
+
+  return new Promise(async function(resolve, reject) {
+    collection.findOne({ _id: new ObjectId(farmerID) }, (err, result) => {
+      if(err) {
+        reject(err);
+        return;
+      }
+
+      if (typeof result['image'] !== 'string') {
+        reject(new Error("IMAGE URI NOT FOUND"));
+        return;
+      }
+
+      debug("found the following farmer image", result['image'])
+      resolve(result['image']);
     });
   });
 }
