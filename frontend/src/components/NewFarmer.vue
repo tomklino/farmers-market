@@ -201,7 +201,7 @@ export default {
     commonProduce: [ "Strawberries", "Kiwis", "Mangos", "Pineapples" ],
     imageChoices: [],
     selectedPicture: "",
-    units: [ "Kg", "gr" ],
+    units: [ "Kg", "gr", "unit" ],
     minimumOrders: 20,
     produce: "",
     produceName: "",
