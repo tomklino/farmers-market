@@ -1,6 +1,7 @@
-const request = require('request');
-const mongo   = require('./mongo');
 const debug = require('debug')('server:farmers');
+
+const request = require('request');
+const mongo   = require('../data-modules/mongo');
 
 const { ObjectId } = require('mongodb'); // or ObjectID
 
