@@ -9,8 +9,8 @@ function connect() {
   return new Promise((resolve) => {
     MongoClient.connect(url, function(err, client) {
       if (err) {
-        console.error("Error occured while trying to connect to mongo", err)
-        process.exit(1)
+        console.error("Error occured while trying to connect to mongo", err);
+        return resolve(err);
       }
       mongoClient = client;
       console.log("MONGO: Connected successfully to server");
@@ -21,19 +21,28 @@ function connect() {
 
 async function getClient() {
   if(!mongoClient || !mongoClient.isConnected()) {
-    await connect();
+    let err = await connect();
+    if (err instanceof Error) {
+      return [ err, null ];
+    }
   }
-  return mongoClient
+  return [ null, mongoClient ];
 }
 
 async function getDB(db_name) {
-  let mongoClient = await getClient();
-  return mongoClient.db(db_name);
+  let [ err, mongoClient ] = await getClient();
+  if(err instanceof Error) {
+    return [ err, null ];
+  }
+  return [ null, mongoClient.db(db_name) ];
 }
 
 async function getCollection(db_name, collection_name) {
-  let db = await getDB(db_name);
-  return db.collection(collection_name);
+  let [ err, db ] = await getDB(db_name);
+  if(err instanceof Error) {
+    return [ err, null ];
+  }
+  return [ null, db.collection(collection_name) ];
 }
 
 module.exports = { getClient, getDB, getCollection }

@@ -18,7 +18,10 @@ module.exports = {
 }
 
 async function validateFarmerID(farmerID) {
-  const collection = await mongo.getCollection(db_name, farmers_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     collection.findOne({ _id: farmerID }, (err, doc) => {
@@ -33,7 +36,10 @@ async function validateFarmerID(farmerID) {
 }
 
 async function findFarmers() {
-  const collection = await mongo.getCollection(db_name, farmers_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     collection.find({}).toArray((err, docs) => {
@@ -45,7 +51,10 @@ async function findFarmers() {
 }
 
 async function insertFarmer(farmerJSON) {
-  const collection = await mongo.getCollection(db_name, farmers_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     collection.insertOne(farmerJSON, (err, r) => {
@@ -56,7 +65,10 @@ async function insertFarmer(farmerJSON) {
 }
 
 async function deleteFarmer(id) {
-  const collection = await mongo.getCollection(db_name, farmers_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     collection.findOneAndDelete({ _id: new ObjectId(id) }, (err, r) => {
@@ -67,7 +79,10 @@ async function deleteFarmer(id) {
 }
 
 async function getFarmerImage(farmerID) {
-  const collection = await mongo.getCollection(db_name, farmers_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise(async function(resolve, reject) {
     collection.findOne({ _id: new ObjectId(farmerID) }, (err, result) => {

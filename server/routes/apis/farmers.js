@@ -8,6 +8,9 @@ const farmersData = require('../../data-modules/farmers-data');
 
 router.get('/', async function(req, res, next) {
   payload = await farmersData.findFarmers();
+  if(payload instanceof Error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
   res.json(payload);
 });
 

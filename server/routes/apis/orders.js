@@ -11,11 +11,17 @@ const { emailOrder } = require('../../utils/order-email');
 
 router.get('/:farmerID', async function(req, res, next) {
   payload = await ordersData.findOrders(req.params.farmerID);
+  if(payload instanceof Error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
   res.json(payload);
 });
 
 router.get('/byid/:orderID', async function(req, res, next) {
   payload = await ordersData.findOrder(req.params.orderID);
+  if(payload instanceof Error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
   payloadArray = [ payload ];
   debug("orders/byid - response:", payloadArray);
   res.json(payloadArray);
@@ -51,16 +57,16 @@ router.post('/modify', async function(req, res, next) {
 });
 
 router.post('/new', async function(req, res, next) {
-  let payload = req.body;
+  let orderJSON = req.body;
   debug("got request for a new order");
 
-  let [ validated, violations ] = await validateOrderJSON(payload);
+  let [ validated, violations ] = await validateOrderJSON(orderJSON);
   if(!validated) {
     debug("refusing to add an invalid order");
     res.status(400).send("invalid JSON: " + violations);
     return;
   }
-  let err = await ordersData.insertOrder(payload);
+  let err = await ordersData.insertOrder(orderJSON);
   if (err) {
     debug("encountered error while trying to insert order", err);
     res.status(500).send("Internal Error");
@@ -68,10 +74,10 @@ router.post('/new', async function(req, res, next) {
   }
 
   // TODO: check for a valid email address before sending
-  if(typeof payload.email === 'undefined') {
-    console.log("Warning: received an order with no email", payload);
+  if(typeof orderJSON.email === 'undefined') {
+    console.log("Warning: received an order with no email", orderJSON);
   } else {
-    emailOrder(payload, payload.email)
+    emailOrder(orderJSON, orderJSON.email)
     .then(() => debug("emailed successfully"))
     .catch((err) => debug("error trying to send email:", err));
   }
@@ -80,11 +86,13 @@ router.post('/new', async function(req, res, next) {
 
 router.post("/complete", async function(req, res, next) {
   // TODO check session is logged in
-  let payload = req.body;
 
   try {
-    let result = (await ordersData.completeOrder(payload.orderID)).result;
-    debug("completed order:", result);
+    let payload = (await ordersData.completeOrder(req.body.orderID));
+    if(payload instanceof Error) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+    debug("completed order:", payload.result);
     res.json({ message: "done" });
   } catch (err) {
     debug("error while trying to complete order", err);
@@ -93,11 +101,14 @@ router.post("/complete", async function(req, res, next) {
 });
 
 router.post("/uncomplete", async function(req, res, next) {
-  let payload = req.body;
+  // TODO check session is logged in
 
   try {
-    let result = (await ordersData.unCompleteOrder(payload.orderID)).result;
-    debug("undo complete order:", result);
+    let payload = (await ordersData.unCompleteOrder(req.body.orderID));
+    if(payload instanceof Error) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+    debug("undo complete order:", payload.result);
     res.json({ message: "done" });
   } catch (err) {
     debug("error while trying to uncomplete order", err);

@@ -11,7 +11,10 @@ const {
 module.exports = {};
 
 async function insertUser(userJSON) {
-  const collection = await mongo.getCollection(db_name, users_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     collection.insertOne(userJSON, (err, r) => {

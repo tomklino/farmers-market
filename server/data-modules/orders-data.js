@@ -19,7 +19,10 @@ module.exports = {
 }
 
 async function completeOrder(orderID) {
-  const collection = await mongo.getCollection(db_name, orders_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) {
+    return err;
+  }
 
   return collection.updateOne(
     { _id: ObjectId(orderID) },
@@ -28,7 +31,10 @@ async function completeOrder(orderID) {
 }
 
 async function unCompleteOrder(orderID) {
-  const collection = await mongo.getCollection(db_name, orders_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) {
+    return err;
+  }
 
   return collection.updateOne(
     { _id: ObjectId(orderID) },
@@ -37,7 +43,10 @@ async function unCompleteOrder(orderID) {
 }
 
 async function modifyOrder(orderJSON) {
-  const collection = await mongo.getCollection(db_name, orders_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     collection.updateOne(
@@ -48,7 +57,10 @@ async function modifyOrder(orderJSON) {
 }
 
 async function insertOrder(orderJSON) {
-  const collection = await mongo.getCollection(db_name, orders_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     collection.insertOne(orderJSON, (err, r) => {
@@ -59,7 +71,10 @@ async function insertOrder(orderJSON) {
 }
 
 async function findOrder(orderID) {
-  const collection = await mongo.getCollection(db_name, orders_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     debug("trying to find order with id", orderID);
@@ -75,7 +90,10 @@ async function findOrder(orderID) {
 }
 
 async function findOrders(farmerID) {
-  const collection = await mongo.getCollection(db_name, orders_collection_name);
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) {
+    return err;
+  }
 
   return new Promise((resolve) => {
     collection.find({ farmerID: farmerID }).toArray((err, docs) => {
