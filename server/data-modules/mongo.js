@@ -4,7 +4,6 @@ const url = process.env['MONGO__CONNECTION_STRING'] || 'mongodb://localhost:2701
 const dbName = process.env['MONGO__DBNAME'] || 'defaultdb';
 
 var mongoClient;
-// Use connect method to connect to the server
 
 function connect() {
   return new Promise((resolve) => {

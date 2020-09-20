@@ -1,7 +1,7 @@
 const debug = require('debug')('data:farmers');
 
 const mongo = require('./mongo');
-const { ObjectId } = require('mongodb'); // or ObjectID
+const { ObjectId } = require('mongodb');
 
 const {
   db_name,
