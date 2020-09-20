@@ -1,10 +1,13 @@
-const { OAuth2Client } = require('google-auth-library');
+const debug = require('debug')('server:users');
 
+const { OAuth2Client } = require('google-auth-library');
 const express = require('express');
 const router = express.Router();
 
 const CLIENT_ID = process.env['GOOGLE_CLIENT_ID']
 const client = new OAuth2Client(CLIENT_ID);
+
+const usersData = require('../data-modules/users-data');
 
 router.get('/whoami', function(req, res, next) {
   let payload = {};
@@ -39,18 +42,32 @@ router.post('/google-signin', async function(req, res, next) {
   let id_token = req.body.id_token;
   if(!id_token) {
     console.log("google-signin point reached, but no id_token provided");
-    return res.status(400).json({error: "Bad request"});
+    return res.status(400).json({ error: "Bad request" });
   }
 
   let googleResponse = await googleVerify(id_token);
   let userID = googleResponse['sub'];
   let userEmail = googleResponse['email'];
+
+  let userEntry = await usersData.findUser(userEmail);
+  if(userEntry === null) {
+    let userJSON = {}
+    userJSON.username = userEmail;
+    userJSON.user_email = userEmail;
+    userJSON.admin = false;
+    userJSON.with_google = true;
+    await usersData.insertUser(userJSON);
+    userEntry = userJSON;
+    debug("userEntry is now", userEntry);
+  }
+  debug("userEntry (from db) is", userEntry);
   console.log(`google-signin point reached, verified to the following user_id and email: ${userID} ${userEmail}`);
 
   req.session.logged_in = true;
-  req.session.user = userEmail;
-  req.session.email = userEmail;
-  req.session.admin = false;
+
+  req.session.user = userEntry.username;
+  req.session.email = userEntry.user_email;
+  req.session.admin = userEntry.admin;
   req.session.with_google = true;
 
   let payload = {};
