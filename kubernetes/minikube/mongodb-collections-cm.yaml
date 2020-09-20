@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-collections
+data:
+  script.sh: |-
+    DB_NAME="farmers"
+
+    echo -n "waiting for mongodb to be ready"
+    until mongo --eval "db.adminCommand('ping')"; do echo -n '.'; sleep 1; done;
+    echo "ready"
+
+    mongo ${DB_NAME} --eval 'db.users.createIndex( { "username": 1 }, { unique: true })'

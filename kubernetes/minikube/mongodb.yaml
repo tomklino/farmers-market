@@ -36,7 +36,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: [ '/bin/bash', '-c', '/opt/collections/script.sh' ]
+                command: [ '/bin/bash', '-c', '[[ -f /opt/collections/script.sh ]] && /opt/collections/script.sh || echo "no collection script - nothing to do"']
           ports:
             - containerPort: 27017
               name: mongo
@@ -62,6 +62,7 @@ spec:
           configMap:
             name: mongo-collections
             defaultMode: 0555
+            optional: true
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -71,17 +72,3 @@ spec:
         resources:
           requests:
             storage: 2Gi
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mongo-collections
-data:
-  script.sh: |-
-    DB_NAME="farmers"
-
-    echo -n "waiting for mongodb to be ready"
-    until mongo --eval "db.adminCommand('ping')"; do echo -n '.'; sleep 1; done;
-    echo "ready"
-
-    mongo ${DB_NAME} --eval 'db.users.createIndex( { "username": 1 }, { unique: true })'
