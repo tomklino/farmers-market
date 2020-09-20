@@ -33,6 +33,10 @@ spec:
       containers:
         - name: mongodb
           image: mongo:4.2-bionic
+          lifecycle:
+            postStart:
+              exec:
+                command: [ '/bin/bash', '-c', '[[ -f /opt/collections/script.sh ]] && /opt/collections/script.sh || echo "no collection script - nothing to do"']
           ports:
             - containerPort: 27017
               name: mongo
@@ -50,6 +54,15 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data/db
+          volumeMounts:
+            - name: collections
+              mountPath: /opt/collections
+      volumes:
+        - name: collections
+          configMap:
+            name: mongo-collections
+            defaultMode: 0555
+            optional: true
   volumeClaimTemplates:
     - metadata:
         name: data
