@@ -56,7 +56,7 @@ export default new Vuex.Store({
         newLoggedInUser.username = whoamiRespone.user;
         newLoggedInUser.email = typeof whoamiRespone.email === "string" ? whoamiRespone.email : "";
         newLoggedInUser.admin = whoamiRespone.admin == "true";
-        newLoggedInUser.withGoogle = whoamiRespone.with_google == "true"
+        newLoggedInUser.withGoogle = whoamiRespone.with_google == "true";
       } else {
         newLoggedInUser.loggedIn = false;
         newLoggedInUser.username = "";
