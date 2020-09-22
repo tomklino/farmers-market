@@ -1,10 +1,14 @@
 <template>
   <v-app>
     <div id="app">
+      <v-dialog v-model="offerLoginOpen" width=500>
+        <OfferLogin />
+      </v-dialog>
       <LoginDialog v-model="loginDialogOpened" />
       <div id="nav">
         <v-toolbar dark color="orange">
           <router-link class="title" to="/"><v-toolbar-title class="title">Farmers</v-toolbar-title></router-link>
+          <v-btn @click="offerLoginOpen=true">offer login</v-btn>
           <v-spacer></v-spacer>
           <router-link v-if="isAdmin()" to="/new/farmer">
             <v-btn text>Create Farmer</v-btn></router-link>
@@ -31,6 +35,7 @@
 <script>
 //TODO move the login logic - including google login and all related methods to its own component
 import LoginDialog from '@/components/LoginDialog.vue'
+import OfferLogin from '@/components/OfferLogin.vue'
 import GoogleLogin from 'vue-google-login';
 import axios from 'axios';
 import store from '@/store'
@@ -39,7 +44,8 @@ export default {
   name: "app",
   components: {
     LoginDialog,
-    GoogleLogin
+    GoogleLogin,
+    OfferLogin
   },
   mounted() {
     this.refreshLoggedInUser();
@@ -98,6 +104,7 @@ export default {
   },
   data() {
     return {
+      offerLoginOpen: false,
       loginDialogOpened: false,
       googleComponentKey: 1, // HACK due to a bug in google login button - this is used to force a rerender after logout
       googleParams: {
