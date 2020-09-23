@@ -12,7 +12,7 @@
     </v-card>
     <v-divider>or</v-divider>
     <v-card flat class="d-flex justify-center my-4">
-      <v-btn>continue as guest</v-btn>
+      <v-btn @click="continueAsGuest()">continue as guest</v-btn>
     </v-card>
   </v-card>
 </template>
@@ -39,7 +39,7 @@ export default {
         id_token
       });
       await store.dispatch('refreshLoggedInUser');
-      this.$emit('input', false);
+      this.$emit('logged-in');
     },
     async googleLogoutOnSuccess() {
       await this.logout();
@@ -53,6 +53,9 @@ export default {
     isSignedInWithGoogle() {
       console.log("signed in with google?", store.state.loggedInUser.withGoogle);
       return store.state.loggedInUser.withGoogle
+    },
+    continueAsGuest() {
+      this.$emit("continue-as-guest");
     }
   },
   data: () => ({

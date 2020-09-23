@@ -2,7 +2,10 @@
   <v-app>
     <div id="app">
       <v-dialog v-model="offerLoginOpen" width=500>
-        <OfferLogin />
+        <OfferLogin
+          @logged-in="offerLoginOpen=false"
+          @continue-as-guest="offerLoginOpen=false"
+        />
       </v-dialog>
       <LoginDialog v-model="loginDialogOpened" />
       <div id="nav">
