@@ -2,6 +2,26 @@
   <div>
     <v-dialog
       persistent
+      v-model="offerLoginDialogOpened"
+      width="500"
+    >
+      <OfferLogin
+        @logged-in="commitOrder"
+        @continue-as-guest="continueAsGuest"
+      />
+    </v-dialog>
+    <v-dialog
+      persistent
+      v-model="userInfoDialogOpened"
+      width="500"
+    >
+      <UserInfoForm
+        v-model="userInfo"
+        v-on:input="commitOrder"
+      />
+    </v-dialog>
+    <v-dialog
+      persistent
       v-model="completedDialogOpened"
       width="500"
     >
@@ -31,27 +51,6 @@
         <v-card-title v-if="typeof farmer.products !== 'undefined'">{{ farmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
         <v-card-text>
           <v-form class="px-3" v-model="valid">
-            <v-text-field
-              v-model="name"
-              type="text"
-              label="Your full name"
-              :rules="nameRules"
-              :disabled="isDisabled"
-              ></v-text-field>
-            <v-text-field
-              v-model="email"
-              type="text"
-              label="Email address"
-              :rules="emailRules"
-              :disabled="isDisabled"
-              ></v-text-field>
-            <v-text-field
-              v-model="phone"
-              type="text"
-              label="Phone number"
-              :rules="phoneRules"
-              :disabled="isDisabled"
-              ></v-text-field>
             <v-row v-for="(produce, i) in farmer.products" :key="produce.name">
               <v-layout row wrap>
                 <v-flex xs12 md8>
@@ -114,9 +113,15 @@
 import store from '@/store';
 import { mapState } from 'vuex';
 import axios from 'axios';
+import UserInfoForm from '@/components/UserInfoForm.vue';
+import OfferLogin from '@/components/OfferLogin.vue';
 
 export default {
   name: 'FarmerOrderForm',
+  components: {
+    UserInfoForm,
+    OfferLogin
+  },
   mounted() {
     console.log(this.$route.params.farmer_id);
     store.dispatch("setDisplayedFarmer", this.$route.params.farmer_id);
@@ -128,6 +133,9 @@ export default {
     }
   },
   methods: {
+    isLoggedIn() {
+      return store.state.loggedInUser.loggedIn;
+    },
     produceLabel(produce) {
       return `${produce.name} [${produce.packageSize}${produce.packageUnit}]`
     },
@@ -188,11 +196,12 @@ export default {
       this.$router.push("/farmers");
     },
     async modifyOrder() {
+      const { name, email, phone } = this.userInfo;
+      //TODO make sure userInfo contains all the above before sending
+
       let payload = {
         orderID: this.displayedOrder._id,
-        name: this.name,
-        email: this.email,
-        phone: this.phone,
+        name, email, phone,
         products: this.farmer.products.filter(p => p.want),
         farmerID: this.farmer._id
       }
@@ -203,11 +212,29 @@ export default {
       console.log("order modified:", modifiedOrderResponse);
       this.completedDialogOpened = true;
     },
+    continueAsGuest() {
+      this.offerLoginDialogOpened = false;
+      this.userInfoDialogOpened = true;
+    },
+    closeAllDialogs() {
+      this.offerLoginDialogOpened = false;
+      this.userInfoDialogOpened = false;
+    },
     async commitOrder() {
+      this.closeAllDialogs();
+
+      const { name, email, phone } = this.userInfo;
+      if(!(name && email && phone)) {
+        if(!this.isLoggedIn()) {
+          this.offerLoginDialogOpened = true;
+          return;
+        }
+        this.userInfoDialogOpened = true;
+        return;
+      }
+
       let payload = {
-        name: this.name,
-        email: this.email,
-        phone: this.phone,
+        name, email, phone,
         products: this.farmer.products.filter(p => p.want),
         farmerID: this.farmer._id
       }
@@ -220,32 +247,12 @@ export default {
     }
   },
   data: () => ({
+    offerLoginDialogOpened: false,
+    userInfoDialogOpened: false,
+    userInfo: {},
     checkbox: false,
     completedDialogOpened: false,
     isDisabled: false,
-    name: "",
-    email: "",
-    emailRules: [
-      v => !!v || 'Email address is requried',
-      (v) => {
-        let atIndex = v.indexOf("@");
-        if (atIndex <= 0) {
-          return "Invalid Email address"
-        }
-        let userPart = v.split("@")[0];
-        let domainPart = v.split("@")[1];
-        let dotIndex = domainPart.indexOf(".");
-        return (userPart.length > 0 && dotIndex !== -1 && dotIndex < (domainPart.length - 1))
-      }
-    ],
-    nameRules: [
-      v => !!v || 'Name is required'
-    ],
-    phoneRules: [
-      v => !!v || 'Phone is required'
-      // TODO match phone regex
-    ],
-    phone: "",
     valid: false,
     quantity: 1,
   }),
