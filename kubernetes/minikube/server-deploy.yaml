@@ -22,10 +22,10 @@ spec:
         resources:
           requests:
             cpu: 100m
-            memory: 50Mi
+            memory: 100Mi
           limits:
             cpu: 400m
-            memory: 50Mi
+            memory: 100Mi
         workingDir: /workspace
         command: [ "npm", "start" ]
         env:
