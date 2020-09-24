@@ -26,6 +26,20 @@ router.get('/whoami', function(req, res, next) {
   res.json(payload);
 });
 
+router.get('/myinfo', async function(req, res, next) {
+  let payload = {};
+  if (!req.session.logged_in) {
+    payload.message = "Not logged in";
+    res.status(401).json(payload);
+    return;
+  }
+
+  const { userInfo } = await usersData.findUser(userEmail);
+  payload.userInfo = userInfo;
+
+  res.json(payload);
+});
+
 router.post('/logout', function(req, res, next) {
   console.log("got a logout request");
   req.session.logged_in = false;
@@ -36,6 +50,24 @@ router.post('/logout', function(req, res, next) {
   let payload = {};
   payload.message = "Logged out";
   res.json(payload);
+});
+
+router.post('/update/:username', async function(req, res, next) {
+  console.log("got an update request");
+  const { userInfo } = req.body;
+  if(!userInfo) {
+    const error_message = "no userInfo provided in update request";
+    console.log("ERROR", error_message);
+    return res.status(400).json({ message: "Invalid Request", error_message });
+  }
+
+  const err = await usersData.setUserInfo(req.params.username, userInfo);
+  if(err instanceof Error) {
+    const error_message = "internal error trying to persist data to database";
+    console.log("ERROR", error_message);
+    return res.status(400).json({ message: "Internal Error", error_message });
+  }
+  res.json({ message: "success" });
 });
 
 router.post('/google-signin', async function(req, res, next) {

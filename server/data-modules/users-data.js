@@ -12,7 +12,8 @@ module.exports = {
   insertUser,
   findUser,
   setAdminPrivilege,
-  revokeAdminPrivilege
+  revokeAdminPrivilege,
+  setUserInfo
 };
 
 async function insertUser(userJSON) {
@@ -54,12 +55,9 @@ async function setAdminPrivilege(username) {
     return err;
   }
 
-  new Promise((resolve) => {
-    collection.updateOne(
-      { username },
-      { $set: { admin: "true" }});
-    resolve();
-  });
+  return collection.updateOne(
+    { username },
+    { $set: { admin: "true" }});
 }
 
 async function revokeAdminPrivilege(username) {
@@ -68,10 +66,18 @@ async function revokeAdminPrivilege(username) {
     return err;
   }
 
-  new Promise((resolve) => {
-    collection.updateOne(
-      { username },
-      { $set: { admin: "false" }});
-    resolve();
-  });
+  return collection.updateOne(
+    { username },
+    { $set: { admin: "false" }});
+}
+
+async function setUserInfo(username, userInfo) {
+  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
+  if(err) {
+    return err;
+  }
+
+  return collection.updateOne(
+    { username },
+    { $set: { userInfo }});
 }

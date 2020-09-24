@@ -32,6 +32,7 @@ export default {
   name: "UserInfoForm",
   data: () => ({
     valid: false,
+    //// TODO: make sure the name/email/phone are being filled in they exist
     name: "",
     email: "",
     phone: "",
