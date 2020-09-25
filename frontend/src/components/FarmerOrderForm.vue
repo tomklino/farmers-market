@@ -123,9 +123,7 @@ export default {
     OfferLogin
   },
   mounted() {
-    console.log(this.$route.params.farmer_id);
     store.dispatch("setDisplayedFarmer", this.$route.params.farmer_id);
-    console.log(store.state.displayedFarmer);
 
     let { loggedInUser } = store.state;
     if(loggedInUser.loggedIn && loggedInUser.email.length > 0) {
@@ -223,7 +221,8 @@ export default {
     async commitOrder() {
       this.closeAllDialogs();
 
-      const { name, email, phone } = this.userInfo;
+      await store.dispatch("loadUserInfo"); //load from local storage to state
+      const { name, email, phone } = store.state.userInfo;
       if(!(name && email && phone)) {
         if(!this.isLoggedIn()) {
           this.offerLoginDialogOpened = true;
@@ -249,7 +248,6 @@ export default {
   data: () => ({
     offerLoginDialogOpened: false,
     userInfoDialogOpened: false,
-    userInfo: {},
     checkbox: false,
     completedDialogOpened: false,
     isDisabled: false,
@@ -257,7 +255,15 @@ export default {
     quantity: 1,
   }),
   computed: {
-    ...mapState(['loggedInUser']),
+    ...mapState(['loggedInUser', 'userInfo']),
+    userInfo: {
+      get() {
+        return store.state.userInfo;
+      },
+      set(newValue) {
+        store.dispatch("setUserInfo", newValue);
+      }
+    },
     orderTotal() {
       if(typeof this.farmer === 'undefined' || typeof this.farmer.products === 'undefined') {
         return 0;

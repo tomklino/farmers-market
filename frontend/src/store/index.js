@@ -10,6 +10,7 @@ export default new Vuex.Store({
     displayedOrder: {},
     farmersList: [],
     ordersList: [],
+    userInfo: {},
     loggedInUser: {
       loggedIn: false,
       username: "",
@@ -68,9 +69,48 @@ export default new Vuex.Store({
     },
     markOrderCompleted(state, { orderID, isCompleted = "true" }) {
       state.ordersList.find(o => o._id === orderID).completed = isCompleted;
+    },
+    setUserInfo(state, userInfo) {
+      Vue.set(state, 'userInfo', userInfo);
     }
   },
   actions: {
+    clearUserInfo({ commit }) {
+      localStorage.removeItem("user_info");
+      commit("setUserInfo", {});
+    },
+    setUserInfo({ commit }, userInfo) {
+      commit("setUserInfo", userInfo)
+    },
+    loadUserInfo({ commit, dispatch }) {
+      const userInfoObjectString = localStorage.getItem("user_info");
+      if(userInfoObjectString === null) {
+        return dispatch('clearUserInfo');
+      }
+      const userInfo = JSON.parse(userInfoObjectString);
+      commit("setUserInfo", userInfo);
+    },
+    async fetchUserInfo({ dispatch }) {
+      try {
+        const response = await axios.get('/users/myinfo');
+        const { userInfo } = response.data;
+        console.log("fetchUserInfo: user info is", userInfo);
+        localStorage.setItem("user_info", JSON.stringify(userInfo));
+        await dispatch("loadUserInfo");
+      } catch (err) {
+        console.log("error while trying to obtain user info from server", err);
+      }
+    },
+    async persistUserInfo({ commit, state, dispatch }, userInfo) {
+      const { username } = state.loggedInUser
+      try {
+        let response = await axios.post(`/users/update/${username}`, { userInfo });
+        await dispatch("fetchUserInfo");
+      } catch (err) {
+        // TODO reflect error (and error type to user)
+        console.log("error trying to set user info in server", err);
+      }
+    },
     async completeOrder({ commit }, orderID) {
       try {
         let response = await axios.post('/api/orders/complete', { orderID })

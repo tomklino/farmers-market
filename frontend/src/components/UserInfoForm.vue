@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import store from '@/store';
 
 export default {
   name: "UserInfoForm",
@@ -58,11 +59,18 @@ export default {
     ]
   }),
   methods: {
+    isLoggedIn() {
+      return store.state.loggedInUser.loggedIn;
+    },
     submit() {
       if(!this.valid) {
         return;
       }
-      this.$emit("input", { name: this.name, email: this.email, phone: this.phone });
+      const userInfo = { name: this.name, email: this.email, phone: this.phone };
+      if(this.isLoggedIn()) {
+        store.dispatch("persistUserInfo", userInfo);
+      }
+      this.$emit("input", userInfo);
     }
   }
 }
