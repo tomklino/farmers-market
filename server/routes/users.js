@@ -34,6 +34,7 @@ router.get('/myinfo', async function(req, res, next) {
     return;
   }
 
+  const userEmail = req.session['email'];
   const { userInfo } = await usersData.findUser(userEmail);
   payload.userInfo = userInfo;
 
