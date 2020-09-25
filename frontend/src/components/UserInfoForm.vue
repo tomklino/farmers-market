@@ -62,13 +62,13 @@ export default {
     isLoggedIn() {
       return store.state.loggedInUser.loggedIn;
     },
-    submit() {
+    async submit() {
       if(!this.valid) {
         return;
       }
       const userInfo = { name: this.name, email: this.email, phone: this.phone };
       if(this.isLoggedIn()) {
-        store.dispatch("persistUserInfo", userInfo);
+        await store.dispatch("persistUserInfo", userInfo);
       }
       this.$emit("input", userInfo);
     }

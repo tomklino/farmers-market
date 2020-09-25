@@ -179,13 +179,15 @@ export default new Vuex.Store({
       console.log("got data:", response.data)
       commit("updateOrders", { orders: response.data, farmerID: farmer_id });
     },
-    async refreshLoggedInUser({ commit }) {
+    async refreshLoggedInUser({ commit, dispatch }) {
       try {
         let response = await axios.get("/users/whoami");
         console.log("got data:", response.data);
         commit("updateLoggedInUser", response.data);
+        await dispatch("fetchUserInfo");
       } catch(e) {
         if (e.response.status === 401) {
+          dispatch("clearUserInfo");
           commit("updateLoggedInUser", "");
         }
       }

@@ -221,8 +221,10 @@ export default {
     async commitOrder() {
       this.closeAllDialogs();
 
-      await store.dispatch("loadUserInfo"); //load from local storage to state
-      const { name, email, phone } = store.state.userInfo;
+      if(this.isLoggedIn()) {
+        await store.dispatch("loadUserInfo"); //load from local storage to state
+      }
+      const { name, email, phone } = this.userInfo;
       if(!(name && email && phone)) {
         if(!this.isLoggedIn()) {
           this.offerLoginDialogOpened = true;
