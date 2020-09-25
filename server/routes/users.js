@@ -67,7 +67,7 @@ router.post('/update/:username', async function(req, res, next) {
     console.log("ERROR", error_message);
     return res.status(400).json({ message: "Internal Error", error_message });
   }
-  res.json({ message: "success" });
+  res.json({ message: "done" });
 });
 
 router.post('/google-signin', async function(req, res, next) {
@@ -104,7 +104,7 @@ router.post('/google-signin', async function(req, res, next) {
 
   let payload = {};
   payload.message = `logged in as ${userEmail}`;
-  res.json({ message: "success" });
+  res.json({ message: "done" });
 });
 
 if(process.env["ENVIRONMENT"] === "DEV") {
