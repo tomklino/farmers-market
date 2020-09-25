@@ -54,6 +54,12 @@ router.post('/logout', function(req, res, next) {
 
 router.post('/update/:username', async function(req, res, next) {
   console.log("got an update request");
+  if(!req.session.admin && req.session.user !== req.params.username) {
+    const error_message = "not authorized to change user info";
+    console.log("ERROR", error_message);
+    return res.status(401).json({ message: "Unauthorized", error_message});
+  }
+  
   const { userInfo } = req.body;
   if(!userInfo) {
     const error_message = "no userInfo provided in update request";
