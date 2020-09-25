@@ -1,17 +1,10 @@
 <template>
   <v-app>
     <div id="app">
-      <v-dialog v-model="offerLoginOpen" width=500>
-        <OfferLogin
-          @logged-in="offerLoginOpen=false"
-          @continue-as-guest="offerLoginOpen=false"
-        />
-      </v-dialog>
       <LoginDialog v-model="loginDialogOpened" />
       <div id="nav">
         <v-toolbar dark color="orange">
           <router-link class="title" to="/"><v-toolbar-title class="title">Farmers</v-toolbar-title></router-link>
-          <v-btn @click="offerLoginOpen=true">offer login</v-btn>
           <v-spacer></v-spacer>
           <router-link v-if="isAdmin()" to="/new/farmer">
             <v-btn text>Create Farmer</v-btn></router-link>
@@ -29,15 +22,13 @@
 
 <script>
 import LoginDialog from '@/components/LoginDialog.vue'
-import OfferLogin from '@/components/OfferLogin.vue'
 import axios from 'axios';
 import store from '@/store'
 
 export default {
   name: "app",
   components: {
-    LoginDialog,
-    OfferLogin
+    LoginDialog
   },
   mounted() {
     this.refreshLoggedInUser();
