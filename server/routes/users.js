@@ -59,7 +59,7 @@ router.post('/update/:username', async function(req, res, next) {
     console.log("ERROR", error_message);
     return res.status(401).json({ message: "Unauthorized", error_message});
   }
-  
+
   const { userInfo } = req.body;
   if(!userInfo) {
     const error_message = "no userInfo provided in update request";
@@ -71,7 +71,7 @@ router.post('/update/:username', async function(req, res, next) {
   if(err instanceof Error) {
     const error_message = "internal error trying to persist data to database";
     console.log("ERROR", error_message);
-    return res.status(400).json({ message: "Internal Error", error_message });
+    return res.status(500).json({ message: "Internal Error", error_message });
   }
   res.json({ message: "done" });
 });
