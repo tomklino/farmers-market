@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-text>
-      <v-form class="px-3" v-model="valid">
+      <v-form class="pa-9" v-model="valid">
         <v-text-field
           v-model="name"
           type="text"

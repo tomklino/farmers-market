@@ -161,7 +161,7 @@ export default new Vuex.Store({
     clearDisplayedFarmer({ commit }) {
       commit('displayedFarmer', {});
     },
-    clearDisplayedOrder( { commit } ){
+    clearDisplayedOrder({ commit }) {
       commit('displayedOrder', {});
     },
     async fetchOrder({ commit }, order_id) {
