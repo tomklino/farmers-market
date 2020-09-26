@@ -94,6 +94,9 @@ export default new Vuex.Store({
       try {
         const response = await axios.get('/users/myinfo');
         const { userInfo } = response.data;
+        if(typeof userInfo !== "object") {
+          return localStorage.setItem("user_info", "{}");
+        }
         console.log("fetchUserInfo: user info is", userInfo);
         localStorage.setItem("user_info", JSON.stringify(userInfo));
         await dispatch("loadUserInfo");
