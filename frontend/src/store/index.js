@@ -101,10 +101,10 @@ export default new Vuex.Store({
         console.log("error while trying to obtain user info from server", err);
       }
     },
-    async persistUserInfo({ commit, state, dispatch }, userInfo) {
+    async persistUserInfo({ state, dispatch }, userInfo) {
       const { username } = state.loggedInUser
       try {
-        let response = await axios.post(`/users/update/${username}`, { userInfo });
+        await axios.post(`/users/update/${username}`, { userInfo });
         await dispatch("fetchUserInfo");
       } catch (err) {
         // TODO reflect error (and error type to user)
