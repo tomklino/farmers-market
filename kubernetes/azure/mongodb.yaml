@@ -54,7 +54,6 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data/db
-          volumeMounts:
             - name: collections
               mountPath: /opt/collections
       volumes:
