@@ -140,9 +140,11 @@ export default {
     loadFromDisplayedOrder() {
       let order = store.state.displayedOrder;
 
-      this.name = order.name;
-      this.email = order.email;
-      this.phone = order.phone;
+      this.userInfo = {
+        name: order.name,
+        email: order.email,
+        phone: order.phone
+      }
       for(let product of this.farmer.products) {
         let orderedProduct = order.products.find(orderedProduct => orderedProduct.name === product.name);
         if(typeof orderedProduct !== undefined) {
