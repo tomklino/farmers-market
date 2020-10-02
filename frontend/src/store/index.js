@@ -11,6 +11,7 @@ export default new Vuex.Store({
     farmersList: [],
     ordersList: [],
     userInfo: {},
+    userOrders: [],
     loggedInUser: {
       loggedIn: false,
       username: "",
@@ -20,6 +21,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setUserOrders(state, orders) {
+      state.userOrders = orders;
+    },
     updateFarmers(state, farmers) {
       state.farmersList = farmers;
     },
@@ -75,6 +79,20 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async refreshUserOrders({ commit, state }) {
+      const { username } = state.loggedInUser;
+      const params = { username };
+      console.log("refreshing user orders with params");
+      console.log(params);
+      try {
+        const response = await axios.get(`/api/orders/byuser`, { params });
+        const orders = response.status === 204 ? [] : response.data['orders'];
+        commit("setUserOrders", orders);
+      } catch (err) {
+        //// TODO: reflect error to user
+        console.log("error while trying to fetch user orders", err);
+      }
+    },
     clearUserInfo({ commit }) {
       localStorage.removeItem("user_info");
       commit("setUserInfo", {});

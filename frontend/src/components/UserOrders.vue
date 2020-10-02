@@ -1,20 +1,20 @@
 <template>
-  <v-card>
-    <v-list three-line>
-      <v-list-item
-        v-for="order in orders"
-        :key="order.title"
-      >
-        <!-- <v-list-item-avatar>
-          <v-img :src="order.avatar"></v-img>
-        </v-list-item-avatar> -->
-
-        <v-list-item-content>
-          <v-list-item-title v-html="order.summary"></v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-  </v-card>
+    <v-card min-width="260">
+      <v-list three-line>
+        <v-list-item
+          v-for="order in userOrders"
+          :key="order._id"
+        >
+          <v-list-item-avatar>
+            <v-img :src="order.farmerImage"></v-img>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title v-html="order.farmerName"></v-list-item-title>
+            <v-list-item-subtitle v-html="order.products.map(o => `${o.name}`).join(', ')"></v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-card>
 </template>
 
 <script>
@@ -30,29 +30,16 @@ export default {
     }
   },
   mounted() {
-    if(typeof this.loggedInUser.username === "string") {
-      this.getActiveOrders();
-    }
-  },
-  methods: {
-    async getActiveOrders() {
-      let { username } = this.loggedInUser;
-      let params = { username };
-      console.log("using the following params to get orders");
-      console.log(params);
-      const response = await axios.get(`/api/orders/byuser`, { params });
-      const orders = response.data['orders'];
-      orders.forEach(o => o.summary = o.products.map(p => p.name).join(" "));
-      this.orders = orders;
-      console.log("got the following orders", this.orders);
+    if(this.loggedInUser.username.length > 0) {
+      store.dispatch("refreshUserOrders");
     }
   },
   computed: {
-    ...mapState(['loggedInUser'])
+    ...mapState(['loggedInUser', 'userOrders'])
   },
   watch: {
     loggedInUser() {
-      this.getActiveOrders()
+      store.dispatch("refreshUserOrders");
     }
   }
 }
