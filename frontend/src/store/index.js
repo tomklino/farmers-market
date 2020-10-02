@@ -178,7 +178,7 @@ export default new Vuex.Store({
       commit("updateFarmers", response.data);
     },
     async fetchOrdersOfFarmer({ commit }, farmer_id) {
-      let response = await axios.get(`/api/orders/${farmer_id}`);
+      let response = await axios.get(`/api/orders/byfarmer/${farmer_id}`);
       console.log("got data:", response.data)
       commit("updateOrders", { orders: response.data, farmerID: farmer_id });
     },

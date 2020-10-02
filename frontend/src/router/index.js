@@ -5,6 +5,7 @@ import NewFarmerView from '../views/NewFarmerView'
 import ManageFarmersView from '../views/ManageFarmersView'
 import FarmerOrderFormView from '../views/FarmerOrderFormView'
 import ManageOrdersView from '../views/ManageOrdersView'
+import UserOrdersView from '../views/UserOrdersView'
 import OrderSummaryView from '../views/OrderSummaryView'
 
 Vue.use(VueRouter)
@@ -44,6 +45,11 @@ Vue.use(VueRouter)
     path: '/farmer/:farmer_id',
     name: 'FarmerOrderForm',
     component: FarmerOrderFormView
+  },
+  {
+    path: '/myorders',
+    name: 'MyOrders',
+    component: UserOrdersView
   },
   {
     path: '/about',

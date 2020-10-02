@@ -35,8 +35,15 @@ router.get('/myinfo', async function(req, res, next) {
   }
 
   const userEmail = req.session['email'];
-  const { userInfo } = await usersData.findUser(userEmail);
-  payload.userInfo = userInfo;
+  const userEntry = await usersData.findUser(userEmail);
+  if(userEntry instanceof Error) {
+    debug("ERROR: internal database error while trying to find user", userEntry);
+    return res.status(500).json({ message: "Interal Server Error" });
+  }
+  if(userEntry === null || typeof userEntry.userInfo !== "object") {
+    return res.status(404).json({ message: `userInfo for ${userEmail} was not found`});
+  }
+  payload.userInfo = userEntry.userInfo;
 
   res.json(payload);
 });

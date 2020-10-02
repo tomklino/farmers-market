@@ -36,17 +36,12 @@ async function findUser(username) {
     return err;
   }
 
-  return new Promise((resolve) => {
-    debug("trying to find user with username", username);
-    collection.findOne({ username }, (err, result) => {
-      if(err) {
-        console.log("error while trying to fetch order", err);
-        return resolve(err);
-      }
-      debug("found the following user", result);
-      resolve(result);
-    });
-  });
+  debug("trying to find user with username", username);
+  try {
+    return collection.findOne({ username });
+  } catch (err) {
+    return err;
+  }
 }
 
 async function setAdminPrivilege(username) {

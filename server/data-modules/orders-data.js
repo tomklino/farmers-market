@@ -15,13 +15,14 @@ module.exports = {
   modifyOrder,
   insertOrder,
   findOrder,
-  findOrders
+  findOrders,
+  findOrdersByUser
 }
 
 async function completeOrder(orderID) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) {
-    return err;
+    throw err;
   }
 
   return collection.updateOne(
@@ -33,7 +34,7 @@ async function completeOrder(orderID) {
 async function unCompleteOrder(orderID) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) {
-    return err;
+    throw err;
   }
 
   return collection.updateOne(
@@ -45,7 +46,7 @@ async function unCompleteOrder(orderID) {
 async function modifyOrder(orderJSON) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) {
-    return err;
+    throw err;
   }
 
   return new Promise((resolve) => {
@@ -59,21 +60,22 @@ async function modifyOrder(orderJSON) {
 async function insertOrder(orderJSON) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) {
-    return err;
+    throw err;
   }
 
-  return new Promise((resolve) => {
-    collection.insertOne(orderJSON, (err, r) => {
-      debug("order inserted successfully", r);
-      resolve(err);
-    });
-  });
+  try {
+    const result = await collection.insertOne(orderJSON)
+    debug("order inserted successfully");
+    return [ null, result.insertedId ];
+  } catch (err) {
+    return [ err, null ];
+  }
 }
 
 async function findOrder(orderID) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) {
-    return err;
+    throw err;
   }
 
   return new Promise((resolve) => {
@@ -92,7 +94,7 @@ async function findOrder(orderID) {
 async function findOrders(farmerID) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) {
-    return err;
+    throw err;
   }
 
   return new Promise((resolve) => {
@@ -102,4 +104,13 @@ async function findOrders(farmerID) {
       resolve(docs);
     });
   });
+}
+
+async function findOrdersByUser(username) {
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) {
+    throw err;
+  }
+
+  return collection.find({ created_by: username }).toArray();
 }
