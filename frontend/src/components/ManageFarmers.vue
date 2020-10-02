@@ -72,7 +72,7 @@ export default {
       this.verifyDeletion = false;
       await axios.delete('/api/farmers/' + farmerToDelete);
       console.log("deleted successfuly:", farmerToDelete);
-      this.refreshFarmers();
+      store.dispatch('refreshFarmers');
     },
     routeToFarmerOrders(farmerID) {
       this.$router.push(`/orders/${farmerID}`);
