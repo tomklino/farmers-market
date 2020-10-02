@@ -147,7 +147,7 @@ export default {
       }
       for(let product of this.farmer.products) {
         let orderedProduct = order.products.find(orderedProduct => orderedProduct.name === product.name);
-        if(typeof orderedProduct !== undefined) {
+        if(typeof orderedProduct !== "undefined") {
           product.want = true;
           product.quantity = orderedProduct.quantity;
         }
