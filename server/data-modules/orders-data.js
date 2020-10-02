@@ -53,13 +53,24 @@ async function modifyOrder(orderJSON) {
 }
 
 async function insertOrder(orderJSON) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  const [ err, db ] = await mongo.getDB(db_name);
   if(err) {
     return [ err, null ];
   }
 
+  const ordersCollection = db.collection(orders_collection_name);
+  const farmersCollection = db.collection(farmers_collection_name);
+
   try {
-    const result = await collection.insertOne(orderJSON)
+    const farmer = await farmersCollection.findOne({ _id: ObjectId(orderJSON['farmerID'])});
+    orderJSON.farmerName = farmer.name;
+    orderJSON.farmerImage = farmer.image;
+  } catch (err) {
+    return [ err, null ];
+  }
+
+  try {
+    const result = await ordersCollection.insertOne(orderJSON)
     debug("order inserted successfully");
     return [ null, result.insertedId ];
   } catch (err) {
