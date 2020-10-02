@@ -64,11 +64,12 @@ router.post('/modify', async function(req, res, next) {
     res.status(400).send("invalid JSON: " + violations);
     return;
   }
-  let err = await ordersData.modifyOrder(payload);
-  if (err) {
+
+  try {
+    await ordersData.modifyOrder(payload);
+  } catch (err) {
     debug("encountered error while trying to modify order", err);
-    res.status(500).send("Internal Error");
-    return;
+    return res.status(500).send("Internal Error");
   }
 
   if(typeof payload.email === 'undefined') {

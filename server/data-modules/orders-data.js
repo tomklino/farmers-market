@@ -26,9 +26,8 @@ async function completeOrder(orderID) {
   }
 
   return collection.updateOne(
-    { _id: ObjectId(orderID) },
-    { $set: { "completed": "true" }}
-  );
+      { _id: ObjectId(orderID) },
+      { $set: { "completed": "true" }});
 }
 
 async function unCompleteOrder(orderID) {
@@ -38,9 +37,8 @@ async function unCompleteOrder(orderID) {
   }
 
   return collection.updateOne(
-    { _id: ObjectId(orderID) },
-    { $set: { "completed": "false" }}
-  );
+      { _id: ObjectId(orderID) },
+      { $set: { "completed": "false" }});
 }
 
 async function modifyOrder(orderJSON) {
@@ -49,18 +47,15 @@ async function modifyOrder(orderJSON) {
     throw err;
   }
 
-  return new Promise((resolve) => {
-    collection.updateOne(
+  return collection.updateOne(
       { _id: ObjectId(orderJSON.orderID) },
       { $set: orderJSON });
-    resolve();
-  });
 }
 
 async function insertOrder(orderJSON) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) {
-    throw err;
+    return [ err, null ];
   }
 
   try {
@@ -78,17 +73,7 @@ async function findOrder(orderID) {
     throw err;
   }
 
-  return new Promise((resolve) => {
-    debug("trying to find order with id", orderID);
-    collection.findOne({ _id: new ObjectId(orderID) }, (err, result) => {
-      if(err) {
-        console.log("error while trying to fetch order", err);
-        return resolve(err);
-      }
-      debug("found the following order", result);
-      resolve(result);
-    });
-  });
+  return collection.findOne({ _id: new ObjectId(orderID) });
 }
 
 async function findOrders(farmerID) {
@@ -97,13 +82,7 @@ async function findOrders(farmerID) {
     throw err;
   }
 
-  return new Promise((resolve) => {
-    collection.find({ farmerID: farmerID }).toArray((err, docs) => {
-      debug("Found the following records");
-      debug(docs)
-      resolve(docs);
-    });
-  });
+  return collection.find({ farmerID: farmerID }).toArray();
 }
 
 async function findOrdersByUser(username) {
