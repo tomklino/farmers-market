@@ -29,6 +29,11 @@ export default {
       orders: []
     }
   },
+  mounted() {
+    if(typeof this.loggedInUser.username === "string") {
+      this.getActiveOrders();
+    }
+  },
   methods: {
     async getActiveOrders() {
       let { username } = this.loggedInUser;
