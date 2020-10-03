@@ -17,7 +17,7 @@
           >{{ loginButtonString }}</v-btn>
         </v-toolbar>
       </div>
-      <v-container class="d-flex justify-center">
+      <v-container width="100%">
         <router-view/>
       </v-container>
     </div>

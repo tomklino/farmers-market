@@ -34,14 +34,14 @@ router.get('/myinfo', async function(req, res, next) {
     return;
   }
 
-  const userEmail = req.session['email'];
-  const userEntry = await usersData.findUser(userEmail);
+  const username = req.session['user'];
+  const userEntry = await usersData.findUser(username);
   if(userEntry instanceof Error) {
     debug("ERROR: internal database error while trying to find user", userEntry);
     return res.status(500).json({ message: "Interal Server Error" });
   }
   if(userEntry === null || typeof userEntry.userInfo !== "object") {
-    return res.status(404).json({ message: `userInfo for ${userEmail} was not found`});
+    return res.status(404).json({ message: `userInfo for ${username} was not found`});
   }
   payload.userInfo = userEntry.userInfo;
 
@@ -124,10 +124,21 @@ router.post('/google-signin', async function(req, res, next) {
 if(process.env["ENVIRONMENT"] === "DEV") {
   console.log("WARNING: environment is set to dev - enabling dev admin user");
 
-  router.post('/login/devadmin', function(req, res, next) {
+  router.post('/login/devadmin', async function(req, res, next) {
+    const username = "devadmin";
     if(req.body.password === "DevAdmin1590") {
+      let userEntry = await usersData.findUser("username");
+      if(userEntry === null) {
+        let userJSON = {}
+        userJSON.username = username;
+        userJSON.admin = true;
+        userJSON.with_google = false;
+        await usersData.insertUser(userJSON);
+        userEntry = userJSON;
+        debug("userEntry is now", userEntry);
+      }
       req.session.logged_in = true;
-      req.session.user = "devadmin";
+      req.session.user = username;
       req.session.admin = "true";
 
       let payload = {};
