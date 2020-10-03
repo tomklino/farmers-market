@@ -11,4 +11,6 @@ data:
     until mongo --eval "db.adminCommand('ping')"; do echo -n '.'; sleep 1; done;
     echo "ready"
 
-    mongo ${DB_NAME} --eval 'db.users.createIndex( { "username": 1 }, { unique: true })'
+    mongo ${DB_NAME} --eval 'db.users.createIndex({ "username": 1 }, { unique: true })'
+    mongo ${DB_NAME} --eval 'db.orders.createIndex({ "farmerID": 1 })'
+    mongo ${DB_NAME} --eval 'db.orders.createIndex({ "created_by": 1 }, { partialFilterExpression: { created_by: { $exists: true }}})'
