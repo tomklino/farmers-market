@@ -2,36 +2,29 @@
   <v-container grid-list-md>
     <v-layout row wrap>
       <v-flex v-for="farmer in farmers" md4 xs12 :key="farmer.id">
-        <v-card
-          class="mx-auto"
-          max-width="400"
-        >
-          <v-img
-            class="white--text align-end"
-            height="200px"
-            :src="farmer.image"
+        <router-link :to="{ name: 'FarmerOrderForm', params: { farmer_id: farmer._id} }">
+          <v-card
+            link
+            class="mx-auto"
+            max-width="400"
           >
-            <v-card-title>{{ farmer.name }}</v-card-title>
-          </v-img>
-
-          <v-card-subtitle class="pb-0">{{ farmer.produce }}</v-card-subtitle>
-
-          <v-card-text class="text--primary">
-            <div>Order Minimum: {{ farmer.orderMinimum }}</div>
-
-            <div>Area: {{ farmer.shipmentArea }}</div>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-btn
-              color="orange"
-              text
-              @click="routeToFarmer(farmer._id)"
+            <v-img
+              class="white--text align-end"
+              height="200px"
+              :src="farmer.image"
             >
-              Order
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+              <v-card-title>{{ farmer.name }}</v-card-title>
+            </v-img>
+
+            <v-card-subtitle class="pb-0">{{ farmer.produce }}</v-card-subtitle>
+
+            <v-card-text class="text--primary">
+              <div>Order Minimum: {{ farmer.orderMinimum }}</div>
+
+              <div>Area: {{ farmer.shipmentArea }}</div>
+            </v-card-text>
+          </v-card>
+        </router-link>
       </v-flex>
     </v-layout>
   </v-container>
@@ -49,11 +42,12 @@ export default {
     farmers() {
       return store.state.farmersList;
     }
-  },
-  methods: {
-    routeToFarmer(farmerID) {
-      this.$router.push(`/farmer/${farmerID}`);
-    }
   }
 }
 </script>
+
+<style scoped>
+* {
+    text-decoration: none;
+}
+</style>
