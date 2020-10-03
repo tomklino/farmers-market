@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sendgrid-env-vars
+data:
+  SENDGRID__FROM_ADDRESS: "farmers@local"

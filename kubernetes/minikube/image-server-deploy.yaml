@@ -28,6 +28,9 @@ spec:
             memory: 50Mi
         workingDir: /workspace
         command: [ "npm", "start" ]
+        envFrom:
+          - configMapRef:
+              name: global-env-vars
         env:
           - name: "DESTINATION_DIR"
             value: "/images"

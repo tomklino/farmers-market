@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-env-vars
+data:
+  SELF_HOSTNAME: "http://farmers.klino.me"
+  STATIC_HOST_URI: "https://farmersstatic.blob.core.windows.net"
+  FEATURE_FLAG__EMAIL: "true"

@@ -32,5 +32,8 @@ spec:
           limits:
             cpu: 800m
             memory: 300Mi
+        envFrom:
+          - configMapRef:
+              name: global-env-vars
       dnsPolicy: ClusterFirst
 status: {}

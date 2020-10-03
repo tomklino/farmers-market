@@ -26,10 +26,11 @@ spec:
           limits:
             cpu: 400m
             memory: 200Mi
+        envFrom:
+          - configMapRef:
+              name: sendgrid-env-vars
         env:
           - name: SENDGRID__API_KEY # TODO in prod, take this from a secret
             value: "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"
-          - name: SENDGRID__FROM_ADDRESS
-            value: "farmers@klino.me"
       dnsPolicy: ClusterFirst
 status: {}

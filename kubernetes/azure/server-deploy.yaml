@@ -26,26 +26,29 @@ spec:
           limits:
             cpu: 400m
             memory: 50Mi
+        envFrom:
+          - configMapRef:
+              name: global-env-vars
         env:
-          - name: ENVIRONMENT # NOTE this allows to login using the devadmin user
-            value: "DEV"
+          - name: GOOGLE_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: farmers-google-app
+                key: appid
+          - name: GOOGLE_APP_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: farmers-google-app
+                key: secret
+          - name: COOKIE_SECRET
+            value: "notArealSECRET_dev_only"
           - name: MONGO__CONNECTION_STRING
             value: "mongodb://mongodb:27017"
-          - name: DEBUG
-            value: "server:*"
-          - name: COOKIE_SECRET # TODO fill in from a secret
-            value: "notArealSECRET_dev_only"
           - name: MAILER__HOSTNAME
             value: "mailer"
           - name: MAILER__PORT
             value: "80"
           - name: MAILER__DEFAULT_ORDER_TEMPLATE
             value: "receipt-full.mjml"
-          - name: SELF_HOSTNAME # TODO pass to configmap
-            value: "farmers.klino.me"
-          - name: STATIC_HOST_URI # TODO pass to configmap
-            value: "https://farmersstatic.blob.core.windows.net"
-          - name: "FEATURE_FLAG__EMAIL" # TODO pass to configmap
-            value: "true"
       dnsPolicy: ClusterFirst
 status: {}

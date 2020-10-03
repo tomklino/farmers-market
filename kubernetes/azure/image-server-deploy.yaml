@@ -26,11 +26,12 @@ spec:
           limits:
             cpu: 400m
             memory: 50Mi
+        envFrom:
+          - configMapRef:
+              name: global-env-vars
         env:
           - name: "DESTINATION_DIR"
             value: "/images"
-          - name: "SELF_HOSTNAME"
-            value: "http://farmers.klino.me"
         volumeMounts:
           - mountPath: /images
             name: images

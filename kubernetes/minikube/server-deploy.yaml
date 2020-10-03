@@ -28,6 +28,9 @@ spec:
             memory: 100Mi
         workingDir: /workspace
         command: [ "npm", "start" ]
+        envFrom:
+          - configMapRef:
+              name: global-env-vars
         env:
           - name: GOOGLE_CLIENT_ID
             valueFrom:
@@ -39,26 +42,16 @@ spec:
               secretKeyRef:
                 name: farmers-google-app
                 key: secret
-          - name: ENVIRONMENT # NOTE this allows to login using the devadmin user
-            value: "DEV"
           - name: COOKIE_SECRET
             value: "notArealSECRET_dev_only"
           - name: MONGO__CONNECTION_STRING
             value: "mongodb://mongodb:27017"
-          - name: DEBUG
-            value: "*:*"
           - name: MAILER__HOSTNAME
             value: "mailer"
           - name: MAILER__PORT
             value: "80"
           - name: MAILER__DEFAULT_ORDER_TEMPLATE
             value: "receipt-full.mjml"
-          - name: SELF_HOSTNAME
-            value: "farmers.local"
-          - name: STATIC_HOST_URI
-            value: "https://farmersstatic.blob.core.windows.net"
-          - name: "FEATURE_FLAG__EMAIL"
-            value: "false"
         volumeMounts:
           - mountPath: /workspace
             name: server
