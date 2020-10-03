@@ -1,8 +1,8 @@
 <template>
   <v-card
     class="mx-auto"
-    max-width="480
-    ">
+    width="100%"
+    >
     <v-card-title>Order Summary</v-card-title>
     <v-list two-line>
       <v-list-item>
@@ -34,7 +34,7 @@
       </v-list-item>
     </v-list>
     <v-card-actions class="justify-center"
-      v-if="loggedInUser.loggedIn"
+      v-if="isAdmin()"
     >
       <v-btn raised color="green"
         @click="completeOrder(order._id)"
@@ -70,6 +70,9 @@ export default {
     }
   },
   methods: {
+    isAdmin() {
+      return store.state.loggedInUser.admin;
+    },
     async completeOrder(orderID) {
       console.log("will complete", orderID);
       this.isLoading = true;

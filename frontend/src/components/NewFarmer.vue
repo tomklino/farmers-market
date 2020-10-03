@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="create_farmer">
     <v-dialog
       v-model="createdDialogOpened"
       width="500"
