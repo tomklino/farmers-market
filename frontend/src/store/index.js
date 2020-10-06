@@ -39,15 +39,15 @@ export default new Vuex.Store({
       if(farmerID) {
         // if orders are for a specific farmer, remove all previous orders from
         // that farmer before merging to reflect deleted orders
-        ordersFromState = ordersFromState.filter(o => o._id !== farmerID)
+        ordersFromState = ordersFromState.filter(o => o._id !== farmerID);
       }
       // merge new orders into orders in state
       orders.forEach((order) => {
-        let indexInState = ordersFromState.findIndex(o => o._id === order._id)
+        let indexInState = ordersFromState.findIndex(o => o._id === order._id);
         if (indexInState !== -1) {
-          ordersFromState.splice(indexInState, 1)
+          ordersFromState.splice(indexInState, 1);
         }
-        ordersFromState.push(order)
+        ordersFromState.push(order);
       });
       state.ordersList = ordersFromState;
     },
@@ -79,16 +79,18 @@ export default new Vuex.Store({
       localStorage.removeItem("user_orders");
       commit("setUserOrders", []);
     },
-    async appendUserOrder({ dispatch }, orderJSON) {
+    async appendUserOrder({ dispatch, commit }, orderJSON) {
       const userOrdersItem = localStorage.getItem("user_orders");
       const userOrders = userOrdersItem ? JSON.parse(userOrdersItem) : [];
       const existingOrderIndex = userOrders.findIndex(o => o._id === orderJSON._id)
+      console.log("found an existing order", userOrders[existingOrderIndex]);
       if(existingOrderIndex !== -1) {
         // order exists - replacing entry
         userOrders[existingOrderIndex] = orderJSON;
       } else {
         userOrders.push(orderJSON)
       }
+      commit("updateOrders", { orders: [ orderJSON ]});
       localStorage.setItem("user_orders", JSON.stringify(userOrders));
       dispatch("loadUserOrders");
     },

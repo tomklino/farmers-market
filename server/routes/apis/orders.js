@@ -80,8 +80,8 @@ router.post('/modify', async function(req, res, next) {
       .catch((err) => debug("error trying to send email:", err));
   }
 
-  console.log("done modifying order");
-  res.send("Done");
+  const modifiedOrder = await ordersData.findOrder(payload['orderID']);
+  res.json(modifiedOrder);
 });
 
 router.post('/new', async function(req, res, next) {

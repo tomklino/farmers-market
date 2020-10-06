@@ -122,7 +122,8 @@ export default {
     UserInfoForm,
     OfferLogin
   },
-  mounted() {
+  created() {
+    store.dispatch("refreshUserOrders")
     store.dispatch("setDisplayedFarmer", this.$route.params.farmer_id);
 
     let { loggedInUser } = store.state;
@@ -210,6 +211,7 @@ export default {
       this.isDisabled = true;
       let modifiedOrderResponse = await axios.post('/api/orders/modify', payload);
       console.log("order modified:", modifiedOrderResponse);
+      store.dispatch("appendUserOrder", modifiedOrderResponse.data);
       this.completedDialogOpened = true;
     },
     continueAsGuest() {
@@ -260,7 +262,7 @@ export default {
     quantity: 1,
   }),
   computed: {
-    ...mapState(['loggedInUser', 'userInfo']),
+    ...mapState(['loggedInUser', 'userInfo', 'userOrders']),
     userInfo: {
       get() {
         return store.state.userInfo;
@@ -287,6 +289,14 @@ export default {
     }
   },
   watch: {
+    async userOrders() {
+      console.log("watch for userOrders", this.userOrders);
+      const foundOrder = this.userOrders.find(o => o.farmerID === this.$route.params.farmer_id);
+      if(typeof foundOrder === 'object') {
+        await store.dispatch('setDisplayedOrder', foundOrder._id);
+        this.loadFromDisplayedOrder();
+      }
+    },
     loggedInUser() {
       let { loggedInUser } = store.state;
       if(loggedInUser.loggedIn && loggedInUser.email.length > 0) {
@@ -294,6 +304,7 @@ export default {
       }
     },
     displayedOrder() {
+      console.log("displayedOrder watcher");
       if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.farmer._id !== 'undefined') {
         this.loadFromDisplayedOrder();
       } else {
