@@ -17,8 +17,24 @@ spec:
         run: image-server
     spec:
       containers:
-      - image: farmersregistry.azurecr.io/farmers-image-server:0.3.0
+      - image: farmersregistry.azurecr.io/farmers-image-server:0.5.0
         name: image-server
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 6
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 1
+          successThreshold: 1
         resources:
           requests:
             cpu: 100m
@@ -30,6 +46,8 @@ spec:
           - configMapRef:
               name: global-env-vars
         env:
+          - name: "PORT"
+            value: "3000"
           - name: "DESTINATION_DIR"
             value: "/images"
         volumeMounts:

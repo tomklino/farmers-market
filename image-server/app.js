@@ -10,6 +10,10 @@ const { getReadableStream, getWritableStream } = require('./storage_plugins/fs-s
 
 const server = express();
 
+server.get("/healthz", (req, res) => {
+  res.send("healthy");
+});
+
 const imageRouter = express.Router();
 
 imageRouter.post('/upload', async(req, res) => {
@@ -52,10 +56,6 @@ imageRouter.get('/:id', async(req, res) => {
   }
 
   readStream.pipe(res);
-});
-
-imageRouter.get('/', async(req, res) => {
-  //TODO list images
 });
 
 server.use('/images', imageRouter);
