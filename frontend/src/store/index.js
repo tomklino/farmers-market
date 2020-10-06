@@ -83,7 +83,6 @@ export default new Vuex.Store({
       const userOrdersItem = localStorage.getItem("user_orders");
       const userOrders = userOrdersItem ? JSON.parse(userOrdersItem) : [];
       const existingOrderIndex = userOrders.findIndex(o => o._id === orderJSON._id)
-      console.log("found an existing order", userOrders[existingOrderIndex]);
       if(existingOrderIndex !== -1) {
         // order exists - replacing entry
         userOrders[existingOrderIndex] = orderJSON;
@@ -103,7 +102,6 @@ export default new Vuex.Store({
         localStorage.setItem("user_orders", JSON.stringify(orders));
       } catch (err) {
         //// TODO: reflect error to user
-        console.log("error while trying to fetch user orders", err);
       }
     },
     loadUserOrders({ commit }) {
@@ -139,11 +137,10 @@ export default new Vuex.Store({
         if(typeof userInfo !== "object") {
           return localStorage.setItem("user_info", "{}");
         }
-        console.log("fetchUserInfo: user info is", userInfo);
         localStorage.setItem("user_info", JSON.stringify(userInfo));
         await dispatch("loadUserInfo");
       } catch (err) {
-        console.log("error while trying to obtain user info from server", err);
+        //TODO reflect error to user
       }
     },
     async persistUserInfo({ state, dispatch }, userInfo) {
@@ -153,7 +150,6 @@ export default new Vuex.Store({
         await dispatch("fetchUserInfo");
       } catch (err) {
         // TODO reflect error (and error type to user)
-        console.log("error trying to set user info in server", err);
       }
     },
     async completeOrder({ commit }, orderID) {
@@ -162,10 +158,10 @@ export default new Vuex.Store({
         if (response.data.message === "done") {
           commit("markOrderCompleted", { orderID });
         } else {
-          console.log("unexpected response while trying to complete order", response);
+          //TODO reflect error to user
         }
       } catch(err) {
-        console.log("error from server while trying to complete order", err);
+        //TODO reflect error to user
       }
     },
     async unCompleteOrder({ commit }, orderID) {
@@ -174,17 +170,16 @@ export default new Vuex.Store({
         if (response.data.message === "done") {
           commit("markOrderCompleted", { orderID, isCompleted: "false" });
         } else {
-          console.log("unexpected response while trying to uncomplete order", response);
+          // TODO: reflect error to user
         }
       } catch(err) {
-        console.log("error from server while trying to uncomplete order", err);
+        // TODO: reflect error to user
       }
     },
     async setDisplayedOrder({ commit, state, dispatch }, order_id) {
       let displayedOrder = state.ordersList.find(o => o._id === order_id);
       if(!displayedOrder) {
         await dispatch('fetchOrder', order_id);
-        console.log("orders list", state.ordersList);
         displayedOrder = state.ordersList.find(o => o._id === order_id);
       }
       if(displayedOrder) {
@@ -193,12 +188,10 @@ export default new Vuex.Store({
     },
     async setDisplayedFarmer({ commit, state, dispatch }, farmer_id) {
       let displayedFarmer = state.farmersList.find(f => f._id === farmer_id);
-      console.log("setting displayedFarmer", farmer_id);
       if(!displayedFarmer) {
         await dispatch('refreshFarmers');
         displayedFarmer = state.farmersList.find(f => f._id === farmer_id);
       }
-      console.log("displayedFarmerObject:", displayedFarmer);
       if(displayedFarmer) {
         commit('displayedFarmer', displayedFarmer);
       }
@@ -211,17 +204,14 @@ export default new Vuex.Store({
     },
     async fetchOrder({ commit }, order_id) {
       let response = await axios.get(`/api/orders/byid/${order_id}`);
-      console.log("fetchOrder got data", response.data);
       commit("updateOrders", { orders: response.data });
     },
     async refreshFarmers({ commit }) {
       let response = await axios.get("/api/farmers");
-      console.log("got data:", response.data);
       commit("updateFarmers", response.data);
     },
     async fetchOrdersOfFarmer({ commit }, farmer_id) {
       let response = await axios.get(`/api/orders/byfarmer/${farmer_id}`);
-      console.log("got data:", response.data)
       commit("updateOrders", { orders: response.data, farmerID: farmer_id });
     },
     async logoutUser({ commit, dispatch }) {

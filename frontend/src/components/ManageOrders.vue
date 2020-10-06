@@ -93,7 +93,6 @@ export default {
       let fetchedOrders = store.state.ordersList.filter((o) => {
         return o.farmerID === this.$route.params.farmer_id;
       });
-      console.log("fetched", fetchedOrders);
       fetchedOrders.forEach((order) => {
         order.summary = order.products.map(p => `${p.name} ${p.packageSize}${p.packageUnit} (${p.quantity})`).join(", ");
       })

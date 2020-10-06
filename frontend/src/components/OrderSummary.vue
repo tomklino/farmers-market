@@ -76,7 +76,6 @@ export default {
       return store.state.loggedInUser.admin;
     },
     async completeOrder(orderID) {
-      console.log("will complete", orderID);
       this.isLoading = true;
       await store.dispatch("completeOrder", orderID);
       this.isLoading = false;

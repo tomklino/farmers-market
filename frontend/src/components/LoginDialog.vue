@@ -57,14 +57,12 @@ export default {
   },
   computed: {
     withGoogle() {
-      console.log("withGoogle:", store.state.loggedInUser.withGoogle);
       return store.state.loggedInUser.withGoogle;
     },
     loginString() {
       let loginString = this.isLoggedIn() ?
         store.state.loggedInUser.username :
         "Login"
-      console.log("login string is", loginString);
       return loginString
     },
     loginDialogOpened: {
@@ -91,10 +89,8 @@ export default {
   methods: {
     forceGoogleRerender() {
       this.googleComponentKey++;
-      console.log("force google to re-render", this.googleComponentKey);
     },
     async googleOnSuccess(googleUser) {
-      console.log("google success - signing in to farmers", googleUser);
       let id_token = googleUser.getAuthResponse().id_token;
       await axios.post("/users/google-signin", {
         id_token

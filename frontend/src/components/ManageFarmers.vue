@@ -71,7 +71,6 @@ export default {
       this.pendingDeletion = "";
       this.verifyDeletion = false;
       await axios.delete('/api/farmers/' + farmerToDelete);
-      console.log("deleted successfuly:", farmerToDelete);
       store.dispatch('refreshFarmers');
     },
     routeToFarmerOrders(farmerID) {

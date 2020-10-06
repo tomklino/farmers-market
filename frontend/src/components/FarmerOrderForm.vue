@@ -206,11 +206,9 @@ export default {
         products: this.farmer.products.filter(p => p.want),
         farmerID: this.farmer._id
       }
-      console.log(payload);
 
       this.isDisabled = true;
       let modifiedOrderResponse = await axios.post('/api/orders/modify', payload);
-      console.log("order modified:", modifiedOrderResponse);
       store.dispatch("appendUserOrder", modifiedOrderResponse.data);
       this.completedDialogOpened = true;
     },
@@ -247,7 +245,6 @@ export default {
       this.isDisabled = true;
       let newOrderResponse = await axios.post('/api/orders/new', payload);
       //TODO reflect error to user
-      console.log("order submitted:", newOrderResponse);
       store.dispatch("appendUserOrder", newOrderResponse.data);
       this.completedDialogOpened = true;
     }
@@ -290,7 +287,6 @@ export default {
   },
   watch: {
     async userOrders() {
-      console.log("watch for userOrders", this.userOrders);
       const foundOrder = this.userOrders.find(o => o.farmerID === this.$route.params.farmer_id);
       if(typeof foundOrder === 'object') {
         await store.dispatch('setDisplayedOrder', foundOrder._id);
@@ -304,7 +300,6 @@ export default {
       }
     },
     displayedOrder() {
-      console.log("displayedOrder watcher");
       if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.farmer._id !== 'undefined') {
         this.loadFromDisplayedOrder();
       } else {

@@ -30,10 +30,8 @@ export default {
   methods: {
     forceGoogleRerender() {
       this.googleComponentKey++;
-      console.log("force google to re-render", this.googleComponentKey);
     },
     async googleOnSuccess(googleUser) {
-      console.log("google success - signing in to farmers", googleUser);
       let id_token = googleUser.getAuthResponse().id_token;
       await axios.post("/users/google-signin", {
         id_token

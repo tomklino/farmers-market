@@ -234,19 +234,14 @@ export default {
         this.products.length > 0
     }
   },
-  mounted () {
-    console.log("STUB");
-  },
   methods: {
     async uploadImage(file) {
-      console.log("STUB", file);
       let response = await axios.post('/images/upload', file, {
         headers: {
           'Content-Type': file.type
         }
       });
       this.imageChoices.push(response.data.imageRelativeLink);
-      console.log("upload done. response:", response);
     },
     addProduce() {
       if(!this.produceValid) {
@@ -282,13 +277,11 @@ export default {
         products: this.products,
       }
       this.isDisabled = true;
-      let creationResponse = await axios.post('/api/farmers/new', payload);
-      console.log("created:", creationResponse);
+      await axios.post('/api/farmers/new', payload);
       this.createdDialogOpened = true;
     },
     selectPicture(img) {
       this.selectedPicture = img;
-      console.log(this.selectedPicture);
     }
   }
 }
