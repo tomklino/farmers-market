@@ -19,6 +19,22 @@ spec:
       containers:
       - image: farmersregistry.azurecr.io/farmers-server:0.5.0
         name: server
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 6
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 1
+          successThreshold: 1
         resources:
           requests:
             cpu: 100m
@@ -30,6 +46,8 @@ spec:
           - configMapRef:
               name: global-env-vars
         env:
+          - name: PORT
+            value: "3000"
           - name: GOOGLE_CLIENT_ID
             valueFrom:
               secretKeyRef:
