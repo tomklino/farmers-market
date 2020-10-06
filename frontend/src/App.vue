@@ -10,7 +10,7 @@
             <v-btn text>Create Farmer</v-btn></router-link>
           <router-link v-if="isAdmin()" to="/manage">
             <v-btn text>Manage Farmers</v-btn></router-link>
-          <router-link v-if="isLoggedIn()" to="/myorders">
+          <router-link to="/myorders">
             <v-btn text>My Orders</v-btn></router-link>
           <v-btn text
             @click="openLoginDialog"
@@ -38,9 +38,6 @@ export default {
     this.refreshLoggedInUser();
   },
   methods: {
-    isLoggedIn() {
-      return store.state.loggedInUser.loggedIn;
-    },
     isAdmin() {
       return store.state.loggedInUser.admin;
     },

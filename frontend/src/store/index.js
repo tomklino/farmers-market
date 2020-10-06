@@ -54,22 +54,18 @@ export default new Vuex.Store({
     displayedOrder(state, order) {
       state.displayedOrder = order;
     },
-    updateLoggedInUser(state, whoamiRespone) {
-      let newLoggedInUser = {}
-      if (typeof whoamiRespone.user === 'string') {
-        newLoggedInUser.loggedIn = true;
-        newLoggedInUser.username = whoamiRespone.user;
-        newLoggedInUser.email = typeof whoamiRespone.email === "string" ? whoamiRespone.email : "";
-        newLoggedInUser.admin = whoamiRespone.admin == "true";
-        newLoggedInUser.withGoogle = whoamiRespone.with_google == "true";
+    updateLoggedInUser(state, loggedInUser) {
+      if (loggedInUser.loggedIn) {
+        Vue.set(state, 'loggedInUser', loggedInUser)
       } else {
-        newLoggedInUser.loggedIn = false;
-        newLoggedInUser.username = "";
-        newLoggedInUser.email = "";
-        newLoggedInUser.admin = false;
-        newLoggedInUser.withGoogle = false;
+        Vue.set(state, 'loggedInUser', {
+          loggedIn: false,
+          username: "",
+          email: "",
+          admin: false,
+          withGoogle: false
+        });
       }
-      Vue.set(state, 'loggedInUser', newLoggedInUser);
     },
     markOrderCompleted(state, { orderID, isCompleted = "true" }) {
       state.ordersList.find(o => o._id === orderID).completed = isCompleted;
@@ -79,6 +75,23 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async clearUserOrders({ commit }) {
+      localStorage.removeItem("user_orders");
+      commit("setUserOrders", []);
+    },
+    async appendUserOrder({ dispatch }, orderJSON) {
+      const userOrdersItem = localStorage.getItem("user_orders");
+      const userOrders = userOrdersItem ? JSON.parse(userOrdersItem) : [];
+      const existingOrderIndex = userOrders.findIndex(o => o._id === orderJSON._id)
+      if(existingOrderIndex !== -1) {
+        // order exists - replacing entry
+        userOrders[existingOrderIndex] = orderJSON;
+      } else {
+        userOrders.push(orderJSON)
+      }
+      localStorage.setItem("user_orders", JSON.stringify(userOrders));
+      dispatch("loadUserOrders");
+    },
     async fetchUserOrders({ state }) {
       const { username } = state.loggedInUser;
       const params = { username };
@@ -96,8 +109,10 @@ export default new Vuex.Store({
       const orders = JSON.parse(ordersLocalItem);
       commit("setUserOrders", orders);
     },
-    async refreshUserOrders({ dispatch }) {
-      await dispatch("fetchUserOrders");
+    async refreshUserOrders({ state, dispatch }) {
+      if(state.loggedInUser.loggedIn) {
+        await dispatch("fetchUserOrders");
+      }
       await dispatch("loadUserOrders");
     },
     clearUserInfo({ commit }) {
@@ -207,16 +222,35 @@ export default new Vuex.Store({
       console.log("got data:", response.data)
       commit("updateOrders", { orders: response.data, farmerID: farmer_id });
     },
-    async refreshLoggedInUser({ commit, dispatch }) {
+    async logoutUser({ commit, dispatch }) {
+      localStorage.removeItem("logged_in_user");
+      dispatch("clearUserInfo");
+      dispatch("clearUserOrders");
+      commit("updateLoggedInUser", { loggedIn: false });
+    },
+    async loginUser({ commit }, whoamiResponeData ) {
+      const loggedInUser = {};
+      loggedInUser.loggedIn = true;
+      loggedInUser.username = whoamiResponeData.user;
+      loggedInUser.email = typeof whoamiResponeData.email === "string" ? whoamiResponeData.email : "";
+      loggedInUser.admin = whoamiResponeData.admin == "true";
+      loggedInUser.withGoogle = whoamiResponeData.with_google == "true";
+
+      localStorage.setItem("logged_in_user", JSON.stringify(loggedInUser));
+      commit("updateLoggedInUser", loggedInUser);
+    },
+    async refreshLoggedInUser({ dispatch }) {
+      const loggedInUserItem = localStorage.getItem("logged_in_user");
+      const loggedInUser = loggedInUserItem ? JSON.parse(loggedInUserItem) : {};
       try {
-        let response = await axios.get("/users/whoami");
-        console.log("got data:", response.data);
-        commit("updateLoggedInUser", response.data);
+        const response = await axios.get("/users/whoami");
+        dispatch("loginUser", response.data);
         await dispatch("fetchUserInfo");
-      } catch(e) {
-        if (e.response.status === 401) {
-          dispatch("clearUserInfo");
-          commit("updateLoggedInUser", "");
+      } catch(err) {
+        if (err.response.status === 401) {
+          if(loggedInUser.loggedIn) {
+            dispatch("logoutUser");
+          }
         }
       }
     }

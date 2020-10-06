@@ -118,7 +118,7 @@ router.post('/new', async function(req, res, next) {
       .then(() => debug("emailed successfully"))
       .catch((err) => debug("error trying to send email:", err));
   }
-  res.send("Done");
+  res.json(orderJSON);
 });
 
 router.post("/complete", async function(req, res, next) {

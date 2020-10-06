@@ -246,6 +246,7 @@ export default {
       let newOrderResponse = await axios.post('/api/orders/new', payload);
       //TODO reflect error to user
       console.log("order submitted:", newOrderResponse);
+      store.dispatch("appendUserOrder", newOrderResponse.data);
       this.completedDialogOpened = true;
     }
   },

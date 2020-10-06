@@ -7,6 +7,7 @@
       <OrderSummary />
     </v-dialog>
     <v-card max-width="450" min-width="260" class="mx-auto">
+      <h1 v-if="userOrders.length === 0" class="pa-3 grey--text text--lighten-1">You have no orders yet</h1>
       <v-list three-line>
         <v-list-item
           @click="displayOrderSummary(order._id)"
@@ -55,17 +56,13 @@ export default {
       }, 0);
     }
   },
-  mounted() {
-    if(this.loggedInUser.username.length > 0) {
-      store.dispatch("refreshUserOrders");
-    }
-  },
   computed: {
     ...mapState(['loggedInUser', 'userOrders'])
   },
   watch: {
-    loggedInUser() {
-      store.dispatch("refreshUserOrders");
+    loggedInUser: {
+      handler: () => { store.dispatch("refreshUserOrders") },
+      immediate: true
     }
   }
 }
