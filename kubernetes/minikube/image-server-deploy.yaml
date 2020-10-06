@@ -43,7 +43,8 @@ spec:
             name: images
       volumes:
         - name: images
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: farmers-images
         - name: image-server
           hostPath:
             path: /hosthome/tomk/workspace/farmers-market/image-server
