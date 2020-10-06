@@ -10,6 +10,10 @@ const port = config.get("port") || 3000;
 const server = express();
 server.use(express.json());
 
+server.get("/healthz", (req, res) => {
+  res.send("healthy");
+});
+
 server.post('*', async (req, res) => {
   const { templateName, data, destination } = req.body;
   console.log("email request for", destination);

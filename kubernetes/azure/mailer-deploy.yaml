@@ -17,8 +17,24 @@ spec:
         run: mailer
     spec:
       containers:
-      - image: farmersregistry.azurecr.io/farmers-mailer:0.1.0
+      - image: farmersregistry.azurecr.io/farmers-mailer:0.5.0
         name: mailer
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 6
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 10
+          failureThreshold: 1
+          successThreshold: 1
         resources:
           requests:
             cpu: 100m
