@@ -33,18 +33,20 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-    <v-card-actions class="justify-center"
-      v-if="isAdmin()"
-    >
+    <v-card-actions class="justify-center">
       <v-btn raised color="green"
+        v-if="isAdmin()"
         @click="completeOrder(order._id)"
         :disabled="isLoading || order.completed === 'true'"
         >{{ order.completed === "true" ? "Completed" : "Complete Order" }}</v-btn>
       <v-btn raised color="red"
-        v-if="order.completed === 'true'"
+        v-if="isAdmin() && order.completed === 'true'"
         :disabled="isLoading"
         @click="unCompleteOrder(order._id)"
         >Uncomplete</v-btn>
+      <router-link :to="{ name: 'OrderSummary', params: { order_id: order._id} }">
+        <v-btn raised color="green">Modify Order</v-btn>
+      </router-link>
     </v-card-actions>
   </v-card>
 </template>
