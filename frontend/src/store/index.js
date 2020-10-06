@@ -79,19 +79,26 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async refreshUserOrders({ commit, state }) {
+    async fetchUserOrders({ state }) {
       const { username } = state.loggedInUser;
       const params = { username };
-      console.log("refreshing user orders with params");
-      console.log(params);
       try {
         const response = await axios.get(`/api/orders/byuser`, { params });
         const orders = response.status === 204 ? [] : response.data['orders'];
-        commit("setUserOrders", orders);
+        localStorage.setItem("user_orders", JSON.stringify(orders));
       } catch (err) {
         //// TODO: reflect error to user
         console.log("error while trying to fetch user orders", err);
       }
+    },
+    loadUserOrders({ commit }) {
+      const ordersLocalItem = localStorage.getItem("user_orders") || "[]";
+      const orders = JSON.parse(ordersLocalItem);
+      commit("setUserOrders", orders);
+    },
+    async refreshUserOrders({ dispatch }) {
+      await dispatch("fetchUserOrders");
+      await dispatch("loadUserOrders");
     },
     clearUserInfo({ commit }) {
       localStorage.removeItem("user_info");
