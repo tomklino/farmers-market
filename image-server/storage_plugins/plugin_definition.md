@@ -1,6 +1,6 @@
 # Storage plugin defnition
 
-The plugin should return two functions:
+The plugin must return two functions:
 
 * getWritableStream()
 * getReadableStream(id)
