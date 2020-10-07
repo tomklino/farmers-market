@@ -19,85 +19,42 @@ module.exports = {
 
 async function validateFarmerID(farmerID) {
   const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) {
-    return err;
-  }
+  if(err) { throw err; }
 
-  return new Promise((resolve) => {
-    collection.findOne({ _id: farmerID }, (err, doc) => {
-      if(err) {
-        debug("error while trying to verify farmer");
-        resolve(err.toString());
-        return;
-      }
-      resolve(true);
-    });
-  });
+  return collection.findOne({ _id: farmerID });
 }
 
 async function findFarmers() {
   const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) {
-    return err;
-  }
+  if(err) { throw err; }
 
-  return new Promise((resolve) => {
-    collection.find({}).toArray((err, docs) => {
-      debug("Found the following records");
-      debug(docs)
-      resolve(docs);
-    });
-  });
+  return collection.find({}).toArray();
 }
 
 async function insertFarmer(farmerJSON) {
   const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) {
-    return err;
-  }
+  if(err) { throw err; }
 
-  return new Promise((resolve) => {
-    collection.insertOne(farmerJSON, (err, r) => {
-      debug("farmer inserted successfully", r);
-      resolve(err);
-    });
-  });
+  return collection.insertOne(farmerJSON);
 }
 
 async function deleteFarmer(id) {
   const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) {
-    return err;
-  }
+  if(err) { throw err; }
 
-  return new Promise((resolve) => {
-    collection.findOneAndDelete({ _id: new ObjectId(id) }, (err, r) => {
-      debug("farmer deleted", r);
-      resolve(err);
-    });
-  });
+  return collection.findOneAndDelete({ _id: new ObjectId(id) });
 }
 
 async function getFarmerImage(farmerID) {
   const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) {
-    return err;
+  if(err) { throw err; }
+
+  try {
+    const farmer = collection.findOne({ _id: new ObjectId(farmerID) });
+    return typeof farmer['image'] === 'string' ?
+      farmer['image'] :
+      new Error("IMAGE URI NOT FOUND");
+  } catch (err) {
+    throw err;
   }
-
-  return new Promise(async function(resolve, reject) {
-    collection.findOne({ _id: new ObjectId(farmerID) }, (err, result) => {
-      if(err) {
-        reject(err);
-        return;
-      }
-
-      if (typeof result['image'] !== 'string') {
-        reject(new Error("IMAGE URI NOT FOUND"));
-        return;
-      }
-
-      debug("found the following farmer image", result['image'])
-      resolve(result['image']);
-    });
-  });
 }
