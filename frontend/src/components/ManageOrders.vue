@@ -15,7 +15,7 @@
         ></v-divider>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
-          <OrderSummary />
+          <OrderSummary v-model="dialog"/>
         </v-dialog>
       </v-toolbar>
     </template>
