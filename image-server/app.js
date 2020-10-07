@@ -20,7 +20,7 @@ imageRouter.post('/upload', async(req, res) => {
   if(!req.is("image/*")) {
     let errorMessage = `the /upload destination was hit, but content-type is ${req.get("Content-Type")}`;
     console.log(errorMessage);
-    res.status("400").send(errorMessage);
+    res.status(415).send(errorMessage);
     return;
   }
 

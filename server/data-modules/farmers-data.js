@@ -14,14 +14,48 @@ module.exports = {
   findFarmers,
   insertFarmer,
   deleteFarmer,
-  getFarmerImage
+  getFarmerImage,
+  lockFarmerForOrders,
+  unlockFarmerForOrders,
+  isFarmerLockedForOrders
 }
+
+async function isFarmerLockedForOrders(farmerID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) { throw err; }
+
+  const farmer = await collection.findOne({ _id: new ObjectId(farmerID) });
+  console.log("farmer", farmer);
+  console.log("farmerlock is set to", farmer['orderLock'], typeof farmer['orderLock']);
+  return farmer['orderLock'] === "true";
+}
+
+async function lockFarmerForOrders(farmerID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) { throw err; }
+
+  return collection.updateOne(
+    { _id: new ObjectId(farmerID) },
+    { $set: { "orderLock": "true" }}
+  );
+}
+
+async function unlockFarmerForOrders(farmerID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) { throw err; }
+
+  return collection.updateOne(
+    { _id: new ObjectId(farmerID) },
+    { $set: { "orderLock": "false" }}
+  );
+}
+
 
 async function validateFarmerID(farmerID) {
   const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
   if(err) { throw err; }
 
-  return collection.findOne({ _id: farmerID });
+  return collection.findOne({ _id: new ObjectId(farmerID) });
 }
 
 async function findFarmers() {
@@ -50,7 +84,7 @@ async function getFarmerImage(farmerID) {
   if(err) { throw err; }
 
   try {
-    const farmer = collection.findOne({ _id: new ObjectId(farmerID) });
+    const farmer = await collection.findOne({ _id: new ObjectId(farmerID) });
     return typeof farmer['image'] === 'string' ?
       farmer['image'] :
       new Error("IMAGE URI NOT FOUND");

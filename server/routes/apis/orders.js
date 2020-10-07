@@ -55,32 +55,38 @@ router.get('/byuser', async function(req, res, next) {
 });
 
 router.post('/modify', async function(req, res, next) {
-  let payload = req.body;
-  debug("got a request to modify order", payload);
+  let orderJSON = req.body;
+  debug("got a request to modify order", orderJSON);
 
-  let [ validated, violations ] = await validateOrderJSON(payload);
+  let [ validated, violations ] = await validateOrderJSON(orderJSON);
   if(!validated) {
     debug("refusing to modify order - invalid payload");
-    res.status(400).send("invalid JSON: " + violations);
+    res.status(400).json({ message:"invalid JSON", violations });
     return;
   }
 
+  const locked = await farmersData.isFarmerLockedForOrders(orderJSON['farmerID']);
+  console.log("is locked?", locked);
+  if(locked) {
+    return res.status(423).json({ message: "not allowed. farmer locked for orders" })
+  }
+
   try {
-    await ordersData.modifyOrder(payload);
+    await ordersData.modifyOrder(orderJSON);
   } catch (err) {
     debug("encountered error while trying to modify order", err);
     return res.status(500).send("Internal Error");
   }
 
-  if(typeof payload.email === 'undefined') {
-    console.log("Warning: received an order with no email", payload);
+  if(typeof orderJSON.email === 'undefined') {
+    console.log("Warning: received an order with no email", orderJSON);
   } else {
-    emailOrder(payload, payload.email)
+    emailOrder(orderJSON, orderJSON.email)
       .then(() => debug("emailed successfully"))
       .catch((err) => debug("error trying to send email:", err));
   }
 
-  const modifiedOrder = await ordersData.findOrder(payload['orderID']);
+  const modifiedOrder = await ordersData.findOrder(orderJSON['orderID']);
   res.json(modifiedOrder);
 });
 
@@ -91,8 +97,12 @@ router.post('/new', async function(req, res, next) {
   let [ validated, violations ] = await validateOrderJSON(orderJSON);
   if(!validated) {
     debug("refusing to add an invalid order");
-    res.status(400).send("invalid JSON: " + violations);
-    return;
+    return res.status(400).json({ message: "invalid JSON", violations });
+  }
+
+  const locked = await farmersData.isFarmerLockedForOrders(orderJSON['farmerID']);
+  if(locked) {
+    return res.status(423).json({ message: "not allowed. farmer locked for orders" })
   }
 
   if(req.session['logged_in']) {

@@ -6,12 +6,38 @@ var router = express.Router();
 const ordersData = require('../../data-modules/orders-data');
 const farmersData = require('../../data-modules/farmers-data');
 
-router.get('/', async function(req, res, next) {
-  payload = await farmersData.findFarmers();
-  if(payload instanceof Error) {
+router.put('/lockorders/:id', async function(req, res) {
+  if(req.session['admin'] !== "true") {
+    return res.status(401).json({ message: "not allowed" });
+  }
+  if(typeof req.params['id'] !== "string") {
+    return res.status(400).json({ message: "farmer id not set correctly" });
+  }
+
+  try {
+    await farmersData.lockFarmerForOrders(req.params['id']);
+    return res.json({ message: "done" });
+  } catch (err) {
+    console.log("Error while trying to lock farmer for orders", err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
-  res.json(payload);
+});
+
+router.put('/unlockorders/:id', async function(req, res) {
+  if(req.session['admin'] !== "true") {
+    return res.status(401).json({ message: "not allowed" });
+  }
+  if(typeof req.params['id'] !== "string") {
+    return res.status(400).json({ message: "farmer id not set correctly" });
+  }
+
+  try {
+    await farmersData.unlockFarmerForOrders(req.params['id']);
+    return res.json({ message: "done" });
+  } catch (err) {
+    console.log("Error while trying to lock farmer for orders", err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 router.post('/new', async function(req, res, next) {
@@ -42,6 +68,14 @@ router.delete('/:id', async function(req, res, next) {
     return;
   }
   res.send("Done");
+});
+
+router.get('/', async function(req, res, next) {
+  payload = await farmersData.findFarmers();
+  if(payload instanceof Error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+  res.json(payload);
 });
 
 function validateFarmerJSON(farmerJSON) {

@@ -208,9 +208,17 @@ export default {
       }
 
       this.isDisabled = true;
-      let modifiedOrderResponse = await axios.post('/api/orders/modify', payload);
-      store.dispatch("appendUserOrder", modifiedOrderResponse.data);
-      this.completedDialogOpened = true;
+      try {
+        const modifiedOrderResponse = await axios.post('/api/orders/modify', payload);
+        store.dispatch("appendUserOrder", modifiedOrderResponse.data);
+        this.completedDialogOpened = true;
+      } catch (err) {
+        if(err.response.status === 423) {
+          console.log("farmer is locked for orders");
+        } else {
+          console.log("unknown error when trying to modify");
+        }
+      }
     },
     continueAsGuest() {
       this.offerLoginDialogOpened = false;
