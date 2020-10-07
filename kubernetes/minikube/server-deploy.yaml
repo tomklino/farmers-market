@@ -27,7 +27,7 @@ spec:
             cpu: 400m
             memory: 100Mi
         workingDir: /workspace
-        command: [ "npm", "start" ]
+        command: [ "npm", "run", "dev" ]
         envFrom:
           - configMapRef:
               name: global-env-vars
