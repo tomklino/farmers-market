@@ -1,10 +1,10 @@
 <template>
   <div id="user_orders">
     <v-dialog
-      max-width="420"
+      max-width="460"
       v-model="orderSummaryDialogOpened"
     >
-      <OrderSummary />
+      <OrderSummary v-model="orderSummaryDialogOpened" />
     </v-dialog>
     <v-card max-width="450" min-width="260" class="mx-auto">
       <h1 v-if="userOrders.length === 0" class="pa-3 grey--text text--lighten-1">You have no orders yet</h1>

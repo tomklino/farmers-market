@@ -28,25 +28,30 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-content class="text-left">
-          <v-list-item-title>{{ subTotal }}₪</v-list-item-title>
-          <v-list-item-subtitle>Subtotal</v-list-item-subtitle>
+          <v-list-item-title>{{ total }}₪</v-list-item-title>
+          <v-list-item-subtitle>Total</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
     <v-card-actions class="justify-center">
-      <v-btn raised color="green"
+      <router-link :to="{ name: 'OrderSummary', params: { order_id: order._id} }">
+        <v-btn class="ma-2" text color="orange">Modify Order<v-icon right>mdi-pencil</v-icon></v-btn>
+      </router-link>
+      <v-btn raised color="blue"
         v-if="isAdmin()"
         @click="completeOrder(order._id)"
         :disabled="isLoading || order.completed === 'true'"
-        >{{ order.completed === "true" ? "Completed" : "Complete Order" }}</v-btn>
+        >{{ order.completed === "true" ? "Executed" : "Execute Order" }}</v-btn>
       <v-btn raised color="red"
         v-if="isAdmin() && order.completed === 'true'"
         :disabled="isLoading"
         @click="unCompleteOrder(order._id)"
-        >Uncomplete</v-btn>
-      <router-link :to="{ name: 'OrderSummary', params: { order_id: order._id} }">
-        <v-btn raised color="green">Modify Order</v-btn>
-      </router-link>
+        >Undo Executed</v-btn>
+      <v-btn
+        @click="$emit('input', false)"
+        color="green"
+        class="grey--text text--darken-3"
+      >Close</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -63,7 +68,7 @@ export default {
     order() {
       return store.state.displayedOrder;
     },
-    subTotal() {
+    total() {
       let total = 0;
       for (let p of store.state.displayedOrder.products) {
         total += p.quantity * p.price
