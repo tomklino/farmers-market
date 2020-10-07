@@ -11,7 +11,7 @@
           <router-link v-if="isAdmin()" to="/manage">
             <v-btn text>Manage Farmers</v-btn></router-link>
           <router-link to="/myorders">
-            <v-btn text>My Orders</v-btn></router-link>
+            <v-btn class="ma-2" text>My Orders<v-icon right>mdi-basket-outline</v-icon></v-btn></router-link>
           <v-btn text
             @click="openLoginDialog"
           >{{ loginButtonString }}</v-btn>

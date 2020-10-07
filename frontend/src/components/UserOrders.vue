@@ -18,11 +18,20 @@
           <v-list-item-avatar>
             <v-img :src="order.farmerImage"></v-img>
           </v-list-item-avatar>
-          <v-list-item-content >
+          <v-list-item-content>
             <v-list-item-title>{{order.farmerName}}</v-list-item-title>
             <v-list-item-subtitle v-html="order.products.map(o => `${o.name}`).join(', ')"></v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>{{orderTotal(order)}}&#8362;</v-list-item-action>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon large>mdi-basket-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Total</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>{{allOrdersTotal}}&#8362;</v-list-item-action>
         </v-list-item>
       </v-list>
     </v-card>
@@ -57,7 +66,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['loggedInUser', 'userOrders'])
+    ...mapState(['loggedInUser', 'userOrders']),
+    allOrdersTotal() {
+      return this.userOrders.reduce((s, o) => s + this.orderTotal(o), 0);
+    }
   },
   watch: {
     loggedInUser: {
