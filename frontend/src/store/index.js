@@ -24,6 +24,10 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setFarmerLoading(state, { farmerID, isLoading }) {
+      let farmer = state.farmersList.find(f => f._id === farmerID);
+      Vue.set(farmer, "isLoading", isLoading);
+    },
     setLoadingDisplayedFarmer(state, isLoading) {
       state.loadingDisplayedFarmer = isLoading;
     },
@@ -87,6 +91,28 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async unlockOrders({ commit, dispatch }, farmerID) {
+      commit("setFarmerLoading", { farmerID, isLoading: true });
+      try {
+        await axios.put(`/api/farmers/unlockorders/${farmerID}`);
+        await dispatch('refreshFarmers');
+      } catch (err) {
+        // TODO reflect error to user
+      } finally {
+        commit("setFarmerLoading", { farmerID, isLoading: false });
+      }
+    },
+    async lockOrders({ commit, dispatch }, farmerID) {
+      commit("setFarmerLoading", { farmerID, isLoading: true });
+      try {
+        await axios.put(`/api/farmers/lockorders/${farmerID}`);
+        await dispatch('refreshFarmers');
+      } catch (err) {
+        // TODO reflect error to user
+      } finally {
+        commit("setFarmerLoading", { farmerID, isLoading: false });
+      }
+    },
     async clearUserOrders({ commit }) {
       localStorage.removeItem("user_orders");
       commit("setUserOrders", []);
@@ -221,15 +247,15 @@ export default new Vuex.Store({
       commit('displayedOrder', {});
     },
     async fetchOrder({ commit }, order_id) {
-      let response = await axios.get(`/api/orders/byid/${order_id}`);
+      const response = await axios.get(`/api/orders/byid/${order_id}`);
       commit("updateOrders", { orders: response.data });
     },
     async refreshFarmers({ commit }) {
-      let response = await axios.get("/api/farmers");
+      const response = await axios.get("/api/farmers");
       commit("updateFarmers", response.data);
     },
     async fetchOrdersOfFarmer({ commit }, farmer_id) {
-      let response = await axios.get(`/api/orders/byfarmer/${farmer_id}`);
+      const response = await axios.get(`/api/orders/byfarmer/${farmer_id}`);
       commit("updateOrders", { orders: response.data, farmerID: farmer_id });
     },
     async logoutUser({ commit, dispatch }) {

@@ -20,7 +20,8 @@
     >
       <v-list two-item>
         <v-list-item
-          v-for="farmer in farmers"
+          :class='farmer.isLoading ? "grey lighten-3" : ""'
+          v-for="farmer in farmersList"
           :key="farmer._id"
         >
 
@@ -40,6 +41,13 @@
                 v-on:click='requestDeletion(farmer._id)'
               >mdi-delete</v-icon>
             </v-btn>
+            <v-btn icon>
+              <v-icon
+                :color="farmer.orderLock === 'true' ? 'orange' : 'grey'"
+                v-on:click='lockButtonClicked(farmer._id)'>
+                {{ farmer.orderLock === 'true' ? "mdi-lock" : "mdi-lock-open-outline"}}
+              </v-icon>
+            </v-btn>
           </v-list-item-action>
         </v-list-item>
       </v-list>
@@ -49,6 +57,7 @@
 
 <script>
 import store from '@/store'
+import { mapState } from 'vuex';
 import axios from 'axios';
 
 export default {
@@ -58,14 +67,20 @@ export default {
     pendingDeletion: "",
   }),
   computed: {
-    farmers() {
-      return store.state.farmersList
-    }
+    ...mapState(['farmersList'])
   },
-  mounted () {
+  created() {
     store.dispatch('refreshFarmers');
   },
   methods: {
+    async lockButtonClicked(farmerID) {
+      console.log("farmer", this.farmersList.find(f => f._id === farmerID));
+      if(this.farmersList.find(f => f._id === farmerID).orderLock === "true") {
+        await store.dispatch('unlockOrders', farmerID)
+      } else {
+        await store.dispatch('lockOrders', farmerID);
+      }
+    },
     async performDeletion() {
       let farmerToDelete = this.pendingDeletion;
       this.pendingDeletion = "";

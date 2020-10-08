@@ -280,17 +280,17 @@ export default {
     ]),
     completeButtonDisabled() {
       return this.displayedFarmer.products.every(p => p.want !== true) ||
-             this.displayedFarmer.orderLock ||
-             this.displayedOrder.completed;
+             (this.displayedFarmer.orderLock === 'true') ||
+             (this.displayedOrder.completed === 'true');
     },
     modifyingFlag() {
       return Object.keys(this.displayedOrder).length !== 0;
     },
     completeButtonText() {
-      if(this.displayedFarmer.orderLock) {
+      if(this.displayedFarmer.orderLock === 'true') {
         return "closed for orders"
       }
-      if(this.displayedOrder.completed) {
+      if(this.displayedOrder.completed === 'true') {
         return "order delivered"
       }
       return this.modifyingFlag ? "modify order" : "complete order";
