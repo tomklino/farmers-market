@@ -19,6 +19,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+if(!isNaN(parseInt(process.env['SIMULATED_DELAY_MS']))) {
+  app.use('/', (req, res, next) => { setTimeout(next, process.env['SIMULATED_DELAY_MS']); });
+}
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter)

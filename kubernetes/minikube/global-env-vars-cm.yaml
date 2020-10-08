@@ -10,3 +10,4 @@ data:
   STATIC_HOST_URI: "https://farmersstatic.blob.core.windows.net"
   FEATURE_FLAG__EMAIL: "false"
   TEST: "YES"
+  SIMULATED_DELAY_MS: "600"
