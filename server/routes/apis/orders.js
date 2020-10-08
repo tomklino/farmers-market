@@ -66,9 +66,10 @@ router.post('/modify', async function(req, res, next) {
   }
 
   const locked = await farmersData.isFarmerLockedForOrders(orderJSON['farmerID']);
-  console.log("is locked?", locked);
-  if(locked) {
-    return res.status(423).json({ message: "not allowed. farmer locked for orders" })
+  const completed = await ordersData.isOrderComplete(orderJSON['orderID']);
+  if(locked || completed) {
+    const reason = completed ? "order has already been delivered" : "no more modifications allowed for this farmer";
+    return res.status(423).json({ message: `not allowed. ${reason}` })
   }
 
   try {

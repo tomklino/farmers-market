@@ -25,8 +25,6 @@ async function isFarmerLockedForOrders(farmerID) {
   if(err) { throw err; }
 
   const farmer = await collection.findOne({ _id: new ObjectId(farmerID) });
-  console.log("farmer", farmer);
-  console.log("farmerlock is set to", farmer['orderLock'], typeof farmer['orderLock']);
   return farmer['orderLock'] === "true";
 }
 

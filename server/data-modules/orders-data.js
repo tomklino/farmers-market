@@ -10,6 +10,7 @@ const {
 } = require('./mongo-constants');
 
 module.exports = {
+  isOrderComplete,
   completeOrder,
   unCompleteOrder,
   modifyOrder,
@@ -19,11 +20,17 @@ module.exports = {
   findOrdersByUser
 }
 
+async function isOrderComplete(orderID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) { throw err; }
+
+  const order = await collection.findOne({ _id: new ObjectId(orderID) });
+  return order['completed'] === "true";
+}
+
 async function completeOrder(orderID) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) {
-    throw err;
-  }
+  if(err) { throw err; }
 
   return collection.updateOne(
       { _id: ObjectId(orderID) },
@@ -32,9 +39,7 @@ async function completeOrder(orderID) {
 
 async function unCompleteOrder(orderID) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) {
-    throw err;
-  }
+  if(err) { throw err; }
 
   return collection.updateOne(
       { _id: ObjectId(orderID) },
@@ -43,9 +48,7 @@ async function unCompleteOrder(orderID) {
 
 async function modifyOrder(orderJSON) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) {
-    throw err;
-  }
+  if(err) { throw err; }
 
   return collection.updateOne(
       { _id: ObjectId(orderJSON.orderID) },
@@ -80,27 +83,21 @@ async function insertOrder(orderJSON) {
 
 async function findOrder(orderID) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) {
-    throw err;
-  }
+  if(err) { throw err; }
 
   return collection.findOne({ _id: new ObjectId(orderID) });
 }
 
 async function findOrders(farmerID) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) {
-    throw err;
-  }
+  if(err) { throw err; }
 
   return collection.find({ farmerID: farmerID }).toArray();
 }
 
 async function findOrdersByUser(username) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) {
-    throw err;
-  }
+  if(err) { throw err; }
 
   return collection.find({ created_by: username }).toArray();
 }
