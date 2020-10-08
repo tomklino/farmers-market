@@ -52,7 +52,7 @@ router.post('/new', async function(req, res, next) {
   let err = await farmersData.insertFarmer(payload);
   if (err instanceof Error) {
     debug("encountered error while trying to insert farmer", err);
-    res.status(500).json({ message: "Internal Error" });
+    res.status(500).json({ message: "Internal Server Error" });
     return;
   }
   res.send("Done");
@@ -64,7 +64,7 @@ router.delete('/:id', async function(req, res, next) {
   debug("requesting to delete", id);
   if (err) {
     debug("encountered an error while trying to delete farmer", err);
-    res.status(500).send("Internal Error");
+    res.status(500).json({ message: "Internal Server Error" });
     return;
   }
   res.send("Done");
