@@ -50,7 +50,7 @@ router.post('/new', async function(req, res, next) {
     return;
   }
   let err = await farmersData.insertFarmer(payload);
-  if (err) {
+  if (err instanceof Error) {
     debug("encountered error while trying to insert farmer", err);
     res.status(500).send("Internal Error");
     return;

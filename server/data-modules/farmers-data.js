@@ -50,7 +50,6 @@ async function unlockFarmerForOrders(farmerID) {
   );
 }
 
-
 async function validateFarmerID(farmerID) {
   const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
   if(err) { throw err; }
