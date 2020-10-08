@@ -13,7 +13,7 @@ export default {
   components: {
     FarmerOrderForm
   },
-  beforeMount() {
+  beforeCreate() {
     store.dispatch("setDisplayedFarmer", this.$route.params.farmer_id);
     store.dispatch("clearDisplayedOrder");
   }

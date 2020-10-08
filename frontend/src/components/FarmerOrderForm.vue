@@ -44,18 +44,18 @@
         <v-img
           class="white--text align-end"
           height="200px"
-          :src="farmer.image"
+          :src="displayedFarmer.image"
         >
-          <v-card-title>{{ farmer.name }}</v-card-title>
+          <v-card-title>{{ displayedFarmer.name }}</v-card-title>
         </v-img>
-        <v-card-title v-if="typeof farmer.products !== 'undefined'">{{ farmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
+        <v-card-title v-if="typeof displayedFarmer.products !== 'undefined'">{{ displayedFarmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
         <v-card-text>
           <v-form class="px-3" v-model="valid">
-            <v-row v-for="(produce, i) in farmer.products" :key="produce.name">
+            <v-row v-for="(produce, i) in displayedFarmer.products" :key="produce.name">
               <v-layout row wrap>
                 <v-flex xs12 md8>
                   <v-checkbox
-                    v-model="farmer.products[i].want"
+                    v-model="displayedFarmer.products[i].want"
                     @change="wantCheckboxChanged(i)"
                     :label="produceLabel(produce)"
                   ></v-checkbox>
@@ -69,8 +69,8 @@
                     </v-flex>
                     <v-flex xs6 md6>
                       <v-chip
-                      :color="farmer.products[i].quantity ? 'green' : 'light-grey'"
-                      class="ma-0">{{farmer.products[i].quantity || "0"}} x {{farmer.products[i].price}}&#8362;
+                      :color="displayedFarmer.products[i].quantity ? 'green' : 'light-grey'"
+                      class="ma-0">{{displayedFarmer.products[i].quantity || "0"}} x {{displayedFarmer.products[i].price}}&#8362;
                       </v-chip>
                     </v-flex>
                     <v-flex xs3 md3>
@@ -123,13 +123,15 @@ export default {
     OfferLogin
   },
   created() {
-    store.dispatch("refreshUserOrders")
-    store.dispatch("setDisplayedFarmer", this.$route.params.farmer_id);
+    store.dispatch("refreshUserOrders");
 
     let { loggedInUser } = store.state;
     if(loggedInUser.loggedIn && loggedInUser.email.length > 0) {
       this.email = loggedInUser.email;
     }
+  },
+  beforeDestroy() {
+    store.dispatch("clearDisplayedFarmer");
   },
   methods: {
     isLoggedIn() {
@@ -146,7 +148,7 @@ export default {
         email: order.email,
         phone: order.phone
       }
-      for(let product of this.farmer.products) {
+      for(let product of this.displayedFarmer.products) {
         let orderedProduct = order.products.find(orderedProduct => orderedProduct.name === product.name);
         if(typeof orderedProduct !== "undefined") {
           this.$set(product, "want", orderedProduct.want);
@@ -156,22 +158,22 @@ export default {
     },
     setProductQuantity(i, val) {
       //NOTE due to array reactivity caveats in vue, changes to array must be done via $set - or unexpected behaviour will occur
-      let product = this.farmer.products[i];
+      let product = this.displayedFarmer.products[i];
       product.quantity = val;
-      this.$set(this.farmer.products, i, product);
+      this.$set(this.displayedFarmer.products, i, product);
       this.quantityChanged(i);
     },
     quantityPlus(i) {
-      let quantity = Number.parseInt(this.farmer.products[i].quantity) || 0;
+      let quantity = Number.parseInt(this.displayedFarmer.products[i].quantity) || 0;
       this.setProductQuantity(i, quantity + 1);
     },
     quantityMinus(i) {
-      let quantity = Number.parseInt(this.farmer.products[i].quantity) || 0;
+      let quantity = Number.parseInt(this.displayedFarmer.products[i].quantity) || 0;
       this.setProductQuantity(i, Math.max(0, quantity - 1));
     },
     wantCheckboxChanged(i) {
-      if(this.farmer.products[i].want) { //ticked
-        let quantity = Number.parseFloat(this.farmer.products[i].quantity);
+      if(this.displayedFarmer.products[i].want) { //ticked
+        let quantity = Number.parseFloat(this.displayedFarmer.products[i].quantity);
         if(!Number.isInteger(quantity) || quantity <= 0) {
           this.setProductQuantity(i, 1);
         }
@@ -180,45 +182,21 @@ export default {
       }
     },
     quantityChanged(i) {
-      let quantity = Number.parseFloat(this.farmer.products[i].quantity);
+      let quantity = Number.parseFloat(this.displayedFarmer.products[i].quantity);
       if(!Number.isInteger(quantity)) {
-        this.farmer.products[i].quantity = Number.parseInt(this.farmer.products[i].quantity);
+        this.displayedFarmer.products[i].quantity = Number.parseInt(this.displayedFarmer.products[i].quantity);
       }
 
       if(quantity <= 0) {
         // NOTE bug in vuetify: this does not work when changing the value to negative using the arrows
-        this.farmer.products[i].quantity = 0;
-        this.farmer.products[i].want = false;
+        this.displayedFarmer.products[i].quantity = 0;
+        this.displayedFarmer.products[i].want = false;
       } else {
-        this.farmer.products[i].want = true;
+        this.displayedFarmer.products[i].want = true;
       }
     },
     routeToFarmers() {
       this.$router.push("/farmers");
-    },
-    async modifyOrder() {
-      const { name, email, phone } = this.userInfo;
-      //TODO make sure userInfo contains all the above before sending
-
-      let payload = {
-        orderID: this.displayedOrder._id,
-        name, email, phone,
-        products: this.farmer.products.filter(p => p.want),
-        farmerID: this.farmer._id
-      }
-
-      this.isDisabled = true;
-      try {
-        const modifiedOrderResponse = await axios.post('/api/orders/modify', payload);
-        store.dispatch("appendUserOrder", modifiedOrderResponse.data);
-        this.completedDialogOpened = true;
-      } catch (err) {
-        if(err.response.status === 423) {
-          console.log("farmer is locked for orders");
-        } else {
-          console.log("unknown error when trying to modify");
-        }
-      }
     },
     continueAsGuest() {
       this.offerLoginDialogOpened = false;
@@ -246,8 +224,8 @@ export default {
 
       let payload = {
         name, email, phone,
-        products: this.farmer.products.filter(p => p.want),
-        farmerID: this.farmer._id
+        products: this.displayedFarmer.products.filter(p => p.want),
+        farmerID: this.displayedFarmer._id
       }
 
       this.isDisabled = true;
@@ -255,6 +233,30 @@ export default {
       //TODO reflect error to user
       store.dispatch("appendUserOrder", newOrderResponse.data);
       this.completedDialogOpened = true;
+    },
+    async modifyOrder() {
+      const { name, email, phone } = this.userInfo;
+      //TODO make sure userInfo contains all the above before sending
+
+      let payload = {
+        orderID: this.displayedOrder._id,
+        name, email, phone,
+        products: this.displayedFarmer.products.filter(p => p.want),
+        farmerID: this.displayedFarmer._id
+      }
+
+      this.isDisabled = true;
+      try {
+        const modifiedOrderResponse = await axios.post('/api/orders/modify', payload);
+        store.dispatch("appendUserOrder", modifiedOrderResponse.data);
+        this.completedDialogOpened = true;
+      } catch (err) {
+        if(err.response.status === 423) {
+          console.log("farmer is locked for orders");
+        } else {
+          console.log("unknown error when trying to modify");
+        }
+      }
     }
   },
   data: () => ({
@@ -267,7 +269,7 @@ export default {
     quantity: 1,
   }),
   computed: {
-    ...mapState(['loggedInUser', 'userInfo', 'userOrders']),
+    ...mapState(['loggedInUser', 'userInfo', 'userOrders', 'displayedFarmer', 'displayedOrder']),
     userInfo: {
       get() {
         return store.state.userInfo;
@@ -277,20 +279,14 @@ export default {
       }
     },
     orderTotal() {
-      if(typeof this.farmer === 'undefined' || typeof this.farmer.products === 'undefined') {
+      if(typeof this.displayedFarmer === 'undefined' || typeof this.displayedFarmer.products === 'undefined') {
         return 0;
       }
       let sum = 0;
-      this.farmer.products.forEach((p) => {
+      this.displayedFarmer.products.forEach((p) => {
         sum += Number.parseFloat(p.price) * Number.parseInt(p.quantity || 0)
       });
       return sum;
-    },
-    displayedOrder() {
-      return store.state.displayedOrder;
-    },
-    farmer() {
-      return store.state.displayedFarmer;
     }
   },
   watch: {
@@ -308,14 +304,14 @@ export default {
       }
     },
     displayedOrder() {
-      if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.farmer._id !== 'undefined') {
+      if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.displayedFarmer._id !== 'undefined') {
         this.loadFromDisplayedOrder();
       } else {
         //TODO clear form
       }
     },
-    farmer() {
-      if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.farmer._id !== 'undefined') {
+    displayedFarmer() {
+      if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.displayedFarmer._id !== 'undefined') {
         this.loadFromDisplayedOrder();
       } else {
         //TODO clear form
