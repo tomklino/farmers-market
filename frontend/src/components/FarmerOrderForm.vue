@@ -97,6 +97,7 @@
 
             <v-btn
               large
+              :loading="completeButtonLoading"
               color="success"
               v-bind:disabled="completeButtonDisabled"
               @click="completeButtonClicked"
@@ -135,11 +136,13 @@ export default {
   },
   methods: {
     async completeButtonClicked() {
+      this.completeButtonLoading = true;
       if(this.modifyingFlag) {
         await this.modifyOrder();
       } else {
         await this.commitOrder();
       }
+      this.completeButtonLoading = false;
     },
     isLoggedIn() {
       return store.state.loggedInUser.loggedIn;
@@ -267,6 +270,7 @@ export default {
     }
   },
   data: () => ({
+    completeButtonLoading: false,
     offerLoginDialogOpened: false,
     userInfoDialogOpened: false,
     checkbox: false,
