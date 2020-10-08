@@ -37,7 +37,14 @@
       </v-card>
     </v-dialog>
     <v-container grid-list-md text-xs-center>
+      <v-skeleton-loader
+        v-if="Object.keys(displayedFarmer).length === 0"
+        class="mx-auto"
+        max-width="600"
+        type="card"
+      ></v-skeleton-loader>
       <v-card
+        v-else
         class="mx-auto"
         max-width="600"
         >
