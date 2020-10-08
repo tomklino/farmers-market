@@ -7,11 +7,14 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     displayedFarmer: {},
+    loadingDisplayedFarmer: false,
     displayedOrder: {},
+    loadingDisplayedOrder: false,
     farmersList: [],
     ordersList: [],
     userInfo: {},
     userOrders: [],
+    loadingUserOrders: false,
     loggedInUser: {
       loggedIn: false,
       username: "",
@@ -21,6 +24,15 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setLoadingDisplayedFarmer(state, isLoading) {
+      state.loadingDisplayedFarmer = isLoading;
+    },
+    setLoadingDisplayedOrder(state, isLoading) {
+      state.loadingDisplayedOrder = isLoading;
+    },
+    setLoadingUserOrders(state, isLoading) {
+      state.loadingUserOrders = isLoading;
+    },
     setUserOrders(state, orders) {
       state.userOrders = orders;
     },
@@ -109,11 +121,13 @@ export default new Vuex.Store({
       const orders = JSON.parse(ordersLocalItem);
       commit("setUserOrders", orders);
     },
-    async refreshUserOrders({ state, dispatch }) {
+    async refreshUserOrders({ commit, state, dispatch }) {
       if(state.loggedInUser.loggedIn) {
+        commit("setLoadingUserOrders", true);
         await dispatch("fetchUserOrders");
+        commit("setLoadingUserOrders", false)
       }
-      await dispatch("loadUserOrders");
+      dispatch("loadUserOrders");
     },
     clearUserInfo({ commit }) {
       localStorage.removeItem("user_info");
@@ -179,7 +193,9 @@ export default new Vuex.Store({
     async setDisplayedOrder({ commit, state, dispatch }, order_id) {
       let displayedOrder = state.ordersList.find(o => o._id === order_id);
       if(!displayedOrder) {
+        commit('setLoadingDisplayedOrder', true);
         await dispatch('fetchOrder', order_id);
+        commit('setLoadingDisplayedOrder', false);
         displayedOrder = state.ordersList.find(o => o._id === order_id);
       }
       if(displayedOrder) {
@@ -189,7 +205,9 @@ export default new Vuex.Store({
     async setDisplayedFarmer({ commit, state, dispatch }, farmer_id) {
       let displayedFarmer = state.farmersList.find(f => f._id === farmer_id);
       if(!displayedFarmer) {
+        commit('setLoadingDisplayedFarmer', true);
         await dispatch('refreshFarmers');
+        commit('setLoadingDisplayedFarmer', false);
         displayedFarmer = state.farmersList.find(f => f._id === farmer_id);
       }
       if(displayedFarmer) {

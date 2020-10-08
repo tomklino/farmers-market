@@ -38,7 +38,7 @@
     </v-dialog>
     <v-container grid-list-md text-xs-center>
       <v-skeleton-loader
-        v-if="Object.keys(displayedFarmer).length === 0"
+        v-if="loading"
         class="mx-auto"
         max-width="600"
         type="card"
@@ -276,7 +276,13 @@ export default {
     quantity: 1,
   }),
   computed: {
-    ...mapState(['loggedInUser', 'userInfo', 'userOrders', 'displayedFarmer', 'displayedOrder']),
+    ...mapState([
+      'loggedInUser', 'userInfo', 'userOrders', 'displayedFarmer', 'displayedOrder',
+    ]),
+    loading() {
+      let { loadingDisplayedFarmer, loadingDisplayedOrder, loadingUserOrders } = store.state;
+      return loadingDisplayedFarmer || loadingDisplayedOrder || loadingUserOrders;
+    },
     userInfo: {
       get() {
         return store.state.userInfo;
