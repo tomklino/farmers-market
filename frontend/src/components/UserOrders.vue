@@ -72,6 +72,11 @@ export default {
     }
   },
   watch: {
+    orderSummaryDialogOpened(newVal, oldVal) {
+      if(newVal === false && oldVal === true) {
+        store.dispatch("clearDisplayedOrder");
+      }
+    },
     loggedInUser: {
       handler: () => { store.dispatch("refreshUserOrders") },
       immediate: true
