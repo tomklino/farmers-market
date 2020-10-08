@@ -91,24 +91,16 @@
             </v-row>
             <v-layout row>
               <v-flex md12>
-                <v-chip large>Your order total is {{orderTotal}}&#8362;</v-chip>
+                <v-chip color="orange" large>Your order total is {{orderTotal}}&#8362;</v-chip>
               </v-flex>
             </v-layout>
 
             <v-btn
               large
               color="success"
-              v-bind:disabled="!valid || isDisabled"
-              v-if="typeof displayedOrder._id === 'undefined'"
-              @click="commitOrder"
-              >Complete Order</v-btn>
-            <v-btn
-              large
-              color="success"
-              v-bind:disabled="!valid || isDisabled"
-              v-if="typeof displayedOrder._id !== 'undefined'"
-              @click="modifyOrder"
-              >Modify Order</v-btn>
+              v-bind:disabled="completeButtonDisabled"
+              @click="completeButtonClicked"
+              >{{completeButtonText}}</v-btn>
           </v-form>
         </v-card-text>
       </v-card>
@@ -139,8 +131,16 @@ export default {
   },
   beforeDestroy() {
     store.dispatch("clearDisplayedFarmer");
+    store.dispatch("clearDisplayedOrder");
   },
   methods: {
+    async completeButtonClicked() {
+      if(this.modifyingFlag) {
+        await this.modifyOrder();
+      } else {
+        await this.commitOrder();
+      }
+    },
     isLoggedIn() {
       return store.state.loggedInUser.loggedIn;
     },
@@ -271,7 +271,6 @@ export default {
     userInfoDialogOpened: false,
     checkbox: false,
     completedDialogOpened: false,
-    isDisabled: false,
     valid: false,
     quantity: 1,
   }),
@@ -279,6 +278,23 @@ export default {
     ...mapState([
       'loggedInUser', 'userInfo', 'userOrders', 'displayedFarmer', 'displayedOrder',
     ]),
+    completeButtonDisabled() {
+      return this.displayedFarmer.products.every(p => p.want !== true) ||
+             this.displayedFarmer.orderLock ||
+             this.displayedOrder.completed;
+    },
+    modifyingFlag() {
+      return Object.keys(this.displayedOrder).length !== 0;
+    },
+    completeButtonText() {
+      if(this.displayedFarmer.orderLock) {
+        return "closed for orders"
+      }
+      if(this.displayedOrder.completed) {
+        return "order delivered"
+      }
+      return this.modifyingFlag ? "modify order" : "complete order";
+    },
     loading() {
       let { loadingDisplayedFarmer, loadingDisplayedOrder, loadingUserOrders } = store.state;
       return loadingDisplayedFarmer || loadingDisplayedOrder || loadingUserOrders;
