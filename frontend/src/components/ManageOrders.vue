@@ -44,8 +44,22 @@
         mdi-check-circle
       </v-icon>
     </template>
+    <template v-slot:body.append="{ headers, isMobile }">
+      <tr v-if="isMobile" class="v-data-table__mobile-table-row">
+        <td class="v-data-table__mobile-row">
+          <div class="v-data-table__mobile-row__header">Total</div>
+        </td>
+        <td v-for="header in headers.filter(h => isProductName(h.text))" :key="header.text" class="v-data-table__mobile-row">
+          <div class="v-data-table__mobile-row__header">{{header.text}}</div>
+          <div class="v-data-table__mobile-row__cell">{{totalOf(header.text)}}</div>
+        </td>
+      </tr>
+      <tr v-if="!isMobile">
+        <th v-for="header in headers" :key="header.text">{{header.text === "Name" ? "Total" : totalOf(header.text)}}</th>
+      </tr>
+    </template>
     <template v-slot:no-data>
-      <v-btn color="primary" >Reset</v-btn>
+      <v-btn color="primary">Reset</v-btn>
     </template>
   </v-data-table>
 </template>
@@ -53,6 +67,8 @@
 <script>
 import store from '@/store'
 import OrderSummary from '@/components/OrderSummary.vue'
+import { mapState } from 'vuex';
+
 
 function generateSlug(message) {
   const msgUint8 = new TextEncoder().encode(message);
@@ -72,6 +88,7 @@ export default {
     dialog: false
   }),
   computed: {
+    ...mapState(['displayedFarmer']),
     headers() {
       let headers = [
         {
@@ -119,10 +136,12 @@ export default {
       });
       fetchedOrders.forEach((order) => {
         ordersData.push({
+          _id: order._id,
           name: order.name,
           summary: order.products.map(p => `${p.name} ${p.packageSize}${p.packageUnit} (${p.quantity})`).join(", "),
           phone: order.phone,
           email: order.email,
+          completed: order.completed,
           organizedProducts: order.products.reduce((obj, p) => {
             obj[generateSlug(p.name)] = p;
             return obj;
@@ -133,6 +152,24 @@ export default {
     }
   },
   methods: {
+    isProductName(string) {
+      console.log(string, (this.displayedFarmer.products instanceof Array) &&
+          !!this.displayedFarmer.products.find(p => p.name === string));
+      return (this.displayedFarmer.products instanceof Array) &&
+          !!this.displayedFarmer.products.find(p => p.name === string);
+    },
+    totalOf(productName) {
+      if( !(this.displayedFarmer.products instanceof Array) ||
+          !this.displayedFarmer.products.find(p => p.name === productName)) {
+        return "-";
+      }
+      const productSlug = generateSlug(productName);
+      return this.ordersData.reduce((sum, o) => {
+        return o.organizedProducts[productSlug] ?
+          sum + o.organizedProducts[productSlug].quantity :
+          sum;
+      }, 0);
+    },
     openItem(item) {
       store.dispatch('setDisplayedOrder', item._id);
       this.dialog = true;
