@@ -2,6 +2,7 @@
   <v-data-table
     :headers="headers"
     :items="ordersData"
+    :search="search"
     sort-by="name"
     class="elevation-1"
   >
@@ -13,6 +14,11 @@
           inset
           vertical
         ></v-divider>
+        <v-text-field
+        v-model="search"
+        label="Search"
+        class="mx-4"
+        ></v-text-field>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <OrderSummary v-model="dialog"/>
@@ -85,7 +91,8 @@ export default {
     OrderSummary
   },
   data: () => ({
-    dialog: false
+    dialog: false,
+    search: ""
   }),
   computed: {
     ...mapState(['displayedFarmer']),
@@ -107,7 +114,9 @@ export default {
         },
         {
           text: "Summary",
-          value: "summary"
+          value: "summary",
+          filterable: false,
+          sortable: false
         }
       ]
       let displayedFarmer = store.state.displayedFarmer;
@@ -115,7 +124,8 @@ export default {
         displayedFarmer.products.forEach(p => {
           headers.push({
             text: p.name,
-            value: `organizedProducts[${generateSlug(p.name)}].quantity`
+            value: `organizedProducts[${generateSlug(p.name)}].quantity`,
+            filterable: false
           })
         });
       }
@@ -123,7 +133,8 @@ export default {
         {
           text: 'Actions',
           value: 'actions',
-          sortable: false
+          sortable: false,
+          filterable: false
         }
       )
       return headers;
