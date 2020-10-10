@@ -72,9 +72,6 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'OrderSummary',
-  beforeDestroy() {
-    store.dispatch("clearDisplayedOrder");
-  },
   computed: {
     ...mapState(['loggedInUser', 'displayedOrder']),
     total() {

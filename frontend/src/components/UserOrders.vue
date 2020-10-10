@@ -74,7 +74,8 @@ export default {
   watch: {
     orderSummaryDialogOpened(newVal, oldVal) {
       if(newVal === false && oldVal === true) {
-        store.dispatch("clearDisplayedOrder");
+        console.log("dialog closed, clearing order");
+        // store.dispatch("clearDisplayedOrder");
       }
     },
     loggedInUser: {

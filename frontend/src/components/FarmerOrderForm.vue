@@ -151,7 +151,7 @@ export default {
       return `${produce.name} [${produce.packageSize}${produce.packageUnit}]`
     },
     loadFromDisplayedOrder() {
-      let order = store.state.displayedOrder;
+      const order = store.state.displayedOrder;
 
       this.userInfo = {
         name: order.name,
@@ -283,7 +283,8 @@ export default {
       'loggedInUser', 'userInfo', 'userOrders', 'displayedFarmer', 'displayedOrder',
     ]),
     completeButtonDisabled() {
-      return this.displayedFarmer.products.every(p => p.want !== true) ||
+      return this.displayedFarmer.products instanceof Array &&
+             this.displayedFarmer.products.every(p => p.want !== true) ||
              (this.displayedFarmer.orderLock === 'true') ||
              (this.displayedOrder.completed === 'true');
     },
@@ -336,19 +337,25 @@ export default {
         this.email = loggedInUser.email;
       }
     },
-    displayedOrder() {
-      if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.displayedFarmer._id !== 'undefined') {
-        this.loadFromDisplayedOrder();
-      } else {
-        //TODO clear form
-      }
+    displayedOrder: {
+      handler() {
+        if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.displayedFarmer._id !== 'undefined') {
+          this.loadFromDisplayedOrder();
+        } else {
+          //TODO clear form
+        }
+      },
+      immediate: true
     },
-    displayedFarmer() {
-      if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.displayedFarmer._id !== 'undefined') {
-        this.loadFromDisplayedOrder();
-      } else {
-        //TODO clear form
-      }
+    displayedFarmer: {
+      handler() {
+        if(typeof store.state.displayedOrder._id !== 'undefined' && typeof this.displayedFarmer._id !== 'undefined') {
+          this.loadFromDisplayedOrder();
+        } else {
+          //TODO clear form
+        }
+      },
+      immediate: true
     }
   }
 }

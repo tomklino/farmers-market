@@ -6,6 +6,7 @@
 
 <script>
 import store from '@/store'
+import { mapState } from 'vuex';
 
 import FarmerOrderForm from '@/components/FarmerOrderForm.vue'
 
@@ -14,11 +15,23 @@ export default {
   components: {
     FarmerOrderForm
   },
-  async beforeCreate() {
-    await store.dispatch('setDisplayedOrder', this.$route.params.order_id);
-    let farmerID = store.state.displayedOrder.farmerID;
-    console.log("setting displayed farmer to", farmerID);
-    await store.dispatch('setDisplayedFarmer', farmerID);
+  beforeCreate() {
+    console.log("setting displayedOrder", this.$route.params.order_id);
+    store.dispatch('setDisplayedOrder', this.$route.params.order_id);
+  },
+  computed: {
+    ...mapState(['displayedOrder'])
+  },
+  watch: {
+    displayedOrder: {
+      handler() {
+        const farmerID = this.displayedOrder.farmerID;
+        if(typeof farmerID === "string") {
+          store.dispatch('setDisplayedFarmer', farmerID);
+        }
+      },
+      immediate: true
+    }
   }
 }
 </script>
