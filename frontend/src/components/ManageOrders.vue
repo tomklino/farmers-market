@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="orders"
+    :items="ordersData"
     sort-by="name"
     class="elevation-1"
   >
@@ -54,6 +54,13 @@
 import store from '@/store'
 import OrderSummary from '@/components/OrderSummary.vue'
 
+function generateSlug(message) {
+  const msgUint8 = new TextEncoder().encode(message);
+  const encodedArray = Array.from(msgUint8);
+  const hex = encodedArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hex;
+}
+
 // TODO add buttons to table to remove, or edit:
 // https://vuetifyjs.com/en/components/data-tables/#crud-actions
 export default {
@@ -62,41 +69,68 @@ export default {
     OrderSummary
   },
   data: () => ({
-    dialog: false,
-    headers: [
-      {
-        text: "Name",
-        align: "start",
-        sortable: true,
-        value: "name"
-      },
-      {
-        text: "Phone",
-        value: "phone",
-      },
-      {
-        text: "Summary",
-        value: "summary"
-      },
-      {
-        text: 'Actions',
-        value: 'actions',
-        sortable: false
-      }
-    ]
+    dialog: false
   }),
-  mounted () {
-    store.dispatch("fetchOrdersOfFarmer", this.$route.params.farmer_id);
-  },
   computed: {
-    orders() {
-      let fetchedOrders = store.state.ordersList.filter((o) => {
+    headers() {
+      let headers = [
+        {
+          text: "Name",
+          align: "start",
+          sortable: true,
+          value: "name"
+        },
+        {
+          text: "Phone",
+          value: "phone",
+        },
+        {
+          text: "Email",
+          value: "email"
+        },
+        {
+          text: "Summary",
+          value: "summary"
+        }
+      ]
+      let displayedFarmer = store.state.displayedFarmer;
+      if(displayedFarmer.products instanceof Array) {
+        displayedFarmer.products.forEach(p => {
+          const slug = generateSlug(p.name);
+          headers.push({
+            text: p.name,
+            value: `organizedProducts[${slug}].quantity`
+          })
+        });
+      }
+      headers.push(
+        {
+          text: 'Actions',
+          value: 'actions',
+          sortable: false
+        }
+      )
+      return headers;
+    },
+    ordersData() {
+      const ordersData = [];
+      // const totals = [];
+      const fetchedOrders = store.state.ordersList.filter((o) => {
         return o.farmerID === this.$route.params.farmer_id;
       });
       fetchedOrders.forEach((order) => {
-        order.summary = order.products.map(p => `${p.name} ${p.packageSize}${p.packageUnit} (${p.quantity})`).join(", ");
-      })
-      return fetchedOrders;
+        ordersData.push({
+          name: order.name,
+          summary: order.products.map(p => `${p.name} ${p.packageSize}${p.packageUnit} (${p.quantity})`).join(", "),
+          phone: order.phone,
+          email: order.email,
+          organizedProducts: order.products.reduce((obj, p) => {
+            obj[generateSlug(p.name)] = p;
+            return obj;
+          }, {})
+        })
+      });
+      return ordersData;
     }
   },
   methods: {
