@@ -8,17 +8,21 @@
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
-        <v-toolbar-title>Orders</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
         <v-text-field
         v-model="search"
         label="Search"
         class="mx-4"
         ></v-text-field>
+        <v-switch
+          v-model="summarize"
+          label="Summarize"
+          class="pa-3"
+        ></v-switch>
+        <v-switch
+          v-model="hideFinished"
+          label="Hide Finished"
+          class="pa-3"
+        ></v-switch>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <OrderSummary v-model="dialog"/>
@@ -50,10 +54,11 @@
         mdi-check-circle
       </v-icon>
     </template>
-    <template v-slot:body.append="{ headers, isMobile }">
+    <template v-slot:body.append="{ headers, isMobile, pagination }">
       <tr v-if="isMobile" class="v-data-table__mobile-table-row">
         <td class="v-data-table__mobile-row">
           <div class="v-data-table__mobile-row__header">Total</div>
+          <div class="v-data-table__mobile-row__cell">{{pagination.itemsLength}}</div>
         </td>
         <td v-for="header in headers.filter(h => isProductName(h.text))" :key="header.text" class="v-data-table__mobile-row">
           <div class="v-data-table__mobile-row__header">{{header.text}}</div>
@@ -92,7 +97,9 @@ export default {
   },
   data: () => ({
     dialog: false,
-    search: ""
+    search: "",
+    summarize: false,
+    hideFinished: true
   }),
   computed: {
     ...mapState(['displayedFarmer']),
@@ -103,31 +110,36 @@ export default {
           align: "start",
           sortable: true,
           value: "name"
-        },
-        {
-          text: "Phone",
-          value: "phone",
-        },
-        {
-          text: "Email",
-          value: "email"
-        },
-        {
+        }
+      ]
+      if(this.summarize) {
+        headers.push({
           text: "Summary",
           value: "summary",
           filterable: false,
           sortable: false
-        }
-      ]
-      let displayedFarmer = store.state.displayedFarmer;
-      if(displayedFarmer.products instanceof Array) {
-        displayedFarmer.products.forEach(p => {
-          headers.push({
-            text: p.name,
-            value: `organizedProducts[${generateSlug(p.name)}].quantity`,
-            filterable: false
-          })
         });
+      } else {
+        headers.push(
+          {
+            text: "Phone",
+            value: "phone",
+          },
+          {
+            text: "Email",
+            value: "email"
+          }
+        )
+        let displayedFarmer = store.state.displayedFarmer;
+        if(displayedFarmer.products instanceof Array) {
+          displayedFarmer.products.forEach(p => {
+            headers.push({
+              text: p.name,
+              value: `organizedProducts[${generateSlug(p.name)}].quantity`,
+              filterable: false
+            })
+          });
+        }
       }
       headers.push(
         {
@@ -142,10 +154,11 @@ export default {
     ordersData() {
       const ordersData = [];
       // const totals = [];
-      const fetchedOrders = store.state.ordersList.filter((o) => {
-        return o.farmerID === this.$route.params.farmer_id;
+      const orders = store.state.ordersList.filter((o) => {
+        return o.farmerID === this.$route.params.farmer_id &&
+          (!this.hideFinished || o.completed !== "true");
       });
-      fetchedOrders.forEach((order) => {
+      orders.forEach((order) => {
         ordersData.push({
           _id: order._id,
           name: order.name,
@@ -164,8 +177,6 @@ export default {
   },
   methods: {
     isProductName(string) {
-      console.log(string, (this.displayedFarmer.products instanceof Array) &&
-          !!this.displayedFarmer.products.find(p => p.name === string));
       return (this.displayedFarmer.products instanceof Array) &&
           !!this.displayedFarmer.products.find(p => p.name === string);
     },
@@ -175,7 +186,8 @@ export default {
         return "-";
       }
       const productSlug = generateSlug(productName);
-      return this.ordersData.reduce((sum, o) => {
+      return this.ordersData.filter(o => !this.hideFinished || o.completed !== "true")
+        .reduce((sum, o) => {
         return o.organizedProducts[productSlug] ?
           sum + o.organizedProducts[productSlug].quantity :
           sum;
