@@ -96,10 +96,9 @@ export default {
       let displayedFarmer = store.state.displayedFarmer;
       if(displayedFarmer.products instanceof Array) {
         displayedFarmer.products.forEach(p => {
-          const slug = generateSlug(p.name);
           headers.push({
             text: p.name,
-            value: `organizedProducts[${slug}].quantity`
+            value: `organizedProducts[${generateSlug(p.name)}].quantity`
           })
         });
       }
