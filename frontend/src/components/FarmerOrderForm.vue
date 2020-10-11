@@ -77,7 +77,7 @@
                     <v-flex xs6 md6>
                       <v-chip
                       :color="displayedFarmer.products[i].quantity ? 'green' : 'light-grey'"
-                      class="ma-0">{{displayedFarmer.products[i].quantity || "0"}} x {{displayedFarmer.products[i].price}}&#8362;
+                      class="ma-0 ltr">{{displayedFarmer.products[i].quantity || "0"}} x {{displayedFarmer.products[i].price}}&#8362;
                       </v-chip>
                     </v-flex>
                     <v-flex xs3 md3>
@@ -293,12 +293,12 @@ export default {
     },
     completeButtonText() {
       if(this.displayedFarmer.orderLock === 'true') {
-        return "closed for orders"
+        return this.$t('closed_for_orders');
       }
       if(this.displayedOrder.completed === 'true') {
-        return "order delivered"
+        return this.$t('order_delivered');
       }
-      return this.modifyingFlag ? "modify order" : "complete order";
+      return this.modifyingFlag ? this.$t('modify_order') : this.$t('complete_order');
     },
     loading() {
       let { loadingDisplayedFarmer, loadingDisplayedOrder, loadingUserOrders } = store.state;
@@ -360,3 +360,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+</style>

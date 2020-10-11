@@ -8,5 +8,9 @@
   "your_order_total": "Your order total is",
   "order_minimum": "Order Minimum",
   "area": "Area",
+  "complete_order": "Complete Order",
+  "modify_order": "Modify Order",
+  "order_delivered": "Order Delivered",
+  "closed_for_orders": "Closed for orders",
   "submit": "Submit"
 }

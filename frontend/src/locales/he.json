@@ -8,5 +8,9 @@
   "your_order_total": "סכום כולל להזמנה",
   "order_minimum": "מינימום הזמנות",
   "area": "איזור חלוקה",
+  "complete_order": "בצע הזמנה",
+  "modify_order": "שנה הזמנה",
+  "order_delivered": "ההזמנה הושלמה",
+  "closed_for_orders": "סגור להזמנות",
   "Submit": "אישור"
 }
