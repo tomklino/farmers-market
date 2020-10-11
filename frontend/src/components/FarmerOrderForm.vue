@@ -91,7 +91,7 @@
             </v-row>
             <v-layout row>
               <v-flex md12>
-                <v-chip color="orange" large>Your order total is {{orderTotal}}&#8362;</v-chip>
+                <v-chip color="orange" large>{{ $t('your_order_total') }} {{orderTotal}}&#8362;</v-chip>
               </v-flex>
             </v-layout>
 

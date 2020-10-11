@@ -1,3 +1,12 @@
 {
-  "message": "hello i18n !!"
+  "farmers": "Farmers",
+  "create_new_farmer": "create farmer",
+  "manage_farmers": "manage farmers",
+  "my_orders": "my orders",
+  "login": "Login",
+  "logout": "Logout",
+  "your_order_total": "Your order total is",
+  "order_minimum": "Order Minimum",
+  "area": "Area",
+  "submit": "Submit"
 }

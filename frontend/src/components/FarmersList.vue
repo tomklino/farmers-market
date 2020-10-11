@@ -18,10 +18,10 @@
 
             <v-card-subtitle class="pb-0">{{ farmer.produce }}</v-card-subtitle>
 
-            <v-card-text class="text--primary">
-              <div>Order Minimum: {{ farmer.orderMinimum }}</div>
+            <v-card-text rtl class="text--primary">
+              <div>{{ $t('order_minimum') }}: {{ farmer.orderMinimum }}</div>
 
-              <div>Area: {{ farmer.shipmentArea }}</div>
+              <div class="rtl">{{ $t('area') }}: {{ farmer.shipmentArea }}</div>
             </v-card-text>
           </v-card>
         </router-link>
@@ -49,5 +49,9 @@ export default {
 <style scoped>
 * {
     text-decoration: none;
+}
+
+.rtl {
+  direction: rtl;
 }
 </style>

@@ -4,14 +4,15 @@
       <LoginDialog v-model="loginDialogOpened" />
       <div id="nav">
         <v-toolbar dark color="orange">
-          <router-link class="title" to="/"><v-toolbar-title class="title">Farmers</v-toolbar-title></router-link>
+          <router-link class="title" to="/"><v-toolbar-title class="title">{{ $t('farmers') }}</v-toolbar-title></router-link>
+          <v-btn class="ma-2" text @click="switchLanguage()">עברית/english</v-btn>
           <v-spacer></v-spacer>
           <router-link v-if="isAdmin()" to="/new/farmer">
-            <v-btn text>Create Farmer</v-btn></router-link>
+            <v-btn text>{{ $t('create_new_farmer') }}</v-btn></router-link>
           <router-link v-if="isAdmin()" to="/manage">
-            <v-btn text>Manage Farmers</v-btn></router-link>
+            <v-btn text>{{ $t('manage_farmers') }}</v-btn></router-link>
           <router-link to="/myorders">
-            <v-btn class="ma-2" text>My Orders<v-icon right>mdi-basket-outline</v-icon></v-btn></router-link>
+            <v-btn class="ma-2" text>{{ $t('my_orders') }}<v-icon right>mdi-basket-outline</v-icon></v-btn></router-link>
           <v-btn text
             @click="openLoginDialog"
           >{{ loginButtonString }}</v-btn>
@@ -38,6 +39,10 @@ export default {
     this.refreshLoggedInUser();
   },
   methods: {
+    switchLanguage() {
+      this.$vuetify.rtl = !this.$vuetify.rtl;
+      this.$i18n.locale = this.$i18n.locale === 'en' ? 'he' : 'en';
+    },
     isAdmin() {
       return store.state.loggedInUser.admin;
     },
@@ -55,7 +60,7 @@ export default {
   },
   computed: {
     loginButtonString() {
-      return !store.state.loggedInUser.loggedIn ? "Login" :
+      return !store.state.loggedInUser.loggedIn ? this.$t('login') :
         store.state.loggedInUser.username;
     }
   },

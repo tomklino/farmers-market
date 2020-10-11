@@ -30,12 +30,12 @@
         <v-btn large color="green"
           v-if="!isLoggedIn()"
           @click="login"
-          >Submit
+          >{{ $t('login') }}
         </v-btn>
         <v-btn large color="grey"
           v-if="isLoggedIn()"
           @click="logout">
-          Logout
+          {{ $t('logout') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -62,7 +62,7 @@ export default {
     loginString() {
       let loginString = this.isLoggedIn() ?
         store.state.loggedInUser.username :
-        "Login"
+        this.$t("login");
       return loginString
     },
     loginDialogOpened: {
