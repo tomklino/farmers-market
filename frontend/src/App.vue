@@ -40,8 +40,8 @@ export default {
   },
   methods: {
     switchLanguage() {
-      this.$vuetify.rtl = !this.$vuetify.rtl;
       this.$i18n.locale = this.$i18n.locale === 'en' ? 'he' : 'en';
+      this.$vuetify.rtl = this.$i18n.locale === 'he';
     },
     isAdmin() {
       return store.state.loggedInUser.admin;
