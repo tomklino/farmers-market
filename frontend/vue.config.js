@@ -7,7 +7,17 @@ module.exports = {
       "poll": 1000
     },
   },
+
   "transpileDependencies": [
     "vuetify"
-  ]
+  ],
+
+  pluginOptions: {
+    i18n: {
+      locale: 'en',
+      fallbackLocale: 'en',
+      localeDir: 'locales',
+      enableInSFC: false
+    }
+  }
 }
