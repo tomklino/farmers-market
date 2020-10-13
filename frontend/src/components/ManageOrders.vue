@@ -10,17 +10,17 @@
       <v-toolbar flat color="white">
         <v-text-field
         v-model="search"
-        label="Search"
+        :label="$t('search')"
         class="mx-4"
         ></v-text-field>
         <v-switch
           v-model="summarize"
-          label="Summarize"
+          :label="$t('summarize')"
           class="pa-3"
         ></v-switch>
         <v-switch
           v-model="hideFinished"
-          label="Hide Finished"
+          :label="$t('hide_finished')"
           class="pa-3"
         ></v-switch>
         <v-spacer></v-spacer>
@@ -106,7 +106,7 @@ export default {
     headers() {
       let headers = [
         {
-          text: "Name",
+          text: this.$t('name'),
           align: "start",
           sortable: true,
           value: "name"
@@ -114,7 +114,7 @@ export default {
       ]
       if(this.summarize) {
         headers.push({
-          text: "Summary",
+          text: this.$t('summary'),
           value: "summary",
           filterable: false,
           sortable: false
@@ -122,11 +122,11 @@ export default {
       } else {
         headers.push(
           {
-            text: "Phone",
+            text: this.$t('phone'),
             value: "phone",
           },
           {
-            text: "Email",
+            text: this.$t('email'),
             value: "email"
           }
         )
@@ -143,7 +143,7 @@ export default {
       }
       headers.push(
         {
-          text: 'Actions',
+          text: this.$t('actions'),
           value: 'actions',
           sortable: false,
           filterable: false

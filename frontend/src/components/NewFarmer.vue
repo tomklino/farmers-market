@@ -5,7 +5,7 @@
       width="500"
     >
       <v-card>
-        <v-card-title>Success!</v-card-title>
+        <v-card-title>{{ $t('success') }}</v-card-title>
       </v-card>
     </v-dialog>
 
@@ -14,7 +14,7 @@
       width="500"
     >
       <v-card>
-        <v-card-title>Add a produce to sell</v-card-title>
+        <v-card-title>{{ $t('add_a_produce_to_sell') }}</v-card-title>
         <v-container grid-list-md text-xs-center>
           <v-form v-model="produceValid">
 
@@ -25,29 +25,29 @@
                     v-model="produceName"
                     :rules="produceNameRules"
                     :disabled="isDisabled"
-                    label="Name"
+                    :label="$t('produce_name')"
                   />
                 </v-col>
                 <v-col md="3">
                   <v-text-field
                     v-model="packageSize"
                     :disabled="isDisabled"
-                    label="Package Size"
+                    :label="$t('package_size')"
                     type="number"
                   />
                 </v-col>
-                <v-col md="2">
+                <v-col md="3">
                   <v-select
                     v-model="packageUnit"
                     :items="units"
                     :disabled="isDisabled"
-                    label="Unit"
+                    :label="$t('unit_size')"
                   ></v-select>
                 </v-col>
                 <v-col md="4">
                   <v-text-field
                     v-model="price"
-                    label="Price"
+                    :label="$t('price')"
                     :rules="priceRules"
                     :disabled="isDisabled"
                     hint="₪"
@@ -61,17 +61,19 @@
         </v-container>
         <v-card-actions>
           <v-btn
+            class="ma-3"
             color="green"
             @click="addProduce()"
           >
-            Add
+            {{ $t('add') }}
           </v-btn>
-
+          <v-spacer></v-spacer>
           <v-btn
-            color="grey"
+            class="ma-3"
+            color="grey lighten-2"
             @click="newProduceDialogOpened = false"
           >
-            Cancel
+            {{ $t('cancel') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -85,7 +87,7 @@
                 v-model="name"
                 :rules="nameRules"
                 :disabled="isDisabled"
-                label="Name"
+                :label="$t('name')"
                 required
               ></v-text-field>
             </v-row>
@@ -98,7 +100,7 @@
                 :disabled="isDisabled"
                 hide-selected
                 deletable-chips
-                label="Area"
+                :label="$t('area')"
               >
 
               </v-combobox>
@@ -107,22 +109,21 @@
               <v-text-field
                 v-model="minimumOrders"
                 :disabled="isDisabled"
-                label="Minimum Orders"
+                :label="$t('order_minimum')"
                 type="number"
               />
             </v-row>
 
             <v-row>
-              <v-container class="with-rounded-border">
-                <v-row>Products</v-row>
+              <v-container>
                 <v-row>
                   <v-col
                     class="d-flex justify-start"
                   >
-                    <v-btn class="mx-2" fab dark small color="indigo"
+                    <v-btn class="mx-2" rounded dark color="indigo"
                       @click="newProduceDialogOpened = true"
                     >
-                      <v-icon dark>mdi-plus</v-icon>
+                      <v-icon dark>mdi-plus</v-icon>{{ $t('product') }}
                     </v-btn>
                   </v-col>
                   <v-col
@@ -143,7 +144,7 @@
             </v-row>
 
             <v-row>
-              <v-file-input accept="image/*" label="Upload an image" @change="uploadImage"></v-file-input>
+              <v-file-input accept="image/*" :label="$t('upload_an_image')" @change="uploadImage"></v-file-input>
               <v-layout row wrap>
                 <v-flex xs3 v-for="image in imageChoices"
                   v-bind:key="image"
@@ -162,7 +163,7 @@
           <v-flex xs6>
             <v-row justify="center">
               <v-card>
-                <v-card-title>When can you arrive?</v-card-title>
+                <v-card-title>{{ $t('when_can_you_arrive') }}</v-card-title>
                 <v-date-picker
                   v-model="arrivalDates"
                   :disabled="isDisabled"
@@ -176,10 +177,11 @@
         <v-btn
           large
           color="success"
+          class="ma-3"
           v-bind:disabled="!complete || isDisabled"
           v-on:click="create"
           >
-          Create
+          {{ $t('create_new_farmer__button') }}
         </v-btn>
       </v-container>
     </v-form>
@@ -198,35 +200,58 @@ export default {
 
     createdDialogOpened: false,
     isDisabled: false,
-    commonProduce: [ "Strawberries", "Kiwis", "Mangos", "Pineapples" ],
+    commonProduce: [ "Strawberries", "Kiwis", "Mangos", "Pineapples" ], // TODO this should be queried from server
     imageChoices: [],
     selectedPicture: "",
-    units: [ "Kg", "gr", "unit" ],
     minimumOrders: 20,
     produce: "",
     produceName: "",
-    produceNameRules: [
-      v => !!v || 'Produce is required',
-    ],
     area: "",
-    areaOptions: [ "Haruzim" ],
-    areaRules: [
-      v => !!v || 'Area is required',
-    ],
+    areaOptions: [ "חרוזים" ], // TODO should be queried from server
     price: 50,
-    priceRules: [
-      v => v > 0 || 'Price has to be set',
-    ],
     packageSize: 1,
     packageUnit: "Kg",
     arrivalDates: [],
     name: '',
-    nameRules: [
-      v => !!v || 'Name is required',
-    ],
     valid: false
   }),
   computed: {
+    units() {
+      return [
+        {
+          text: this.$t("kg"),
+          value: "Kg"
+        },
+        {
+          text: this.$t("gr"),
+          value: "gr"
+        },
+        {
+          text: this.$t("unit"),
+          value: "unit"
+        }
+      ]
+    },
+    produceNameRules() {
+      return [
+        v => !!v || this.$t('produce_name_is_required'),
+      ]
+    },
+    priceRules() {
+      return [
+        v => v > 0 || this.$t('price_is_required'),
+      ]
+    },
+    areaRules() {
+      return [
+        v => !!v || this.$t('area_is_required'),
+      ]
+    },
+    nameRules() {
+      return [
+        v => !!v || this.$t('name_is_required'),
+      ]
+    },
     complete() {
       return this.valid &&
         this.selectedPicture &&
@@ -254,7 +279,7 @@ export default {
 
       let produce = { name, packageSize, packageUnit, price };
 
-      produce.text = `${name} - ${packageSize}${packageUnit} - ${price}&#8362;`
+      produce.text = `${name} - ${packageSize}${packageUnit} - ${price}₪`
       this.products.push(produce);
 
       //clear and close dialog
