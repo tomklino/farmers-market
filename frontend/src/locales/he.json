@@ -20,5 +20,18 @@
   "name_is_required": "יש למלא שם",
   "phone_is_required": "יש למלא מספר טלפון",
   "email_is_required": "יש למלא כתובת אימייל",
-  "email_is_invalid": "כתובת אימייל אינה תקינה"
+  "email_is_invalid": "כתובת אימייל אינה תקינה",
+  "success": "הצלחה!",
+  "back_to_farmers_page": "חזור לעמוד החקלאים",
+  "you_have_no_orders_yet": "אין לך עדיין הזמנות",
+  "total": "סה\"כ",
+  "order_summary": "סיכום הזמנה",
+  "name": "שם",
+  "phone": "טלפון",
+  "close": "סגור",
+  "undo_execute": "בטל הזמנה בוצעה",
+  "executed": "הזמנה בוצעה",
+  "execute_order": "בצע הזמנה",
+  "cancel": "בטל",
+  "are_you_sure_you_want_to_delete": "בטוח למחוק?"
 }

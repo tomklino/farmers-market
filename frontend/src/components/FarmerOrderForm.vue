@@ -26,13 +26,13 @@
       width="500"
     >
       <v-card>
-        <v-card-title>Success!</v-card-title>
+        <v-card-title>{{ $t('success') }}</v-card-title>
         <v-card-actions>
           <v-btn
             text
             color="orange"
             @click="routeToFarmers"
-            >Back To Farmers Page</v-btn>
+            >{{ $t('back_to_farmers_page') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

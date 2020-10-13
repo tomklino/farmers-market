@@ -12,55 +12,55 @@
       class="mx-auto"
       width="100%"
       >
-      <v-card-title>Order Summary</v-card-title>
+      <v-card-title>{{ $t('order_summary') }}</v-card-title>
       <v-list two-line>
         <v-list-item>
-          <v-list-item-content class="text-left">
+          <v-list-item-content class="text-start">
             <v-list-item-title>{{ displayedOrder.name }}</v-list-item-title>
-            <v-list-item-subtitle>Name</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ $t('name') }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-list-item>
-          <v-list-item-content class="text-left">
+          <v-list-item-content class="text-start">
             <v-list-item-title>{{ displayedOrder.phone }}</v-list-item-title>
-            <v-list-item-subtitle>Phone</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ $t('phone') }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
       <v-list v-if="displayedOrder.products" two-line>
         <v-list-item v-for="produce in displayedOrder.products.filter(p => p.want)" :key="produce.name">
-          <v-list-item-content class="text-left">
+          <v-list-item-content class="text-start">
             <v-list-item-title>
               {{ produce.name }} ({{produce.quantity}}) - {{ produce.price * produce.quantity }}₪
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item>
-          <v-list-item-content class="text-left">
+          <v-list-item-content class="text-start">
             <v-list-item-title>{{ total }}₪</v-list-item-title>
-            <v-list-item-subtitle>Total</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ $t('total') }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
       <v-card-actions class="justify-center">
         <router-link :to="{ name: 'OrderSummary', params: { order_id: displayedOrder._id} }">
-          <v-btn class="ma-2" text color="orange">Modify order<v-icon right>mdi-pencil</v-icon></v-btn>
+          <v-btn class="ma-2" text color="orange">{{ $t('modify_order') }}<v-icon right>mdi-pencil</v-icon></v-btn>
         </router-link>
         <v-btn raised color="blue"
           v-if="isAdmin()"
           @click="completeOrder(displayedOrder._id)"
           :disabled="isLoading || displayedOrder.completed === 'true'"
-          >{{ displayedOrder.completed === "true" ? "Executed" : "Execute Order" }}</v-btn>
+          >{{ displayedOrder.completed === "true" ? $t('executed') : $t('execute_order') }}</v-btn>
         <v-btn raised color="red"
           v-if="isAdmin() && displayedOrder.completed === 'true'"
           :disabled="isLoading"
           @click="unCompleteOrder(displayedOrder._id)"
-          >Undo Executed</v-btn>
+          >{{ $t('undo_execute') }}</v-btn>
         <v-btn
           @click="$emit('input', false)"
           color="green"
           class="grey--text text--darken-3"
-        >Close</v-btn>
+        >{{ $t('close') }}</v-btn>
       </v-card-actions>
     </v-card>
   </div>

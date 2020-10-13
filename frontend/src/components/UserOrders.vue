@@ -7,7 +7,7 @@
       <OrderSummary v-model="orderSummaryDialogOpened" />
     </v-dialog>
     <v-card max-width="450" min-width="260" class="mx-auto">
-      <h1 v-if="userOrders.length === 0" class="pa-3 grey--text text--lighten-1">You have no orders yet</h1>
+      <h1 v-if="userOrders.length === 0" class="pa-3 grey--text text--lighten-1">{{ $t('you_have_no_orders_yet') }}</h1>
       <v-list three-line>
         <v-list-item
           @click="displayOrderSummary(order._id)"
@@ -29,7 +29,7 @@
             <v-icon large>mdi-basket-outline</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>Total</v-list-item-title>
+            <v-list-item-title>{{ $t('total') }}</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>{{allOrdersTotal}}&#8362;</v-list-item-action>
         </v-list-item>

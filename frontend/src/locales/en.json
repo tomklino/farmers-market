@@ -20,5 +20,18 @@
   "name_is_required": "Name is required",
   "phone_is_required": "Phone is required",
   "email_is_required": "Email is required",
-  "email_is_invalid": "Email address is invalid"
+  "email_is_invalid": "Email address is invalid",
+  "success": "Success!",
+  "back_to_farmers_page": "Back to farmers page",
+  "you_have_no_orders_yet": "You have no orders yet",
+  "total": "Total",
+  "order_summary": "Order summary",
+  "name": "Name",
+  "phone": "Phone",
+  "close": "Close",
+  "undo_execute": "Undo Executed",
+  "executed": "Executed",
+  "execute_order": "Execute Order",
+  "cancel": "Cancel",
+  "are_you_sure_you_want_to_delete": "Are you sure you want to delete?"
 }

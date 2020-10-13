@@ -5,11 +5,11 @@
       width="500"
     >
       <v-card>
-        <v-card-title>Are you sure you want to delete?</v-card-title>
+        <v-card-title>{{ $t('are_you_sure_you_want_to_delete') }}</v-card-title>
         <v-card-text>
           <v-btn large color="red darken-2" v-on:click="performDeletion">Delete</v-btn>
           <v-btn large color="grey lighten-1" v-on:click="cancelDeletion">
-            Cancel
+            {{ $t('cancel') }}
           </v-btn>
         </v-card-text>
       </v-card>
