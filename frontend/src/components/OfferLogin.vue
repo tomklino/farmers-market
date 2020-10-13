@@ -8,11 +8,11 @@
         :renderParams="googleRenderParams"
         :onSuccess="isSignedInWithGoogle() ? googleLogoutOnSuccess : googleOnSuccess"
         :onFailure="isSignedInWithGoogle() ? googleLogoutOnFailure : googleOnFailure"
-      >{{ isSignedInWithGoogle() ? "Logout" : "Login" }}</GoogleLogin>
+      >{{ isSignedInWithGoogle() ? $t('logout') : $t('login') }}</GoogleLogin>
     </v-card>
     <v-divider>or</v-divider>
     <v-card flat class="d-flex justify-center my-4">
-      <v-btn @click="continueAsGuest()">continue as guest</v-btn>
+      <v-btn @click="continueAsGuest()">{{ $t('continue_as_guest') }}</v-btn>
     </v-card>
   </v-card>
 </template>

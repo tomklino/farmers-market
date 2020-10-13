@@ -5,22 +5,22 @@
         <v-text-field
           v-model="name"
           type="text"
-          label="Your full name"
+          :label="$t('your_full_name')"
           :rules="nameRules"
           ></v-text-field>
         <v-text-field
           v-model="email"
           type="text"
-          label="Email address"
+          :label="$t('email_address')"
           :rules="emailRules"
           ></v-text-field>
         <v-text-field
           v-model="phone"
           type="text"
-          label="Phone number"
+          :label="$t('phone_number')"
           :rules="phoneRules"
           ></v-text-field>
-          <v-btn color="success" @click="submit" :disabled="!valid">submit</v-btn>
+          <v-btn color="success" @click="submit" :disabled="!valid">{{ $t('submit') }}</v-btn>
       </v-form>
     </v-card-text>
   </v-card>
@@ -36,28 +36,36 @@ export default {
     //// TODO: make sure the name/email/phone are being filled in they exist
     name: "",
     email: "",
-    phone: "",
-    emailRules: [
-      v => !!v || 'Email address is requried',
-      (v) => {
-        let atIndex = v.indexOf("@");
-        if (atIndex <= 0) {
-          return "Invalid Email address"
-        }
-        let userPart = v.split("@")[0];
-        let domainPart = v.split("@")[1];
-        let dotIndex = domainPart.indexOf(".");
-        return (userPart.length > 0 && dotIndex !== -1 && dotIndex < (domainPart.length - 1))
-      }
-    ],
-    nameRules: [
-      v => !!v || 'Name is required'
-    ],
-    phoneRules: [
-      v => !!v || 'Phone is required'
-      // TODO match phone regex
-    ]
+    phone: ""
   }),
+  computed: {
+    emailRules() {
+      return [
+        v => !!v || this.$t('email_is_required'),
+        (v) => {
+          let atIndex = v.indexOf("@");
+          if (atIndex <= 0) {
+            return this.$t("email_is_invalid")
+          }
+          let userPart = v.split("@")[0];
+          let domainPart = v.split("@")[1];
+          let dotIndex = domainPart.indexOf(".");
+          return (userPart.length > 0 && dotIndex !== -1 && dotIndex < (domainPart.length - 1))
+        }
+      ]
+    },
+    nameRules() {
+      return [
+        v => !!v || this.$t('name_is_required')
+      ]
+    },
+    phoneRules() {
+      return [
+        v => !!v || this.$t('phone_is_required')
+        // TODO match phone regex
+      ]
+    }
+  },
   methods: {
     isLoggedIn() {
       return store.state.loggedInUser.loggedIn;

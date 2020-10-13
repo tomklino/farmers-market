@@ -12,5 +12,13 @@
   "modify_order": "Modify Order",
   "order_delivered": "Order Delivered",
   "closed_for_orders": "Closed for orders",
-  "submit": "Submit"
+  "submit": "Submit",
+  "continue_as_guest": "Continue As Guest",
+  "your_full_name": "Your full name",
+  "email_address": "Email address",
+  "phone_number": "Phone number",
+  "name_is_required": "Name is required",
+  "phone_is_required": "Phone is required",
+  "email_is_required": "Email is required",
+  "email_is_invalid": "Email address is invalid"
 }

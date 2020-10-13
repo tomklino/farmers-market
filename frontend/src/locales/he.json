@@ -12,5 +12,13 @@
   "modify_order": "שנה הזמנה",
   "order_delivered": "ההזמנה הושלמה",
   "closed_for_orders": "סגור להזמנות",
-  "Submit": "אישור"
+  "submit": "אישור",
+  "continue_as_guest": "המשך כאורח",
+  "your_full_name": "שם מלא",
+  "email_address": "כתובת אימייל",
+  "phone_number": "מספר טלפון",
+  "name_is_required": "יש למלא שם",
+  "phone_is_required": "יש למלא מספר טלפון",
+  "email_is_required": "יש למלא כתובת אימייל",
+  "email_is_invalid": "כתובת אימייל אינה תקינה"
 }
