@@ -148,7 +148,7 @@ export default {
       return store.state.loggedInUser.loggedIn;
     },
     produceLabel(produce) {
-      return `${produce.name} [${produce.packageSize}${produce.packageUnit}]`
+      return `${produce.name} [${produce.packageSize} ${this.$t(produce.packageUnit.toLowerCase())}]`
     },
     loadFromDisplayedOrder() {
       const order = store.state.displayedOrder;
