@@ -38,10 +38,10 @@ spec:
         resources:
           requests:
             cpu: 100m
-            memory: 50Mi
+            memory: 80Mi
           limits:
             cpu: 400m
-            memory: 50Mi
+            memory: 80Mi
         envFrom:
           - configMapRef:
               name: global-env-vars
