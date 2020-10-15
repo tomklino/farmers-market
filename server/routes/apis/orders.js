@@ -168,6 +168,42 @@ router.post("/uncomplete", async function(req, res, next) {
   // TODO if order has a created_by field, and not yet expired, re-append to user's active_orders
 });
 
+router.post("/markpayed", async function(req, res, next) {
+  // TODO check session is logged in
+
+  try {
+    let payload = await ordersData.markAsPayed(req.body.orderID);
+    if(payload instanceof Error) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+    debug("mark order payed:", payload.result);
+    res.json({ message: "done" });
+  } catch (err) {
+    debug("error while trying to complete order", err);
+    res.status(500).json({ message: "failed" });
+  }
+
+  //TODO if order has a created_by field, remove order from user's active_orders
+});
+
+router.post("/unmarkpayed", async function(req, res, next) {
+  // TODO check session is logged in
+
+  try {
+    let payload = await ordersData.unmarkAsPayed(req.body.orderID);
+    if(payload instanceof Error) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+    debug("undo payed order:", payload.result);
+    res.json({ message: "done" });
+  } catch (err) {
+    debug("error while trying to uncomplete order", err);
+    res.status(500).json({ message: "failed" });
+  }
+
+  // TODO if order has a created_by field, and not yet expired, re-append to user's active_orders
+});
+
 async function validateOrderJSON(orderJSON) {
   let rules = {
     name: [

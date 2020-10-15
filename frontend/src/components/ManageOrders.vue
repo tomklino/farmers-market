@@ -40,18 +40,18 @@
         mdi-pencil
       </v-icon>
       <v-icon
-        v-if="item.completed !== 'true'"
         class="mr-2"
-        @click="completeOrder(item._id)"
+        @click="completeOrderActionClicked(item)"
+        :color="item.completed === 'true' ? 'green' : 'grey'"
       >
-        mdi-check-circle-outline
+        {{item.completed !== "true" ? "mdi-check-circle-outline" : "mdi-check-circle"}}
       </v-icon>
       <v-icon
-        v-if="item.completed === 'true'"
         class="mr-2"
-        @click="unCompleteOrder(item._id)"
+        @click="markOrderAsPayedActionClicked(item)"
+        :color="item.payed === 'true' ? 'green' : 'grey'"
       >
-        mdi-check-circle
+        {{item.payed !== "true" ? "mdi-cash" : "mdi-cash-check"}}
       </v-icon>
     </template>
     <template v-slot:body.append="{ headers, isMobile, pagination }">
@@ -99,7 +99,7 @@ export default {
     dialog: false,
     search: "",
     summarize: false,
-    hideFinished: true
+    hideFinished: false
   }),
   computed: {
     ...mapState(['displayedFarmer']),
@@ -166,6 +166,7 @@ export default {
           phone: order.phone,
           email: order.email,
           completed: order.completed,
+          payed: order.payed,
           organizedProducts: order.products.reduce((obj, p) => {
             obj[generateSlug(p.name)] = p;
             return obj;
@@ -176,6 +177,26 @@ export default {
     }
   },
   methods: {
+    markOrderAsPayedActionClicked(item) {
+      if(item.payed === "true") {
+        this.unmarkOrderAsPayed(item._id);
+      } else {
+        this.markOrderAsPayed(item._id);
+      }
+    },
+    async markOrderAsPayed(orderID) {
+      await store.dispatch("markOrderAsPayed", orderID);
+    },
+    async unmarkOrderAsPayed(orderID) {
+      await store.dispatch("unmarkOrderAsPayed", orderID);
+    },
+    completeOrderActionClicked(item) {
+      if(item.completed === "true") {
+        this.unCompleteOrder(item._id);
+      } else {
+        this.completeOrder(item._id);
+      }
+    },
     isProductName(string) {
       return (this.displayedFarmer.products instanceof Array) &&
           !!this.displayedFarmer.products.find(p => p.name === string);

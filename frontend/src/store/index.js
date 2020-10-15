@@ -83,6 +83,12 @@ export default new Vuex.Store({
         });
       }
     },
+    markOrderPayed(state, { orderID, isPayed = "true" }) {
+      const indexOfOrder = state.ordersList.findIndex(o => o._id === orderID);
+      const order = state.ordersList[indexOfOrder];
+      order.payed = isPayed;
+      Vue.set(state.ordersList, indexOfOrder, order);
+    },
     markOrderCompleted(state, { orderID, isCompleted = "true" }) {
       state.ordersList.find(o => o._id === orderID).completed = isCompleted;
     },
@@ -91,6 +97,30 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async markOrderAsPayed({ commit }, orderID) {
+      try {
+        let response = await axios.post('/api/orders/markpayed', { orderID })
+        if (response.data.message === "done") {
+          commit("markOrderPayed", { orderID });
+        } else {
+          //TODO reflect error to user
+        }
+      } catch(err) {
+        //TODO reflect error to user
+      }
+    },
+    async unmarkOrderAsPayed({ commit }, orderID) {
+      try {
+        let response = await axios.post('/api/orders/unmarkpayed', { orderID })
+        if (response.data.message === "done") {
+          commit("markOrderPayed", { orderID, isPayed: "false" });
+        } else {
+          // TODO: reflect error to user
+        }
+      } catch(err) {
+        // TODO: reflect error to user
+      }
+    },
     async unlockOrders({ commit, dispatch }, farmerID) {
       commit("setFarmerLoading", { farmerID, isLoading: true });
       try {

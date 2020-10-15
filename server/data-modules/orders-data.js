@@ -17,7 +17,27 @@ module.exports = {
   insertOrder,
   findOrder,
   findOrders,
-  findOrdersByUser
+  findOrdersByUser,
+  markAsPayed,
+  unmarkAsPayed
+}
+
+async function markAsPayed(orderID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) { throw err; }
+
+  return collection.updateOne(
+      { _id: ObjectId(orderID) },
+      { $set: { "payed": "true" }});
+}
+
+async function unmarkAsPayed(orderID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) { throw err; }
+
+  return collection.updateOne(
+      { _id: ObjectId(orderID) },
+      { $set: { "payed": "false" }});
 }
 
 async function isOrderComplete(orderID) {
