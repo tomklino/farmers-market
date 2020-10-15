@@ -153,7 +153,6 @@ export default {
     },
     ordersData() {
       const ordersData = [];
-      // const totals = [];
       const orders = store.state.ordersList.filter((o) => {
         return o.farmerID === this.$route.params.farmer_id &&
           (!this.hideFinished || o.completed !== "true");
