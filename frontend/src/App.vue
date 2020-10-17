@@ -5,7 +5,7 @@
       <div id="nav">
         <v-toolbar dark color="orange">
           <v-menu
-            v-if="$vuetify.breakpoint.smAndDown"
+            v-if="$vuetify.breakpoint.smAndDown && menuItems.length > 0"
             offset-y
             bottom
             left
@@ -32,7 +32,7 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          <router-link class="title" to="/"><v-toolbar-title class="title">{{ $t('farmers') }}</v-toolbar-title></router-link>
+          <router-link class="title" to="/"><v-toolbar-title class="title">{{ $vuetify.breakpoint.smAndUp ? $t('farmers') : "" }}</v-toolbar-title></router-link>
           <v-btn class="ma-2" text @click="switchLanguage()">עב/en</v-btn>
           <v-spacer></v-spacer>
           <v-row class="flex-nowrap justify-end" v-if="$vuetify.breakpoint.mdAndUp">
@@ -96,13 +96,19 @@ export default {
     ...mapState(['loggedInUser']),
     menuItems() {
       const menuItems = [];
+      if(this.$vuetify.breakpoint.xsOnly) {
+        menuItems.push({
+          title: this.$t("home"),
+          to: "/"
+        })
+      }
       if(this.loggedInUser.admin) {
         menuItems.push({
-          title: "Create farmer",
+          title: this.$t("create_new_farmer"),
           to: "/new/farmer"
         });
         menuItems.push({
-          title: "Manage farmers",
+          title: this.$t("manage_farmers"),
           to: "/manage"
         });
       }
