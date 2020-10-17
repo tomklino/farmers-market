@@ -4,18 +4,51 @@
       <LoginDialog v-model="loginDialogOpened" />
       <div id="nav">
         <v-toolbar dark color="orange">
+          <v-menu
+            v-if="$vuetify.breakpoint.smAndDown"
+            offset-y
+            bottom
+            left
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                dark
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item
+                v-for="item in menuItems"
+                :key="item.title"
+              >
+                <router-link :to="item.to">
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </router-link>
+              </v-list-item>
+            </v-list>
+          </v-menu>
           <router-link class="title" to="/"><v-toolbar-title class="title">{{ $t('farmers') }}</v-toolbar-title></router-link>
           <v-btn class="ma-2" text @click="switchLanguage()">עב/en</v-btn>
           <v-spacer></v-spacer>
-          <router-link v-if="isAdmin()" to="/new/farmer">
-            <v-btn text>{{ $t('create_new_farmer') }}</v-btn></router-link>
-          <router-link v-if="isAdmin()" to="/manage">
-            <v-btn text>{{ $t('manage_farmers') }}</v-btn></router-link>
+          <v-row class="flex-nowrap justify-end" v-if="$vuetify.breakpoint.mdAndUp">
+            <router-link v-for="item in menuItems"
+              :key="item.title"
+              :to="item.to">
+              <v-btn text>{{ item.title }}</v-btn>
+            </router-link>
+          </v-row>
           <router-link to="/myorders">
-            <v-btn class="ma-2" text>{{ $t('my_orders') }}<v-icon right>mdi-basket-outline</v-icon></v-btn></router-link>
+            <v-btn class="ma-2" text>{{ $vuetify.breakpoint.mdAndUp ? $t('my_orders') : "" }}<v-icon :right="$vuetify.breakpoint.mdAndUp">mdi-basket-outline</v-icon>
+            </v-btn>
+          </router-link>
           <v-btn text
             @click="openLoginDialog"
-          >{{ loginButtonString }}</v-btn>
+          >{{ loggedInUser.loggedIn ? "" : loginButtonString }}<v-icon v-if="loggedInUser.loggedIn">mdi-account-circle-outline</v-icon></v-btn>
         </v-toolbar>
       </div>
       <v-container width="100%">
@@ -28,6 +61,7 @@
 <script>
 import LoginDialog from '@/components/LoginDialog.vue'
 import axios from 'axios';
+import { mapState } from 'vuex'
 import store from '@/store'
 
 export default {
@@ -59,9 +93,22 @@ export default {
     }
   },
   computed: {
+    ...mapState(['loggedInUser']),
+    menuItems() {
+      return [
+        {
+          title: "Create farmer",
+          to: "/new/farmer"
+        },
+        {
+          title: "Manage farmers",
+          to: "/manage"
+        }
+      ]
+    },
     loginButtonString() {
-      return !store.state.loggedInUser.loggedIn ? this.$t('login') :
-        store.state.loggedInUser.username;
+      return !this.loggedInUser.loggedIn ? this.$t('login') :
+        this.loggedInUser.username;
     }
   },
   data() {
