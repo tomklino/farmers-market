@@ -3,27 +3,30 @@
     <v-layout row wrap>
       <v-flex v-for="farmer in farmers" md4 xs12 :key="farmer.id">
         <router-link :to="{ name: 'FarmerOrderForm', params: { farmer_id: farmer._id} }">
-          <v-card
-            link
-            class="mx-auto"
-            max-width="400"
-          >
-            <v-img
-              class="white--text align-end"
-              height="200px"
-              :src="farmer.image"
+          <v-hover v-slot:default="{ hover }">
+            <v-card
+              link
+              class="ma-2"
+              :elevation="hover ? 12 : 4"
+              max-width="400"
             >
+              <v-img
+                class="white--text align-end"
+                height="200px"
+                :src="farmer.image"
+              >
+              </v-img>
               <v-card-title>{{ farmer.name }}</v-card-title>
-            </v-img>
 
-            <v-card-subtitle class="pb-0">{{ farmer.produce }}</v-card-subtitle>
+              <v-card-subtitle class="pb-0">{{ farmer.produce }}</v-card-subtitle>
 
-            <v-card-text rtl class="text--primary">
-              <div>{{ $t('order_minimum') }}: {{ farmer.orderMinimum }}</div>
+              <v-card-text rtl class="text--primary">
+                <div>{{ $t('order_minimum') }}: {{ farmer.orderMinimum }}</div>
 
-              <div class="rtl">{{ $t('area') }}: {{ farmer.shipmentArea }}</div>
-            </v-card-text>
-          </v-card>
+                <div class="rtl">{{ $t('area') }}: {{ farmer.shipmentArea }}</div>
+              </v-card-text>
+            </v-card>
+          </v-hover>
         </router-link>
       </v-flex>
     </v-layout>
