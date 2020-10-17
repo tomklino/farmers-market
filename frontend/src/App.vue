@@ -95,16 +95,18 @@ export default {
   computed: {
     ...mapState(['loggedInUser']),
     menuItems() {
-      return [
-        {
+      const menuItems = [];
+      if(this.loggedInUser.admin) {
+        menuItems.push({
           title: "Create farmer",
           to: "/new/farmer"
-        },
-        {
+        });
+        menuItems.push({
           title: "Manage farmers",
           to: "/manage"
-        }
-      ]
+        });
+      }
+      return menuItems;
     },
     loginButtonString() {
       return !this.loggedInUser.loggedIn ? this.$t('login') :
