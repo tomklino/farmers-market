@@ -5,7 +5,7 @@
       <div id="nav">
         <v-toolbar dark color="orange">
           <router-link class="title" to="/"><v-toolbar-title class="title">{{ $t('farmers') }}</v-toolbar-title></router-link>
-          <v-btn class="ma-2" text @click="switchLanguage()">עברית/english</v-btn>
+          <v-btn class="ma-2" text @click="switchLanguage()">עב/en</v-btn>
           <v-spacer></v-spacer>
           <router-link v-if="isAdmin()" to="/new/farmer">
             <v-btn text>{{ $t('create_new_farmer') }}</v-btn></router-link>

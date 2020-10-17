@@ -89,6 +89,7 @@
                     <v-flex xs6 md6>
                       <v-chip
                       :color="displayedFarmer.products[i].quantity ? 'green' : 'light-grey'"
+                      :text-color="displayedFarmer.products[i].quantity ? 'white' : 'dark-grey'"
                       class="ma-0 ltr">{{displayedFarmer.products[i].quantity || "0"}} x {{displayedFarmer.products[i].price}}&#8362;
                       </v-chip>
                     </v-flex>
