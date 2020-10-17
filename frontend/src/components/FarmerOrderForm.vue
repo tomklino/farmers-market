@@ -31,9 +31,11 @@
           <div>
             {{ $t('your_order_total_is') }} {{ orderTotal }}&#8362;
           </div>
-          <div v-if="displayedFarmer.paymentLink.length > 0">
+          <div v-if="typeof displayedFarmer.paymentLink === 'string' && displayedFarmer.paymentLink.length > 0">
             {{ $t('please_remember_to_pay_at') }}
-            <a target="_blank" :href="displayedFarmer.paymentLink">{{displayedFarmer.paymentLink}}</a>
+            <a target="_blank" :href="displayedFarmer.paymentLink.length > 0 ? displayedFarmer.paymentLink : ''">
+              {{displayedFarmer.paymentLink.length > 0 ? displayedFarmer.paymentLink : ''}}
+            </a>
           </div>
         </v-card-text>
         <v-card-actions>
@@ -161,6 +163,9 @@ export default {
     },
     loadFromDisplayedOrder() {
       const order = store.state.displayedOrder;
+      if(!(this.displayedFarmer.products instanceof Array)) {
+        return;
+      }
 
       this.userInfo = {
         name: order.name,
