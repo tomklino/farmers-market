@@ -64,9 +64,10 @@
           height="200px"
           :src="displayedFarmer.image"
         >
-          <v-card-title>{{ displayedFarmer.name }}</v-card-title>
         </v-img>
-        <v-card-title v-if="typeof displayedFarmer.products !== 'undefined'">{{ displayedFarmer.products.map(p => p.name).join(" &bull; ") }}</v-card-title>
+        <v-card-title>{{ displayedFarmer.name }}</v-card-title>
+
+        <v-card-subtitle class="subtitle" v-if="typeof displayedFarmer.products !== 'undefined'">{{ displayedFarmer.products.map(p => p.name).join(" &bull; ") }}</v-card-subtitle>
         <v-card-text>
           <v-form class="px-3" v-model="valid">
             <v-row v-for="(produce, i) in displayedFarmer.products" :key="produce.name">
@@ -376,6 +377,10 @@ export default {
 </script>
 
 <style scoped>
+.subtitle {
+  text-align: start;
+}
+
 .rtl {
   direction: rtl;
 }
