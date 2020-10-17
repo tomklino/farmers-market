@@ -56,5 +56,9 @@
   "add": "Add",
   "kg": "Kg",
   "gr": "gr",
-  "unit": "unit"
+  "unit": "unit",
+  "payment_link": "Payment Link",
+  "your_order_has_been_registered": "Your order has been successfully registered",
+  "your_order_total_is": "Your order total is",
+  "please_remember_to_pay_at": "Please remember to pay at"
 }

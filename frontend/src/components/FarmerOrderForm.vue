@@ -26,7 +26,16 @@
       width="500"
     >
       <v-card>
-        <v-card-title>{{ $t('success') }}</v-card-title>
+        <v-card-title>{{ $t('your_order_has_been_registered') }}</v-card-title>
+        <v-card-text>
+          <div>
+            {{ $t('your_order_total_is') }} {{ orderTotal }}&#8362;
+          </div>
+          <div v-if="displayedFarmer.paymentLink.length > 0">
+            {{ $t('please_remember_to_pay_at') }}
+            <a target="_blank" :href="displayedFarmer.paymentLink">{{displayedFarmer.paymentLink}}</a>
+          </div>
+        </v-card-text>
         <v-card-actions>
           <v-btn
             text

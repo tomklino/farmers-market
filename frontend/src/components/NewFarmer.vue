@@ -81,8 +81,8 @@
     <v-form v-model="valid">
       <v-container grid-list-md>
         <v-layout row wrap>
-          <v-flex xs6>
-            <v-row>
+          <v-flex md6 xs12>
+            <v-row class="mx-4">
               <v-text-field
                 v-model="name"
                 :rules="nameRules"
@@ -92,7 +92,7 @@
               ></v-text-field>
             </v-row>
 
-            <v-row>
+            <v-row class="mx-4">
               <v-combobox
                 v-model="area"
                 :items="areaOptions"
@@ -105,7 +105,14 @@
 
               </v-combobox>
             </v-row>
-            <v-row>
+            <v-row class="mx-4">
+              <v-text-field
+                v-model="paymentLink"
+                :disabled="isDisabled"
+                :label="$t('payment_link')"
+              />
+            </v-row>
+            <v-row class="mx-4">
               <v-text-field
                 v-model="minimumOrders"
                 :disabled="isDisabled"
@@ -160,7 +167,7 @@
               </v-layout>
             </v-row>
           </v-flex>
-          <v-flex xs6>
+          <v-flex md6 xs12>
             <v-row justify="center">
               <v-card>
                 <v-card-title>{{ $t('when_can_you_arrive') }}</v-card-title>
@@ -177,7 +184,7 @@
         <v-btn
           large
           color="success"
-          class="ma-3"
+          class="ma-4"
           v-bind:disabled="!complete || isDisabled"
           v-on:click="create"
           >
@@ -194,13 +201,12 @@ import axios from 'axios';
 export default {
   name: 'NewFarmer',
   data: () => ({
+    paymentLink: "",
     products: [],
     produceValid: false,
     newProduceDialogOpened: false,
-
     createdDialogOpened: false,
     isDisabled: false,
-    commonProduce: [ "Strawberries", "Kiwis", "Mangos", "Pineapples" ], // TODO this should be queried from server
     imageChoices: [],
     selectedPicture: "",
     minimumOrders: 20,
@@ -292,8 +298,7 @@ export default {
     async create() {
       var payload = {
         name: this.name,
-        packageSize: this.packageSize,
-        packageUnit: this.packageUnit,
+        paymentLink: this.paymentLink,
         image: this.selectedPicture,
         orderMinimum: this.minimumOrders,
         arrivalDates: this.arrivalDates,
@@ -301,6 +306,7 @@ export default {
         shipmentArea: this.area,
         products: this.products,
       }
+
       this.isDisabled = true;
       await axios.post('/api/farmers/new', payload);
       this.createdDialogOpened = true;

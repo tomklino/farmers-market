@@ -56,5 +56,9 @@
   "add": "הוסף",
   "kg": "ק\"ג",
   "gr": "גרם",
-  "unit": "יחידה"
+  "unit": "יחידה",
+  "payment_link": "קישור לתשלום",
+  "your_order_has_been_registered": "הזמנתך נרשמה בהצלחה",
+  "your_order_total_is": "סך ההזמנה שלך:",
+  "please_remember_to_pay_at": "נא לזכור לשלם בלינק הבא:"
 }

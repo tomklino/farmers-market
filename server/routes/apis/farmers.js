@@ -83,12 +83,6 @@ function validateFarmerJSON(farmerJSON) {
     name: [
       v => typeof v === 'string' || "name must be a string",
     ],
-    packageSize: [
-      v => typeof v !== 'undefined' || "packageSize must be set",
-    ],
-    packageUnit: [
-      v => [ "Kg", "gr" ].includes(v) || "packageUnit must be on of 'Kg', 'gr'",
-    ],
     products: [
       v => Array.isArray(v) || "products must be an array",
     ],
