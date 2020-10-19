@@ -21,8 +21,6 @@
               <v-card-subtitle class="pb-0">{{ farmer.produce }}</v-card-subtitle>
 
               <v-card-text rtl class="text--primary">
-                <div>{{ $t('order_minimum') }}: {{ farmer.orderMinimum }}</div>
-
                 <div class="rtl">{{ $t('area') }}: {{ farmer.shipmentArea }}</div>
               </v-card-text>
             </v-card>
