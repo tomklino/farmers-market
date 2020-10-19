@@ -81,6 +81,12 @@
                     :label="produceLabel(produce)"
                   ></v-checkbox>
                 </v-flex>
+                <v-flex xs12 md12>
+                  <v-card>
+                    <v-card-title><v-img :src="displayedFarmer.products[i].image"></v-img></v-card-title>
+                    <v-card-text>{{ displayedFarmer.products[i].description }}</v-card-text>
+                  </v-card>
+                </v-flex>
                 <v-flex xs12 md5>
                   <v-layout row >
                     <v-flex xs2 md2>
@@ -94,9 +100,10 @@
                       <v-container class="mx-1 px-0">
                         <v-btn
                         rounded
-                        :color="displayedFarmer.products[i].quantity ? 'green' : 'light-grey'"
+                        large
+                        :color="displayedFarmer.products[i].quantity ? 'green' : 'cyan lighten-4'"
                         :text-color="displayedFarmer.products[i].quantity ? 'white' : 'dark-grey'"
-                        class="ltr"
+                        class="ltr font-weight-bold"
                         :class="displayedFarmer.products[i].quantity ? 'white--text': ''">{{displayedFarmer.products[i].quantity || "0"}} x {{displayedFarmer.products[i].price}}&#8362;
                       </v-btn>
                     </v-container>

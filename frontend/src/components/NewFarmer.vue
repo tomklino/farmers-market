@@ -28,6 +28,13 @@
                     :label="$t('produce_name')"
                   />
                 </v-col>
+                <v-col md="12">
+                  <v-text-field
+                    v-model="shortProductDescription"
+                    :disabled="isDisabled"
+                    :label="$t('short_description')"
+                  />
+                </v-col>
                 <v-col md="3">
                   <v-text-field
                     v-model="packageSize"
@@ -57,6 +64,21 @@
                 </v-col>
               </v-layout>
             </v-flex>
+            <v-row class="mx-3">
+              <v-layout row wrap>
+                <v-flex xs3 v-for="image in imageChoices"
+                  v-bind:key="image"
+                  >
+                  <v-card ripple class="mx-auto"
+                    v-on:click="selectProductPicture(image)"
+                    :elevation="selectedProductPicture === image ? 18 : 1"
+                    :outlined="selectedProductPicture === image ? true : false"
+                  >
+                    <v-img :src="image"></v-img>
+                  </v-card>
+                </v-flex>
+              </v-layout>
+            </v-row>
           </v-form>
         </v-container>
         <v-card-actions>
@@ -202,7 +224,9 @@ export default {
   name: 'NewFarmer',
   data: () => ({
     paymentLink: "",
+    shortProductDescription: "",
     products: [],
+    selectedProductPicture: "",
     produceValid: false,
     newProduceDialogOpened: false,
     createdDialogOpened: false,
@@ -282,8 +306,10 @@ export default {
       let packageSize = this.packageSize;
       let packageUnit = this.packageUnit;
       let price = this.price;
+      let image = this.selectedProductPicture;
+      let description = this.shortProductDescription;
 
-      let produce = { name, packageSize, packageUnit, price };
+      let produce = { name, packageSize, packageUnit, price, image, description };
 
       produce.text = `${name} - ${packageSize}${packageUnit} - ${price}₪`
       this.products.push(produce);
@@ -293,6 +319,8 @@ export default {
       this.packageSize = 1;
       this.packageUnit = "Kg";
       this.price = 50;
+      this.selectedProductPicture = "";
+      this.shortProductDescription = "";
       this.newProduceDialogOpened = false;
     },
     async create() {
@@ -313,6 +341,9 @@ export default {
     },
     selectPicture(img) {
       this.selectedPicture = img;
+    },
+    selectProductPicture(img) {
+      this.selectedProductPicture = img;
     }
   }
 }
