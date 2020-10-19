@@ -22,18 +22,19 @@
       </v-card-text>
       <v-card-text v-if="!isLoggedIn()">
         <v-btn large color="grey"
+          v-if="displayLoginAsAdminButton"
           @click="loginAsAdmin = true;"
           >Login As Admin
         </v-btn>
       </v-card-text>
       <v-card-actions>
         <v-btn large color="green"
-          v-if="!isLoggedIn()"
+          v-if="displayLoginAsAdminButton && !isLoggedIn()"
           @click="login"
           >{{ $t('login') }}
         </v-btn>
         <v-btn large color="grey"
-          v-if="isLoggedIn()"
+          v-if="displayLoginAsAdminButton && isLoggedIn()"
           @click="logout">
           {{ $t('logout') }}
         </v-btn>
@@ -56,6 +57,10 @@ export default {
     GoogleLogin
   },
   computed: {
+    displayLoginAsAdminButton() {
+      // HACK feature flag - display only in dev env
+      return document.location.host === "farmers.local"
+    },
     withGoogle() {
       return store.state.loggedInUser.withGoogle;
     },

@@ -33,7 +33,7 @@
             </v-list>
           </v-menu>
           <router-link class="title" to="/"><v-toolbar-title class="title">{{ $vuetify.breakpoint.smAndUp ? $t('farmers') : "" }}</v-toolbar-title></router-link>
-          <v-btn class="ma-2" text @click="switchLanguage()">עב/en</v-btn>
+          <v-btn v-if="displayLanguageSwitcherButton" class="ma-2" text @click="switchLanguage()">עב/en</v-btn>
           <v-spacer></v-spacer>
           <v-row class="flex-nowrap justify-end" v-if="$vuetify.breakpoint.mdAndUp">
             <router-link v-for="item in menuItems"
@@ -94,6 +94,10 @@ export default {
   },
   computed: {
     ...mapState(['loggedInUser']),
+    displayLanguageSwitcherButton() {
+      // HACK feature flag - display only in dev env
+      return document.location.host === "farmers.local"
+    },
     menuItems() {
       const menuItems = [];
       if(this.$vuetify.breakpoint.xsOnly) {
