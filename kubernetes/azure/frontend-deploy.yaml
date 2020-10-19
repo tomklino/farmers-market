@@ -17,7 +17,7 @@ spec:
         run: frontend
     spec:
       containers:
-      - image: farmersregistry.azurecr.io/farmers-frontend:0.8.0
+      - image: farmersregistry.azurecr.io/farmers-frontend:0.9.4
         name: frontend
         livenessProbe:
           httpGet:
