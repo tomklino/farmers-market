@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-md>
     <v-layout class="mx-auto" row wrap>
-      <v-flex v-for="farmer in farmers" md4 sm6 xs12 :key="farmer.id">
+      <v-flex v-for="farmer in farmers" md4 sm6 xs6 :key="farmer.id">
         <router-link :to="{ name: 'FarmerOrderForm', params: { farmer_id: farmer._id} }">
           <v-hover v-slot:default="{ hover }">
             <v-card
@@ -12,7 +12,7 @@
             >
               <v-img
                 class="white--text align-end"
-                height="200px"
+                :height="cardImageHeight"
                 :src="farmer.image"
               >
               </v-img>
@@ -42,6 +42,14 @@ export default {
     store.dispatch('refreshFarmers');
   },
   computed: {
+    cardImageHeight() {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return '100px';
+        case 'sm': return '180px';
+        case 'md': return '200px';
+        default: return '250px';
+      }
+    },
     farmers() {
       return store.state.farmersList;
     }
