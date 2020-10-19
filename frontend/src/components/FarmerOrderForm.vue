@@ -68,35 +68,45 @@
         <v-card-title>{{ displayedFarmer.name }}</v-card-title>
 
         <v-card-subtitle class="subtitle" v-if="typeof displayedFarmer.products !== 'undefined'">{{ displayedFarmer.products.map(p => p.name).join(" &bull; ") }}</v-card-subtitle>
-        <v-card-text>
+        <v-card-text class="my-3">
           <v-form class="px-3" v-model="valid">
-            <v-row v-for="(produce, i) in displayedFarmer.products" :key="produce.name">
+            <v-row v-for="(produce, i) in displayedFarmer.products" :key="produce.name"
+              class="product-row py-3"
+            >
               <v-layout row wrap>
-                <v-flex xs12 md8>
+                <v-flex xs12 md7>
                   <v-checkbox
                     v-model="displayedFarmer.products[i].want"
                     @change="wantCheckboxChanged(i)"
                     :label="produceLabel(produce)"
                   ></v-checkbox>
                 </v-flex>
-                <v-flex xs12 md4>
-                  <v-layout row>
-                    <v-flex xs3 md3>
-                      <v-btn @click="quantityMinus(i)" class="mx-2" fab dark x-small color="indigo">
-                        <v-icon dark>mdi-minus</v-icon>
-                      </v-btn>
+                <v-flex xs12 md5>
+                  <v-layout row >
+                    <v-flex xs2 md2>
+                      <v-container class="px-0">
+                        <v-btn @click="quantityMinus(i)" fab dark small color="indigo">
+                          <v-icon dark>mdi-minus</v-icon>
+                        </v-btn>
+                      </v-container>
                     </v-flex>
                     <v-flex xs6 md6>
-                      <v-chip
-                      :color="displayedFarmer.products[i].quantity ? 'green' : 'light-grey'"
-                      :text-color="displayedFarmer.products[i].quantity ? 'white' : 'dark-grey'"
-                      class="ma-0 ltr">{{displayedFarmer.products[i].quantity || "0"}} x {{displayedFarmer.products[i].price}}&#8362;
-                      </v-chip>
-                    </v-flex>
-                    <v-flex xs3 md3>
-                      <v-btn @click="quantityPlus(i)" class="mx-2" fab dark x-small color="indigo">
-                        <v-icon dark>mdi-plus</v-icon>
+                      <v-container class="mx-1 px-0">
+                        <v-btn
+                        rounded
+                        :color="displayedFarmer.products[i].quantity ? 'green' : 'light-grey'"
+                        :text-color="displayedFarmer.products[i].quantity ? 'white' : 'dark-grey'"
+                        class="ltr"
+                        :class="displayedFarmer.products[i].quantity ? 'white--text': ''">{{displayedFarmer.products[i].quantity || "0"}} x {{displayedFarmer.products[i].price}}&#8362;
                       </v-btn>
+                    </v-container>
+                    </v-flex>
+                    <v-flex xs2 md2>
+                      <v-container class="px-0">
+                        <v-btn @click="quantityPlus(i)" fab dark small color="indigo">
+                          <v-icon dark>mdi-plus</v-icon>
+                        </v-btn>
+                      </v-container>
                     </v-flex>
                   </v-layout>
                 </v-flex>
@@ -378,6 +388,10 @@ export default {
 </script>
 
 <style scoped>
+.product-row {
+  border-top: solid 1px grey;
+}
+
 .subtitle {
   text-align: start;
 }
