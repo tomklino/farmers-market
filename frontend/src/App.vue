@@ -69,7 +69,7 @@ export default {
   components: {
     LoginDialog
   },
-  mounted() {
+  created() {
     this.refreshLoggedInUser();
   },
   methods: {
