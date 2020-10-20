@@ -133,6 +133,10 @@ export default {
 </script>
 
 <style>
+.v-card__text, .v-card__title {
+  word-break: normal; /* maybe !important  */
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
