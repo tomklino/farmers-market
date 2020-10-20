@@ -64,10 +64,16 @@
           height="200px"
           :src="displayedFarmer.image"
         >
+          <v-card-title class="subtitle" v-if="displayedFarmer.products instanceof Array">
+            {{ displayedFarmer.products.map(p => p.name).join(" &bull; ") }}
+          </v-card-title>
+
         </v-img>
         <v-card-title>{{ displayedFarmer.name }}</v-card-title>
 
-        <v-card-subtitle class="subtitle" v-if="typeof displayedFarmer.products !== 'undefined'">{{ displayedFarmer.products.map(p => p.name).join(" &bull; ") }}</v-card-subtitle>
+        <v-card-text class="description grey--text text--darken-2" v-if="typeof displayedFarmer.description === 'string'">
+          {{ displayedFarmer.description }}
+        </v-card-text>
         <v-card-text class="my-3">
           <v-form class="px-3" v-model="valid">
             <v-row v-for="(produce, i) in displayedFarmer.products" :key="produce.name"
@@ -395,6 +401,13 @@ export default {
 </script>
 
 <style scoped>
+
+.description {
+  text-align: start;
+  font-weight: bold;
+  font-size: 0.98em;
+}
+
 .product-row {
   border-top: solid 1px grey;
 }

@@ -85,6 +85,7 @@
           <v-btn
             class="ma-3"
             color="green"
+            :disabled="productButtonDisabled"
             @click="addProduce()"
           >
             {{ $t('add') }}
@@ -112,6 +113,14 @@
                 :label="$t('name')"
                 required
               ></v-text-field>
+            </v-row>
+
+            <v-row class="mx-4">
+              <v-textarea
+                v-model="description"
+                :disabled="isDisabled"
+                :label="$t('short_description')"
+              ></v-textarea>
             </v-row>
 
             <v-row class="mx-4">
@@ -224,6 +233,7 @@ export default {
   name: 'NewFarmer',
   data: () => ({
     paymentLink: "",
+    description: "",
     shortProductDescription: "",
     products: [],
     selectedProductPicture: "",
@@ -246,6 +256,9 @@ export default {
     valid: false
   }),
   computed: {
+    productButtonDisabled() {
+      return this.selectedProductPicture === "" || this.produceName === "";
+    },
     units() {
       return [
         {
@@ -333,6 +346,7 @@ export default {
         price: this.price,
         shipmentArea: this.area,
         products: this.products,
+        description: this.description
       }
 
       this.isDisabled = true;
