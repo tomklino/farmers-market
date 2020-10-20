@@ -21,7 +21,6 @@
       />
     </v-dialog>
     <v-dialog
-      persistent
       v-model="completedDialogOpened"
       width="500"
     >
@@ -46,6 +45,17 @@
             >{{ $t('back_to_farmers_page') }}</v-btn>
         </v-card-actions>
       </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="orderSummaryDialogOpened"
+      width="500">
+      <OrderSummary
+        v-model="orderSummaryDialogOpened"
+        disableGoToOrderButton=true
+        :closeButtonText="$t('i_am_not_done')"
+        :approveButtonText="$t('looks_good')"
+        v-on:approved="sendOrder()"
+      />
     </v-dialog>
     <v-container grid-list-md text-xs-center>
       <v-skeleton-loader
@@ -135,7 +145,7 @@
               large
               :loading="completeButtonLoading"
               color="success"
-              v-bind:disabled="completeButtonDisabled"
+              :disabled="completeButtonDisabled"
               @click="completeButtonClicked"
               >{{completeButtonText}}</v-btn>
           </v-form>
@@ -151,12 +161,14 @@ import { mapState } from 'vuex';
 import axios from 'axios';
 import UserInfoForm from '@/components/UserInfoForm.vue';
 import OfferLogin from '@/components/OfferLogin.vue';
+import OrderSummary from '@/components/OrderSummary.vue';
 
 export default {
   name: 'FarmerOrderForm',
   components: {
     UserInfoForm,
-    OfferLogin
+    OfferLogin,
+    OrderSummary
   },
   created() {
     store.dispatch("refreshUserOrders");
@@ -171,7 +183,20 @@ export default {
     store.dispatch("clearDisplayedOrder");
   },
   methods: {
-    async completeButtonClicked() {
+    pushToDisplayedOrder() {
+      if(this.displayedOrder && typeof this.displayedOrder._id === "string") {
+        return store.dispatch('pushToDisplayedOrder', {
+          ...this.orderJSON,
+          _id: this.displayedOrder._id
+        })
+      }
+      store.dispatch('pushToDisplayedOrder', this.orderJSON);
+    },
+    completeButtonClicked() {
+      this.pushToDisplayedOrder();
+      this.orderSummaryDialogOpened = true;
+    },
+    async sendOrder() {
       this.completeButtonLoading = true;
       if(this.modifyingFlag) {
         await this.modifyOrder();
@@ -261,8 +286,7 @@ export default {
       if(this.isLoggedIn()) {
         await store.dispatch("loadUserInfo"); //load from local storage to state
       }
-      const { name, email, phone } = this.userInfo;
-      if(!(name && email && phone)) {
+      if(!this.isUserInfoComplete) {
         if(!this.isLoggedIn()) {
           this.offerLoginDialogOpened = true;
           return;
@@ -271,31 +295,23 @@ export default {
         return;
       }
 
-      let payload = {
-        name, email, phone,
-        products: this.displayedFarmer.products.filter(p => p.want),
-        farmerID: this.displayedFarmer._id
-      }
+      const payload = this.orderJSON;
 
       this.isDisabled = true;
+      store.dispatch('setSendingOrderToServer', true);
       let newOrderResponse = await axios.post('/api/orders/new', payload);
+      store.dispatch('setSendingOrderToServer', false);
       //TODO reflect error to user
       store.dispatch("appendUserOrder", newOrderResponse.data);
       this.completedDialogOpened = true;
     },
     async modifyOrder() {
-      const { name, email, phone } = this.userInfo;
-      //TODO make sure userInfo contains all the above before sending
-
-      let payload = {
-        orderID: this.displayedOrder._id,
-        name, email, phone,
-        products: this.displayedFarmer.products.filter(p => p.want),
-        farmerID: this.displayedFarmer._id
-      }
+      const payload = this.orderJSON;
+      payload.orderID = this.displayedOrder._id;
 
       this.isDisabled = true;
       try {
+        store.dispatch('setSendingOrderToServer', true);
         const modifiedOrderResponse = await axios.post('/api/orders/modify', payload);
         store.dispatch("appendUserOrder", modifiedOrderResponse.data);
         this.completedDialogOpened = true;
@@ -305,6 +321,8 @@ export default {
         } else {
           console.log("unknown error when trying to modify");
         }
+      } finally {
+        store.dispatch('setSendingOrderToServer', false);
       }
     }
   },
@@ -312,6 +330,7 @@ export default {
     completeButtonLoading: false,
     offerLoginDialogOpened: false,
     userInfoDialogOpened: false,
+    orderSummaryDialogOpened: false,
     checkbox: false,
     completedDialogOpened: false,
     valid: false,
@@ -319,8 +338,27 @@ export default {
   }),
   computed: {
     ...mapState([
-      'loggedInUser', 'userInfo', 'userOrders', 'displayedFarmer', 'displayedOrder',
+      'loggedInUser', 'userInfo', 'userOrders', 'displayedFarmer', 'displayedOrder', 'sendingOrderToServer'
     ]),
+    isUserInfoComplete() {
+      const { name, email, phone } = this.userInfo;
+      if(typeof name !== "string" || typeof email !== "string" || typeof phone !== "string") {
+        return false;
+      }
+      if(name.length === 0 || email.length === 0 || phone.length === 0) {
+        return false;
+      }
+      return true;
+    },
+    orderJSON() {
+      return {
+        name: this.userInfo.name,
+        email: this.userInfo.email,
+        phone: this.userInfo.phone,
+        products: this.displayedFarmer.products.filter(p => p.want),
+        farmerID: this.displayedFarmer._id
+      }
+    },
     completeButtonDisabled() {
       return this.displayedFarmer.products instanceof Array &&
              this.displayedFarmer.products.every(p => p.want !== true) ||
@@ -328,7 +366,7 @@ export default {
              (this.displayedOrder.completed === 'true');
     },
     modifyingFlag() {
-      return Object.keys(this.displayedOrder).length !== 0;
+      return this.displayedOrder && typeof this.displayedOrder._id === "string";
     },
     completeButtonText() {
       if(this.displayedFarmer.orderLock === 'true') {

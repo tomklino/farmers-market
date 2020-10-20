@@ -10,6 +10,7 @@ export default new Vuex.Store({
     loadingDisplayedFarmer: false,
     displayedOrder: {},
     loadingDisplayedOrder: false,
+    sendingOrderToServer: false,
     farmersList: [],
     ordersList: [],
     userInfo: {},
@@ -36,6 +37,9 @@ export default new Vuex.Store({
     },
     setLoadingUserOrders(state, isLoading) {
       state.loadingUserOrders = isLoading;
+    },
+    setSendingOrderToServer(state, isSending) {
+      state.sendingOrderToServer = isSending;
     },
     setUserOrders(state, orders) {
       state.userOrders = orders;
@@ -97,6 +101,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setSendingOrderToServer({ commit }, isSending) {
+      commit('setSendingOrderToServer', isSending);
+    },
     async markOrderAsPayed({ commit }, orderID) {
       try {
         let response = await axios.post('/api/orders/markpayed', { orderID })
@@ -245,6 +252,9 @@ export default new Vuex.Store({
       } catch(err) {
         // TODO: reflect error to user
       }
+    },
+    pushToDisplayedOrder({ commit }, orderJSON) {
+      commit('displayedOrder', orderJSON);
     },
     async setDisplayedOrder({ commit, state, dispatch }, order_id) {
       let displayedOrder = state.ordersList.find(o => o._id === order_id);

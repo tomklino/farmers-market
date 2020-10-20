@@ -36,13 +36,13 @@
           <v-btn v-if="displayLanguageSwitcherButton" class="ma-2" text @click="switchLanguage()">עב/en</v-btn>
           <v-spacer></v-spacer>
           <v-row class="flex-nowrap justify-end" v-if="$vuetify.breakpoint.mdAndUp">
-            <router-link v-for="item in menuItems"
+            <router-link style="text-decoration: none; color: inherit;" v-for="item in menuItems"
               :key="item.title"
               :to="item.to">
               <v-btn text>{{ item.title }}</v-btn>
             </router-link>
           </v-row>
-          <router-link to="/myorders">
+          <router-link style="text-decoration: none; color: inherit;" to="/myorders">
             <v-btn class="ma-2" text>{{ $vuetify.breakpoint.mdAndUp ? $t('my_orders') : "" }}<v-icon :right="$vuetify.breakpoint.mdAndUp">mdi-basket-outline</v-icon>
             </v-btn>
           </router-link>
@@ -135,6 +135,10 @@ export default {
 <style>
 .v-card__text, .v-card__title {
   word-break: normal; /* maybe !important  */
+}
+
+li a {
+    text-decoration: none !important;
 }
 
 #app {

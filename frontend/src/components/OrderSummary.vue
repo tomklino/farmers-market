@@ -42,25 +42,23 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-      <v-card-actions class="justify-center">
-        <router-link :to="{ name: 'OrderSummary', params: { order_id: displayedOrder._id} }">
+      <v-card-actions>
+        <router-link v-if="modifyOrderFlag && !disableGoToOrderButton" style="text-decoration: none; color: inherit;" :to="{ name: 'OrderSummary', params: { order_id: displayedOrder._id} }">
           <v-btn class="ma-2" text color="orange">{{ $t('modify_order') }}<v-icon right>mdi-pencil</v-icon></v-btn>
         </router-link>
-        <v-btn raised color="blue"
-          v-if="isAdmin()"
-          @click="completeOrder(displayedOrder._id)"
-          :disabled="isLoading || displayedOrder.completed === 'true'"
-          >{{ displayedOrder.completed === "true" ? $t('executed') : $t('execute_order') }}</v-btn>
-        <v-btn raised color="red"
-          v-if="isAdmin() && displayedOrder.completed === 'true'"
-          :disabled="isLoading"
-          @click="unCompleteOrder(displayedOrder._id)"
-          >{{ $t('undo_execute') }}</v-btn>
         <v-btn
           @click="$emit('input', false)"
+          color="grey--lighten-1"
+          class="ma-2 grey--text text--darken-3"
+        >{{ closeButtonText || $t('close') }}</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn
+          v-if="typeof approveButtonText === 'string'"
+          @click="$emit('approved', true)"
+          :loading="sendingOrderToServer"
           color="green"
-          class="grey--text text--darken-3"
-        >{{ $t('close') }}</v-btn>
+          class="ma-2 grey--text text--lighten-4"
+        >{{ approveButtonText || $t('close') }}</v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -72,8 +70,14 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'OrderSummary',
+  props: [
+    'closeButtonText', 'approveButtonText', 'disableGoToOrderButton'
+  ],
   computed: {
-    ...mapState(['loggedInUser', 'displayedOrder']),
+    ...mapState(['loggedInUser', 'displayedOrder', 'sendingOrderToServer']),
+    modifyOrderFlag() {
+      return this.displayedOrder && typeof this.displayedOrder._id === "string";
+    },
     total() {
       let total = 0;
       for (let p of store.state.displayedOrder.products) {
