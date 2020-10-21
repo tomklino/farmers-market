@@ -64,5 +64,6 @@
   "home": "Home",
   "short_description": "Short description",
   "i_am_not_done": "I'm not done",
-  "looks_good": "Looks good"
+  "looks_good": "Looks good",
+  "your_order_was_not_submitted_yet": "Your order was not submitted yet"
 }

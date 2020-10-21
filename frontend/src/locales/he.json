@@ -64,5 +64,6 @@
   "home": "בית",
   "short_description": "תיאור קצר",
   "i_am_not_done": "לא סיימתי",
-  "looks_good": "נראה סבבה"
+  "looks_good": "נראה סבבה",
+  "your_order_was_not_submitted_yet": "הזמנתך טרם נשלחה"
 }

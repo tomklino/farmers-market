@@ -12,6 +12,7 @@
       class="mx-auto"
       width="100%"
       >
+      <v-alert v-if="displayWarning" type="warning">{{ $t('your_order_was_not_submitted_yet') }}</v-alert>
       <v-card-title>{{ $t('order_summary') }}</v-card-title>
       <v-list two-line>
         <v-list-item>
@@ -74,7 +75,37 @@ export default {
     'closeButtonText', 'approveButtonText', 'disableGoToOrderButton'
   ],
   computed: {
-    ...mapState(['loggedInUser', 'displayedOrder', 'sendingOrderToServer']),
+    ...mapState(['loggedInUser', 'displayedOrder', 'sendingOrderToServer', 'userOrders']),
+    displayWarning() {
+      if(typeof this.displayedOrder._id === "undefined") {
+        return true;
+      }
+      if(this.orderChanged) {
+        return true
+      }
+
+      return false;
+    },
+    orderChanged() {
+      const orderInMemory = this.userOrders.find(o => o._id === this.displayedOrder._id);
+      if(orderInMemory.products.some(productInMemory => {
+        let hasMatchingProduct = this.displayedOrder.products.findIndex(p => {
+          return p.name === productInMemory.name &&
+                 p.want === productInMemory.want &&
+                 p.quantity === productInMemory.quantity
+          }) !== -1;
+        return !hasMatchingProduct;
+      })) { return true }
+      if(this.displayedOrder.products.some(productInDisplay => {
+        let hasMatchingProduct = orderInMemory.products.findIndex(p => {
+          return p.name === productInDisplay.name &&
+                 p.want === productInDisplay.want &&
+                 p.quantity === productInDisplay.quantity
+          }) !== -1;
+        return !hasMatchingProduct;
+      })) { return true }
+      return false;
+    },
     modifyOrderFlag() {
       return this.displayedOrder && typeof this.displayedOrder._id === "string";
     },
