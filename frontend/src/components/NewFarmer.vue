@@ -107,7 +107,7 @@
           <v-flex md6 xs12>
             <v-row class="mx-4">
               <v-text-field
-                v-model="name"
+                v-model="displayedFarmer.name"
                 :rules="nameRules"
                 :disabled="isDisabled"
                 :label="$t('name')"
@@ -117,7 +117,7 @@
 
             <v-row class="mx-4">
               <v-textarea
-                v-model="description"
+                v-model="displayedFarmer.description"
                 :disabled="isDisabled"
                 :label="$t('short_description')"
               ></v-textarea>
@@ -125,7 +125,7 @@
 
             <v-row class="mx-4">
               <v-combobox
-                v-model="area"
+                v-model="displayedFarmer.area"
                 :items="areaOptions"
                 :rules="areaRules"
                 :disabled="isDisabled"
@@ -138,14 +138,14 @@
             </v-row>
             <v-row class="mx-4">
               <v-text-field
-                v-model="paymentLink"
+                v-model="displayedFarmer.paymentLink"
                 :disabled="isDisabled"
                 :label="$t('payment_link')"
               />
             </v-row>
             <v-row class="mx-4">
               <v-text-field
-                v-model="minimumOrders"
+                v-model="displayedFarmer.minimumOrders"
                 :disabled="isDisabled"
                 :label="$t('order_minimum')"
                 type="number"
@@ -165,7 +165,7 @@
                     </v-btn>
                   </v-col>
                   <v-col
-                    v-for="(produce, i) in products"
+                    v-for="(produce, i) in displayedFarmer.products"
                     :key="produce.text"
                     class="shrink d-flex justify-start"
                   >
@@ -189,8 +189,8 @@
                   >
                   <v-card ripple class="mx-auto"
                     v-on:click="selectPicture(image)"
-                    :elevation="selectedPicture === image ? 18 : 1"
-                    :outlined="selectedPicture === image ? true : false"
+                    :elevation="displayedFarmer.selectedPicture === image ? 18 : 1"
+                    :outlined="displayedFarmer.selectedPicture === image ? true : false"
                   >
                     <v-img :src="image"></v-img>
                   </v-card>
@@ -203,7 +203,8 @@
               <v-card>
                 <v-card-title>{{ $t('when_can_you_arrive') }}</v-card-title>
                 <v-date-picker
-                  v-model="arrivalDates"
+                  :value="arrivalDates"
+                  @input="updateArrivalDates"
                   :disabled="isDisabled"
                   multiple
                   >
@@ -217,9 +218,9 @@
           color="success"
           class="ma-4"
           v-bind:disabled="!complete || isDisabled"
-          v-on:click="create"
+          v-on:click="apply"
           >
-          {{ $t('create_new_farmer__button') }}
+          {{ this.editMode ? $t('modify_farmer') : $t('create_new_farmer__button') }}
         </v-btn>
       </v-container>
     </v-form>
@@ -228,34 +229,50 @@
 
 <script>
 import axios from 'axios';
+import store from '@/store';
+import { mapState } from 'vuex';
 
 export default {
   name: 'NewFarmer',
+  created() {
+    console.log("arrivalDates", this.arrivalDates);
+    // if(typeof this.displayedFarmer._id !== 'string') {
+    //   this.initFarmer();
+    // }
+  },
   data: () => ({
-    paymentLink: "",
-    description: "",
     shortProductDescription: "",
-    products: [],
     selectedProductPicture: "",
     produceValid: false,
     newProduceDialogOpened: false,
     createdDialogOpened: false,
     isDisabled: false,
     imageChoices: [],
-    selectedPicture: "",
-    minimumOrders: 20,
-    produce: "",
     produceName: "",
     area: "",
     areaOptions: [ "חרוזים" ], // TODO should be queried from server
     price: 50,
     packageSize: 1,
     packageUnit: "Kg",
-    arrivalDates: [],
-    name: '',
     valid: false
   }),
   computed: {
+    ...mapState(['displayedFarmer']),
+    arrivalDates: {
+      get() {
+        if(!(store.state.displayedFarmer.arrivalDates instanceof Array)) {
+          store.commit('setDates', []);
+
+        }
+        return store.state.displayedFarmer.arrivalDates;
+      },
+      set(item) {
+        store.commit('setDates', item);
+      }
+    },
+    editMode() {
+      return typeof this.displayedFarmer._id === 'string';
+    },
     productButtonDisabled() {
       return this.selectedProductPicture === "" || this.produceName === "";
     },
@@ -297,12 +314,22 @@ export default {
     },
     complete() {
       return this.valid &&
-        this.selectedPicture &&
-        this.arrivalDates.length > 0 &&
-        this.products.length > 0
+        this.displayedFarmer.selectedPicture &&
+        // this.displayedFarmer.arrivalDates instanceof Array &&
+        this.displayedFarmer.arrivalDates.length > 0
+        // &&
+        // this.displayedFarmer.products instanceof Array &&
+        // this.displayedFarmer.products.length > 0
     }
   },
   methods: {
+    updateArrivalDates(dates) {
+      store.commit('setDates', dates);
+    },
+    initFarmer() {
+      this.displayedFarmer.arrivalDates = [];
+      this.displayedFarmer.products = [];
+    },
     async uploadImage(file) {
       let response = await axios.post('/images/upload', file, {
         headers: {
@@ -325,7 +352,10 @@ export default {
       let produce = { name, packageSize, packageUnit, price, image, description };
 
       produce.text = `${name} - ${packageSize}${packageUnit} - ${price}₪`
-      this.products.push(produce);
+      if(!this.displayedFarmer.products) {
+        this.displayedFarmer.products = [];
+      }
+      this.displayedFarmer.products.push(produce);
 
       //clear and close dialog
       this.produceName = "";
@@ -336,28 +366,22 @@ export default {
       this.shortProductDescription = "";
       this.newProduceDialogOpened = false;
     },
-    async create() {
-      var payload = {
-        name: this.name,
-        paymentLink: this.paymentLink,
-        image: this.selectedPicture,
-        orderMinimum: this.minimumOrders,
-        arrivalDates: this.arrivalDates,
-        price: this.price,
-        shipmentArea: this.area,
-        products: this.products,
-        description: this.description
-      }
-
+    async apply() {
       this.isDisabled = true;
-      await axios.post('/api/farmers/new', payload);
+      const endpoint = `/api/farmers/${this.editMode ? 'edit' : 'new'}`
+      await axios.post(endpoint, this.displayedFarmer);
       this.createdDialogOpened = true;
     },
     selectPicture(img) {
-      this.selectedPicture = img;
+      this.$set(this.displayedFarmer, 'selectedPicture', img);
     },
     selectProductPicture(img) {
       this.selectedProductPicture = img;
+    }
+  },
+  watch: {
+    displayedFarmer() {
+      console.log("displayedFarmer", this.displayedFarmer);
     }
   }
 }

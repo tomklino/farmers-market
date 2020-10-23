@@ -9,9 +9,9 @@ import store from '@/store'
 import NewFarmer from '@/components/NewFarmer.vue'
 
 export default {
-  name: 'NewFarmerView',
+  name: 'EditFarmerView',
   created() {
-    store.dispatch('clearDisplayedFarmer');
+    store.dispatch('setDisplayedFarmer', this.$route.params.farmer_id);
   },
   components: {
     NewFarmer

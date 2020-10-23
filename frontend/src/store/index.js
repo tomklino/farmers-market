@@ -6,7 +6,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    displayedFarmer: {},
+    dates: [],
+    displayedFarmer: {
+      arrivalDates: [],
+      products: []
+    },
     loadingDisplayedFarmer: false,
     displayedOrder: {},
     loadingDisplayedOrder: false,
@@ -25,6 +29,10 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setDates(state, dates) {
+      state.dates = dates;
+      state.displayedFarmer.arrivalDates = dates;
+    },
     setFarmerLoading(state, { farmerID, isLoading }) {
       let farmer = state.farmersList.find(f => f._id === farmerID);
       Vue.set(farmer, "isLoading", isLoading);
@@ -101,6 +109,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setDates({ commit }, dates) {
+      commit('setDates', dates)
+    },
     setSendingOrderToServer({ commit }, isSending) {
       commit('setSendingOrderToServer', isSending);
     },
