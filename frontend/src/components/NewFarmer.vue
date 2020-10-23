@@ -189,8 +189,8 @@
                   >
                   <v-card ripple class="mx-auto"
                     v-on:click="selectPicture(image)"
-                    :elevation="displayedFarmer.selectedPicture === image ? 18 : 1"
-                    :outlined="displayedFarmer.selectedPicture === image ? true : false"
+                    :elevation="displayedFarmer.image === image ? 18 : 1"
+                    :outlined="displayedFarmer.image === image ? true : false"
                   >
                     <v-img :src="image"></v-img>
                   </v-card>
@@ -228,7 +228,6 @@
 
 <script>
 import axios from 'axios';
-// import store from '@/store';
 import { mapState, mapActions } from 'vuex';
 
 export default {
@@ -323,12 +322,11 @@ export default {
     },
     complete() {
       return this.valid &&
-        this.displayedFarmer.selectedPicture &&
-        // this.displayedFarmer.arrivalDates instanceof Array &&
-        this.displayedFarmer.arrivalDates.length > 0
-        // &&
-        // this.displayedFarmer.products instanceof Array &&
-        // this.displayedFarmer.products.length > 0
+        this.displayedFarmer.image &&
+        this.displayedFarmer.arrivalDates instanceof Array &&
+        this.displayedFarmer.arrivalDates.length > 0 &&
+        this.displayedFarmer.products instanceof Array &&
+        this.displayedFarmer.products.length > 0
     }
   },
   methods: {
@@ -376,15 +374,10 @@ export default {
       this.createdDialogOpened = true;
     },
     selectPicture(img) {
-      this.$set(this.displayedFarmer, 'selectedPicture', img);
+      this.$set(this.displayedFarmer, 'image', img);
     },
     selectProductPicture(img) {
       this.selectedProductPicture = img;
-    }
-  },
-  watch: {
-    displayedFarmer() {
-      console.log("displayedFarmer", this.displayedFarmer);
     }
   }
 }

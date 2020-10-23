@@ -6,17 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    dates: [],
-    displayedFarmer: {
-      name: "",
-      description: "",
-      shipmentArea: "",
-      paymentLink: "",
-      selectedPicture: "",
-      orderMinimum: 0,
-      arrivalDates: [],
-      products: []
-    },
+    displayedFarmer: {},
     loadingDisplayedFarmer: false,
     displayedOrder: {},
     loadingDisplayedOrder: false,
@@ -39,7 +29,6 @@ export default new Vuex.Store({
       Vue.set(state.displayedFarmer, attribute.key, attribute.value);
     },
     setDates(state, dates) {
-      // state.dates = dates;
       Vue.set(state.displayedFarmer, 'arrivalDates', dates);
     },
     setFarmerLoading(state, { farmerID, isLoading }) {
