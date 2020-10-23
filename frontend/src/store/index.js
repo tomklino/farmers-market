@@ -8,6 +8,12 @@ export default new Vuex.Store({
   state: {
     dates: [],
     displayedFarmer: {
+      name: "",
+      description: "",
+      area: "",
+      paymentLink: "",
+      selectedPicture: "",
+      minimumOrders: 0,
       arrivalDates: [],
       products: []
     },
@@ -29,9 +35,12 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setDisplayedFarmerAttribute(state, attribute) {
+      Vue.set(state.displayedFarmer, attribute.key, attribute.value);
+    },
     setDates(state, dates) {
-      state.dates = dates;
-      state.displayedFarmer.arrivalDates = dates;
+      // state.dates = dates;
+      Vue.set(state.displayedFarmer, 'arrivalDates', dates);
     },
     setFarmerLoading(state, { farmerID, isLoading }) {
       let farmer = state.farmersList.find(f => f._id === farmerID);
@@ -109,8 +118,23 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    setDates({ commit }, dates) {
-      commit('setDates', dates)
+    setDisplayedFarmerName({ commit }, name) {
+      commit('setDisplayedFarmerAttribute', { key: 'name', value: name });
+    },
+    setDisplayedFarmerDescription({ commit }, description) {
+      commit('setDisplayedFarmerAttribute', { key: 'description', value: description });
+    },
+    setDisplayedFarmerArea({ commit }, area) {
+      commit('setDisplayedFarmerAttribute', { key: 'area', value: area });
+    },
+    setDisplayedFarmerPaymentLink({ commit }, paymentLink) {
+      commit('setDisplayedFarmerAttribute', { key: 'paymentLink', value: paymentLink });
+    },
+    setDisplayedFarmerMinimumOrders({ commit }, minimumOrders) {
+      commit('setDisplayedFarmerAttribute', { key: 'minimumOrders', value: minimumOrders });
+    },
+    setDisplayedFarmerArrivalDates({ commit }, dates) {
+      commit('setDisplayedFarmerAttribute', { key: 'arrivalDates', value: dates })
     },
     setSendingOrderToServer({ commit }, isSending) {
       commit('setSendingOrderToServer', isSending);

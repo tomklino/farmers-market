@@ -107,7 +107,7 @@
           <v-flex md6 xs12>
             <v-row class="mx-4">
               <v-text-field
-                v-model="displayedFarmer.name"
+                v-model="name"
                 :rules="nameRules"
                 :disabled="isDisabled"
                 :label="$t('name')"
@@ -117,7 +117,7 @@
 
             <v-row class="mx-4">
               <v-textarea
-                v-model="displayedFarmer.description"
+                v-model="description"
                 :disabled="isDisabled"
                 :label="$t('short_description')"
               ></v-textarea>
@@ -125,7 +125,7 @@
 
             <v-row class="mx-4">
               <v-combobox
-                v-model="displayedFarmer.area"
+                v-model="area"
                 :items="areaOptions"
                 :rules="areaRules"
                 :disabled="isDisabled"
@@ -138,14 +138,14 @@
             </v-row>
             <v-row class="mx-4">
               <v-text-field
-                v-model="displayedFarmer.paymentLink"
+                v-model="paymentLink"
                 :disabled="isDisabled"
                 :label="$t('payment_link')"
               />
             </v-row>
             <v-row class="mx-4">
               <v-text-field
-                v-model="displayedFarmer.minimumOrders"
+                v-model="minimumOrders"
                 :disabled="isDisabled"
                 :label="$t('order_minimum')"
                 type="number"
@@ -203,8 +203,7 @@
               <v-card>
                 <v-card-title>{{ $t('when_can_you_arrive') }}</v-card-title>
                 <v-date-picker
-                  :value="arrivalDates"
-                  @input="updateArrivalDates"
+                  v-model="arrivalDates"
                   :disabled="isDisabled"
                   multiple
                   >
@@ -229,17 +228,11 @@
 
 <script>
 import axios from 'axios';
-import store from '@/store';
-import { mapState } from 'vuex';
+// import store from '@/store';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'NewFarmer',
-  created() {
-    console.log("arrivalDates", this.arrivalDates);
-    // if(typeof this.displayedFarmer._id !== 'string') {
-    //   this.initFarmer();
-    // }
-  },
   data: () => ({
     shortProductDescription: "",
     selectedProductPicture: "",
@@ -249,7 +242,6 @@ export default {
     isDisabled: false,
     imageChoices: [],
     produceName: "",
-    area: "",
     areaOptions: [ "חרוזים" ], // TODO should be queried from server
     price: 50,
     packageSize: 1,
@@ -257,18 +249,35 @@ export default {
     valid: false
   }),
   computed: {
-    ...mapState(['displayedFarmer']),
+    ...mapState([ 'displayedFarmer' ]),
+    name: {
+      ...mapState({ get: state => state.displayedFarmer.name }),
+      ...mapActions({ set: 'setDisplayedFarmerName' })
+    },
+    description: {
+      ...mapState({ get: state => state.displayedFarmer.description }),
+      ...mapActions({ set: 'setDisplayedFarmerDescription' })
+    },
+    area: {
+      ...mapState({ get: state => state.displayedFarmer.area }),
+      ...mapActions({ set: 'setDisplayedFarmerArea' })
+    },
+    paymentLink: {
+      ...mapState({ get: state => state.displayedFarmer.paymentLink }),
+      ...mapActions({ set: 'setDisplayedFarmerPaymentLink' })
+    },
+    minimumOrders: {
+      ...mapState({ get: state => state.displayedFarmer.minimumOrders }),
+      ...mapActions({ set: 'setDisplayedFarmerMinimumOrders' })
+    },
     arrivalDates: {
       get() {
-        if(!(store.state.displayedFarmer.arrivalDates instanceof Array)) {
-          store.commit('setDates', []);
-
+        if(!(this.$store.state.displayedFarmer.arrivalDates instanceof Array)) {
+          this.$store.dispatch('setDisplayedFarmerArrivalDates', []);
         }
-        return store.state.displayedFarmer.arrivalDates;
+        return this.$store.state.displayedFarmer.arrivalDates;
       },
-      set(item) {
-        store.commit('setDates', item);
-      }
+      ...mapActions({ set: 'setDisplayedFarmerArrivalDates' })
     },
     editMode() {
       return typeof this.displayedFarmer._id === 'string';
@@ -323,13 +332,6 @@ export default {
     }
   },
   methods: {
-    updateArrivalDates(dates) {
-      store.commit('setDates', dates);
-    },
-    initFarmer() {
-      this.displayedFarmer.arrivalDates = [];
-      this.displayedFarmer.products = [];
-    },
     async uploadImage(file) {
       let response = await axios.post('/images/upload', file, {
         headers: {
