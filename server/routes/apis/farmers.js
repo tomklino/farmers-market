@@ -93,9 +93,6 @@ function validateFarmerJSON(farmerJSON) {
       v => Array.isArray(v) || "arrivalDates must be an array",
       // TODO check valid dates
     ],
-    price: [
-      v => typeof v !== 'undefined' || "price must be set",
-    ],
     shipmentArea: [
       v => typeof v === 'string' || "shipmentArea must be a string",
     ]

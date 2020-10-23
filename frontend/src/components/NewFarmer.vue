@@ -125,7 +125,7 @@
 
             <v-row class="mx-4">
               <v-combobox
-                v-model="area"
+                v-model="shipmentArea"
                 :items="areaOptions"
                 :rules="areaRules"
                 :disabled="isDisabled"
@@ -145,7 +145,7 @@
             </v-row>
             <v-row class="mx-4">
               <v-text-field
-                v-model="minimumOrders"
+                v-model="orderMinimum"
                 :disabled="isDisabled"
                 :label="$t('order_minimum')"
                 type="number"
@@ -258,17 +258,17 @@ export default {
       ...mapState({ get: state => state.displayedFarmer.description }),
       ...mapActions({ set: 'setDisplayedFarmerDescription' })
     },
-    area: {
-      ...mapState({ get: state => state.displayedFarmer.area }),
-      ...mapActions({ set: 'setDisplayedFarmerArea' })
+    shipmentArea: {
+      ...mapState({ get: state => state.displayedFarmer.shipmentArea }),
+      ...mapActions({ set: 'setDisplayedShipmentArea' })
     },
     paymentLink: {
       ...mapState({ get: state => state.displayedFarmer.paymentLink }),
       ...mapActions({ set: 'setDisplayedFarmerPaymentLink' })
     },
-    minimumOrders: {
-      ...mapState({ get: state => state.displayedFarmer.minimumOrders }),
-      ...mapActions({ set: 'setDisplayedFarmerMinimumOrders' })
+    orderMinimum: {
+      ...mapState({ get: state => state.displayedFarmer.orderMinimum }),
+      ...mapActions({ set: 'setDisplayedFarmerOrderMinimum' })
     },
     arrivalDates: {
       get() {
@@ -371,6 +371,7 @@ export default {
     async apply() {
       this.isDisabled = true;
       const endpoint = `/api/farmers/${this.editMode ? 'edit' : 'new'}`
+      console.log("displayedFarmer", this.displayedFarmer);
       await axios.post(endpoint, this.displayedFarmer);
       this.createdDialogOpened = true;
     },

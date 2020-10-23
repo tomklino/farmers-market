@@ -10,10 +10,10 @@ export default new Vuex.Store({
     displayedFarmer: {
       name: "",
       description: "",
-      area: "",
+      shipmentArea: "",
       paymentLink: "",
       selectedPicture: "",
-      minimumOrders: 0,
+      orderMinimum: 0,
       arrivalDates: [],
       products: []
     },
@@ -124,14 +124,14 @@ export default new Vuex.Store({
     setDisplayedFarmerDescription({ commit }, description) {
       commit('setDisplayedFarmerAttribute', { key: 'description', value: description });
     },
-    setDisplayedFarmerArea({ commit }, area) {
-      commit('setDisplayedFarmerAttribute', { key: 'area', value: area });
+    setDisplayedShipmentArea({ commit }, shipmentArea) {
+      commit('setDisplayedFarmerAttribute', { key: 'shipmentArea', value: shipmentArea });
     },
     setDisplayedFarmerPaymentLink({ commit }, paymentLink) {
       commit('setDisplayedFarmerAttribute', { key: 'paymentLink', value: paymentLink });
     },
-    setDisplayedFarmerMinimumOrders({ commit }, minimumOrders) {
-      commit('setDisplayedFarmerAttribute', { key: 'minimumOrders', value: minimumOrders });
+    setDisplayedFarmerOrderMinimum({ commit }, orderMinimum) {
+      commit('setDisplayedFarmerAttribute', { key: 'orderMinimum', value: orderMinimum });
     },
     setDisplayedFarmerArrivalDates({ commit }, dates) {
       commit('setDisplayedFarmerAttribute', { key: 'arrivalDates', value: dates })
