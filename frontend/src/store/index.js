@@ -6,7 +6,16 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    displayedFarmer: {},
+    displayedFarmer: {
+      // if something changes here - change the action clearDisplayedFarmer as well
+      name: "",
+      description: "",
+      shipmentArea: "",
+      paymentLink: "",
+      orderMinimum: 0,
+      arrivalDates: [],
+      products: []
+    },
     loadingDisplayedFarmer: false,
     displayedOrder: {},
     loadingDisplayedOrder: false,
@@ -305,7 +314,15 @@ export default new Vuex.Store({
       }
     },
     clearDisplayedFarmer({ commit }) {
-      commit('displayedFarmer', {});
+      commit('displayedFarmer', {
+        name: "",
+        description: "",
+        shipmentArea: "",
+        paymentLink: "",
+        orderMinimum: 0,
+        arrivalDates: [],
+        products: []
+      });
     },
     clearDisplayedOrder({ commit }) {
       commit('displayedOrder', {});

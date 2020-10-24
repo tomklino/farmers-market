@@ -5,13 +5,12 @@
 </template>
 
 <script>
-import store from '@/store'
 import NewFarmer from '@/components/NewFarmer.vue'
 
 export default {
   name: 'NewFarmerView',
   created() {
-    store.dispatch('clearDisplayedFarmer');
+    this.$store.dispatch('clearDisplayedFarmer');
   },
   components: {
     NewFarmer

@@ -270,12 +270,7 @@ export default {
       ...mapActions({ set: 'setDisplayedFarmerOrderMinimum' })
     },
     arrivalDates: {
-      get() {
-        if(!(this.$store.state.displayedFarmer.arrivalDates instanceof Array)) {
-          this.$store.dispatch('setDisplayedFarmerArrivalDates', []);
-        }
-        return this.$store.state.displayedFarmer.arrivalDates;
-      },
+      ...mapState({ get: state => state.displayedFarmer.arrivalDates }),
       ...mapActions({ set: 'setDisplayedFarmerArrivalDates' })
     },
     editMode() {
