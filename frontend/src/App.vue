@@ -2,6 +2,12 @@
   <v-app>
     <div id="app">
       <LoginDialog v-model="loginDialogOpened" />
+      <v-dialog v-model="messageDialogOpened">
+        <v-card width="100%">
+          <v-card-title>{{ message.title }}</v-card-title>
+          <v-card-text>{{ message.content }}</v-card-text>
+        </v-card>
+      </v-dialog>
       <div id="nav">
         <v-toolbar dark color="orange">
           <v-menu
@@ -61,7 +67,7 @@
 <script>
 import LoginDialog from '@/components/LoginDialog.vue'
 import axios from 'axios';
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import store from '@/store'
 
 export default {
@@ -93,7 +99,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['loggedInUser']),
+    ...mapState([ 'loggedInUser', 'message' ]),
+    messageDialogOpened: {
+      ...mapState({ get: "messageDialogOpened" }),
+      ...mapActions({ set: "setMessageDialogOpened" })
+    },
     displayLanguageSwitcherButton() {
       // HACK feature flag - display only in dev env
       return document.location.host === "farmers.local"

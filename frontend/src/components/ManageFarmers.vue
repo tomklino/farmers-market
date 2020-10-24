@@ -48,6 +48,11 @@
                 {{ farmer.orderLock === 'true' ? "mdi-lock" : "mdi-lock-open-outline"}}
               </v-icon>
             </v-btn>
+            <router-link style="text-decoration: none; color: inherit;" :to="{ name: 'EditFarmer', params: { farmer_id: farmer._id} }">
+              <v-btn icon>
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+            </router-link>
           </v-list-item-action>
         </v-list-item>
       </v-list>

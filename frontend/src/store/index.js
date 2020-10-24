@@ -6,7 +6,21 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    displayedFarmer: {},
+    message: {
+      title: "",
+      content: ""
+    },
+    messageDialogOpened: false,
+    displayedFarmer: {
+      // if something changes here - change the action clearDisplayedFarmer as well
+      name: "",
+      description: "",
+      shipmentArea: "",
+      paymentLink: "",
+      orderMinimum: 0,
+      arrivalDates: [],
+      products: []
+    },
     loadingDisplayedFarmer: false,
     displayedOrder: {},
     loadingDisplayedOrder: false,
@@ -25,6 +39,19 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setMessage(state, { title, content }) {
+      state.message.title = title;
+      state.message.content = content
+    },
+    setMessageDialogOpened(state, isOpened) {
+      state.messageDialogOpened = isOpened;
+    },
+    setDisplayedFarmerAttribute(state, attribute) {
+      Vue.set(state.displayedFarmer, attribute.key, attribute.value);
+    },
+    setDates(state, dates) {
+      Vue.set(state.displayedFarmer, 'arrivalDates', dates);
+    },
     setFarmerLoading(state, { farmerID, isLoading }) {
       let farmer = state.farmersList.find(f => f._id === farmerID);
       Vue.set(farmer, "isLoading", isLoading);
@@ -101,6 +128,31 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setMessage({ commit }, message) {
+      commit("setMessage", message);
+      commit("setMessageDialogOpened", true);
+    },
+    setMessageDialogOpened({ commit }, isOpened) {
+      commit("setMessageDialogOpened", isOpened);
+    },
+    setDisplayedFarmerName({ commit }, name) {
+      commit('setDisplayedFarmerAttribute', { key: 'name', value: name });
+    },
+    setDisplayedFarmerDescription({ commit }, description) {
+      commit('setDisplayedFarmerAttribute', { key: 'description', value: description });
+    },
+    setDisplayedShipmentArea({ commit }, shipmentArea) {
+      commit('setDisplayedFarmerAttribute', { key: 'shipmentArea', value: shipmentArea });
+    },
+    setDisplayedFarmerPaymentLink({ commit }, paymentLink) {
+      commit('setDisplayedFarmerAttribute', { key: 'paymentLink', value: paymentLink });
+    },
+    setDisplayedFarmerOrderMinimum({ commit }, orderMinimum) {
+      commit('setDisplayedFarmerAttribute', { key: 'orderMinimum', value: orderMinimum });
+    },
+    setDisplayedFarmerArrivalDates({ commit }, dates) {
+      commit('setDisplayedFarmerAttribute', { key: 'arrivalDates', value: dates })
+    },
     setSendingOrderToServer({ commit }, isSending) {
       commit('setSendingOrderToServer', isSending);
     },
@@ -281,7 +333,15 @@ export default new Vuex.Store({
       }
     },
     clearDisplayedFarmer({ commit }) {
-      commit('displayedFarmer', {});
+      commit('displayedFarmer', {
+        name: "",
+        description: "",
+        shipmentArea: "",
+        paymentLink: "",
+        orderMinimum: 0,
+        arrivalDates: [],
+        products: []
+      });
     },
     clearDisplayedOrder({ commit }) {
       commit('displayedOrder', {});
@@ -329,6 +389,32 @@ export default new Vuex.Store({
           }
         }
       }
+    },
+    async createFarmer({ state, commit, dispatch }) {
+      commit('setLoadingDisplayedFarmer', true);
+      try {
+        await axios.post('/api/farmers', state.displayedFarmer)
+      } catch (err) {
+        dispatch('setMessage', { title: "Error", content: "failed to create farmer" });
+        return false;
+      } finally {
+        commit('setLoadingDisplayedFarmer', false);
+      }
+      return true;
+    },
+    async modifyFarmer({ state, commit, dispatch }) {
+      commit('setLoadingDisplayedFarmer', true);
+      try {
+        await axios.put(`/api/farmers/${state.displayedFarmer._id}`, state.displayedFarmer);
+      } catch (err) {
+        console.log("Error while trhing to edit farmer", err);
+        dispatch('setMessage', { title: "Error", content: "failed to modify farmer" });
+        return false;
+      } finally {
+        commit('setLoadingDisplayedFarmer', false);
+      }
+      return true;
+
     }
   },
   modules: {
