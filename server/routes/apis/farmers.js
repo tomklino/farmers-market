@@ -40,16 +40,35 @@ router.put('/unlockorders/:id', async function(req, res) {
   }
 });
 
-router.post('/new', async function(req, res, next) {
+router.post('/', async function(req, res, next) {
   let payload = req.body;
   debug("got request for a new farmer");
   let [ validated, violations ] = validateFarmerJSON(payload);
   if(!validated) {
     debug("refusing to add an invalid farmer");
-    res.status(400).send("invalid JSON: " + violations);
+    res.status(400).json({ message: "invalid JSON: " + violations });
     return;
   }
   let err = await farmersData.insertFarmer(payload);
+  if (err instanceof Error) {
+    debug("encountered error while trying to insert farmer", err);
+    res.status(500).json({ message: "Internal Server Error" });
+    return;
+  }
+  res.send("Done");
+});
+
+router.put('/:id', async function(req, res, next) {
+  let payload = req.body;
+  delete payload._id;
+  debug("got request to edit farmer");
+  let [ validated, violations ] = validateFarmerJSON(payload);
+  if(!validated) {
+    debug("refusing to edit an invalid farmer request");
+    res.status(400).json({ message: "invalid JSON: " + violations });
+    return;
+  }
+  let err = await farmersData.modifyFarmer(req.params['id'], payload);
   if (err instanceof Error) {
     debug("encountered error while trying to insert farmer", err);
     res.status(500).json({ message: "Internal Server Error" });

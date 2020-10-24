@@ -363,10 +363,14 @@ export default {
     },
     async apply() {
       this.isDisabled = true;
-      const endpoint = `/api/farmers/${this.editMode ? 'edit' : 'new'}`
-      console.log("displayedFarmer", this.displayedFarmer);
-      await axios.post(endpoint, this.displayedFarmer);
-      this.createdDialogOpened = true;
+      let success;
+      if(this.editMode) {
+        success = await this.$store.dispatch("modifyFarmer");
+      } else {
+        success = await this.$store.dispatch("createFarmer");
+      }
+      this.isDisabled = !success;
+      this.createdDialogOpened = success;
     },
     selectPicture(img) {
       this.$set(this.displayedFarmer, 'image', img);

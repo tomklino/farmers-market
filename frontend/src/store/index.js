@@ -6,6 +6,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    message: {
+      title: "",
+      content: ""
+    },
+    messageDialogOpened: false,
     displayedFarmer: {
       // if something changes here - change the action clearDisplayedFarmer as well
       name: "",
@@ -34,6 +39,13 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setMessage(state, { title, content }) {
+      state.message.title = title;
+      state.message.content = content
+    },
+    setMessageDialogOpened(state, isOpened) {
+      state.messageDialogOpened = isOpened;
+    },
     setDisplayedFarmerAttribute(state, attribute) {
       Vue.set(state.displayedFarmer, attribute.key, attribute.value);
     },
@@ -116,6 +128,13 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setMessage({ commit }, message) {
+      commit("setMessage", message);
+      commit("setMessageDialogOpened", true);
+    },
+    setMessageDialogOpened({ commit }, isOpened) {
+      commit("setMessageDialogOpened", isOpened);
+    },
     setDisplayedFarmerName({ commit }, name) {
       commit('setDisplayedFarmerAttribute', { key: 'name', value: name });
     },
@@ -370,6 +389,32 @@ export default new Vuex.Store({
           }
         }
       }
+    },
+    async createFarmer({ state, commit, dispatch }) {
+      commit('setLoadingDisplayedFarmer', true);
+      try {
+        await axios.post('/api/farmers', state.displayedFarmer)
+      } catch (err) {
+        dispatch('setMessage', { title: "Error", content: "failed to create farmer" });
+        return false;
+      } finally {
+        commit('setLoadingDisplayedFarmer', false);
+      }
+      return true;
+    },
+    async modifyFarmer({ state, commit, dispatch }) {
+      commit('setLoadingDisplayedFarmer', true);
+      try {
+        await axios.put(`/api/farmers/${state.displayedFarmer._id}`, state.displayedFarmer);
+      } catch (err) {
+        console.log("Error while trhing to edit farmer", err);
+        dispatch('setMessage', { title: "Error", content: "failed to modify farmer" });
+        return false;
+      } finally {
+        commit('setLoadingDisplayedFarmer', false);
+      }
+      return true;
+
     }
   },
   modules: {

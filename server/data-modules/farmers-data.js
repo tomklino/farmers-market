@@ -13,6 +13,7 @@ module.exports = {
   validateFarmerID,
   findFarmers,
   insertFarmer,
+  modifyFarmer,
   deleteFarmer,
   getFarmerImage,
   lockFarmerForOrders,
@@ -67,6 +68,15 @@ async function insertFarmer(farmerJSON) {
   if(err) { throw err; }
 
   return collection.insertOne(farmerJSON);
+}
+
+async function modifyFarmer(id, farmerJSON) {
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) { throw err; }
+
+  return collection.updateOne(
+      { _id: ObjectId(id) },
+      { $set: farmerJSON });
 }
 
 async function deleteFarmer(id) {
