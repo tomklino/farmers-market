@@ -33,7 +33,7 @@ function emailOrder(order, destination) {
       reject(new Error("NO DESTINATION PROVIDED"))
     }
 
-    let mailer_request = Object.assign({}, mailer_request_template);
+    const mailer_request = Object.assign({}, mailer_request_template);
     mailer_request.destination = destination;
 
     mailer_request.data = {
@@ -56,7 +56,7 @@ function emailOrder(order, destination) {
 
     mailer_request.data.receipt_link = receipt_link_prefix + order._id;
 
-    let farmerImage = await farmersData.getFarmerImage(order.farmerID);
+    const farmerImage = await farmersData.getFarmerImage(order.farmerID);
     mailer_request.data.header_image_url = static_host_uri + farmerImage
 
     // TODO: this is hardcoded - generate from receipt_link instead
