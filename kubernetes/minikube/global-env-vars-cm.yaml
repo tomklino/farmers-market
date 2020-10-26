@@ -11,3 +11,4 @@ data:
   FEATURE_FLAG__EMAIL: "false"
   TEST: "YES"
   SIMULATED_DELAY_MS: "600"
+  EMAIL_DEFAULT_SUBJECT: "Farmers Market"

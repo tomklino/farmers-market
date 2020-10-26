@@ -5,5 +5,6 @@ metadata:
   name: global-env-vars
 data:
   SELF_HOSTNAME: "http://farmers.klino.me"
-  STATIC_HOST_URI: "https://farmersstatic.blob.core.windows.net"
+  STATIC_HOST_URI: "http://farmers.klino.me"
   FEATURE_FLAG__EMAIL: "true"
+  EMAIL_DEFAULT_SUBJECT: "Farmers Market"
