@@ -159,7 +159,7 @@
 
 <script>
 import store from '@/store';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import axios from 'axios';
 import UserInfoForm from '@/components/UserInfoForm.vue';
 import OfferLogin from '@/components/OfferLogin.vue';
@@ -370,8 +370,12 @@ export default {
   }),
   computed: {
     ...mapState([
-      'loggedInUser', 'userInfo', 'userOrders', 'displayedFarmer', 'displayedOrder', 'sendingOrderToServer'
+      'loggedInUser', 'userOrders', 'displayedFarmer', 'displayedOrder', 'sendingOrderToServer'
     ]),
+    userInfo: {
+      ...mapState({ get: state => state.userInfo }),
+      ...mapActions({ set: 'setUserInfo' })
+    },
     isUserInfoComplete() {
       const { name, email, phone } = this.userInfo;
       if(typeof name !== "string" || typeof email !== "string" || typeof phone !== "string") {
@@ -412,14 +416,6 @@ export default {
     loading() {
       let { loadingDisplayedFarmer, loadingDisplayedOrder, loadingUserOrders } = store.state;
       return loadingDisplayedFarmer || loadingDisplayedOrder || loadingUserOrders;
-    },
-    userInfo: {
-      get() {
-        return store.state.userInfo;
-      },
-      set(newValue) {
-        store.dispatch("setUserInfo", newValue);
-      }
     },
     orderTotal() {
       if(typeof this.displayedFarmer === 'undefined' || typeof this.displayedFarmer.products === 'undefined') {
