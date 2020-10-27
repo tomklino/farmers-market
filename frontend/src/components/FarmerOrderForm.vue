@@ -17,7 +17,7 @@
     >
       <UserInfoForm
         v-model="userInfo"
-        v-on:input="commitOrder"
+        v-on:input="sendOrder"
       />
     </v-dialog>
     <v-dialog
@@ -48,13 +48,15 @@
     </v-dialog>
     <v-dialog
       v-model="orderSummaryDialogOpened"
+      @input="(v) => !v && notApproved()"
       width="500">
       <OrderSummary
         v-model="orderSummaryDialogOpened"
+        @input="(v) => !v && notApproved()"
         disableGoToOrderButton=true
         :closeButtonText="$t('i_am_not_done')"
         :approveButtonText="$t('looks_good')"
-        v-on:approved="sendOrder()"
+        v-on:approved="approve()"
       />
     </v-dialog>
     <v-container grid-list-md text-xs-center>
@@ -192,11 +194,12 @@ export default {
       }
       store.dispatch('pushToDisplayedOrder', this.orderJSON);
     },
-    completeButtonClicked() {
+    async completeButtonClicked() {
       this.pushToDisplayedOrder();
-      this.orderSummaryDialogOpened = true;
+      this.sendOrder();
     },
     async sendOrder() {
+      this.pushToDisplayedOrder();
       this.completeButtonLoading = true;
       if(this.modifyingFlag) {
         await this.modifyOrder();
@@ -280,6 +283,24 @@ export default {
       this.offerLoginDialogOpened = false;
       this.userInfoDialogOpened = false;
     },
+    waitForApproval() {
+      return new Promise((resolve) => {
+        this.orderSummaryDialogOpened = true;
+        this.approvedResolve = resolve;
+      });
+    },
+    approve() {
+      if(typeof this.approvedResolve === 'function') {
+        this.approvedResolve(true);
+        this.approvedResolve = null;
+      }
+    },
+    notApproved() {
+      if(typeof this.approvedResolve === 'function') {
+        this.approvedResolve(false);
+        this.approvedResolve = null;
+      }
+    },
     async commitOrder() {
       this.closeAllDialogs();
 
@@ -297,6 +318,11 @@ export default {
 
       const payload = this.orderJSON;
 
+      const approved = await this.waitForApproval();
+      if(!approved) {
+        return;
+      }
+
       this.isDisabled = true;
       store.dispatch('setSendingOrderToServer', true);
       let newOrderResponse = await axios.post('/api/orders/new', payload);
@@ -308,6 +334,11 @@ export default {
     async modifyOrder() {
       const payload = this.orderJSON;
       payload.orderID = this.displayedOrder._id;
+
+      const approved = await this.waitForApproval();
+      if(!approved) {
+        return;
+      }
 
       this.isDisabled = true;
       try {
@@ -327,6 +358,7 @@ export default {
     }
   },
   data: () => ({
+    approvedResolve: null,
     completeButtonLoading: false,
     offerLoginDialogOpened: false,
     userInfoDialogOpened: false,
