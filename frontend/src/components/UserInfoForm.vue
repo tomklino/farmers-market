@@ -11,6 +11,7 @@
         <v-text-field
           v-model="email"
           type="text"
+          :disabled="isEmailDisabled"
           :label="$t('email_address')"
           :rules="emailRules"
           ></v-text-field>
@@ -33,12 +34,25 @@ export default {
   name: "UserInfoForm",
   data: () => ({
     valid: false,
-    //// TODO: make sure the name/email/phone are being filled in they exist
-    name: "",
-    email: "",
-    phone: ""
   }),
   computed: {
+    name: {
+      get() { return store.state.userInfo.name },
+      set(value) {
+        store.commit('setUserInfoAttribute', { key: 'name', value });
+      }
+    },
+    nameRules() {
+      return [
+        v => !!v || this.$t('name_is_required')
+      ]
+    },
+    email: {
+      get() { return store.state.userInfo.email },
+      set(value) {
+        store.commit('setUserInfoAttribute', { key: 'email', value });
+      }
+    },
     emailRules() {
       return [
         v => !!v || this.$t('email_is_required'),
@@ -54,10 +68,15 @@ export default {
         }
       ]
     },
-    nameRules() {
-      return [
-        v => !!v || this.$t('name_is_required')
-      ]
+    isEmailDisabled() {
+      return store.state.loggedInUser.withGoogle &&
+             typeof store.state.userInfo.email === 'string'
+    },
+    phone: {
+      get() { return store.state.userInfo.phone },
+      set(value) {
+        store.commit('setUserInfoAttribute', { key: 'phone', value });
+      }
     },
     phoneRules() {
       return [

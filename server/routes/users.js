@@ -109,9 +109,13 @@ router.post('/google-signin', async function(req, res, next) {
   debug("userEntry (from db) is", userEntry);
   console.log(`google-signin point reached, verified to the following user_id and email: ${userID} ${userEmail}`);
 
+  if(typeof userEntry.userInfo !== 'object') {
+    await usersData.setUserInfo(userEmail, { email: userEmail });
+  }
+
   req.session.logged_in = true;
 
-  req.session.user = userEntry.username;
+  req.session.user  = userEntry.username;
   req.session.email = userEntry.user_email;
   req.session.admin = userEntry.admin;
   req.session.with_google = true;

@@ -12,7 +12,7 @@ export default new Vuex.Store({
     },
     messageDialogOpened: false,
     displayedFarmer: {
-      // if something changes here - change the action clearDisplayedFarmer as well
+      // NOTE if something changes here - change the action clearDisplayedFarmer as well
       name: "",
       description: "",
       shipmentArea: "",
@@ -27,7 +27,12 @@ export default new Vuex.Store({
     sendingOrderToServer: false,
     farmersList: [],
     ordersList: [],
-    userInfo: {},
+    userInfo: {
+      // NOTE if something changes here - change in action clearUserInfo as well
+      name: "",
+      email: "",
+      phone: ""
+    },
     userOrders: [],
     loadingUserOrders: false,
     loggedInUser: {
@@ -125,6 +130,9 @@ export default new Vuex.Store({
     },
     setUserInfo(state, userInfo) {
       Vue.set(state, 'userInfo', userInfo);
+    },
+    setUserInfoAttribute(state, attribute) {
+      Vue.set(state.userInfo, attribute.key, attribute.value)
     }
   },
   actions: {
@@ -246,11 +254,16 @@ export default new Vuex.Store({
     },
     clearUserInfo({ commit }) {
       localStorage.removeItem("user_info");
-      commit("setUserInfo", {});
+      commit("setUserInfo", {
+        name: "",
+        email: "",
+        phone: ""
+      });
     },
     setUserInfo({ commit }, userInfo) {
       commit("setUserInfo", userInfo)
     },
+
     loadUserInfo({ commit, dispatch }) {
       const userInfoObjectString = localStorage.getItem("user_info");
       if(userInfoObjectString === null) {
