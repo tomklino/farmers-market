@@ -204,6 +204,23 @@ router.post("/unmarkpayed", async function(req, res, next) {
   // TODO if order has a created_by field, and not yet expired, re-append to user's active_orders
 });
 
+router.put('/cancel/:orderID', async function(req, res, next) {
+  //TODO check if the user is allowed to perform a cancel
+  const orderID = req.params['orderID'];
+
+  if(typeof orderID !== 'string') {
+    return res.status(400).json({ message: "invalid request - must include a valid orderID" });
+  }
+
+  try {
+    await ordersData.cancelOrder(orderID);
+  } catch (err) {
+    return res.status(500).json({ message: "internal server error while trying to cancel order" });
+  }
+
+  return res.json({ message: "done" });
+});
+
 async function validateOrderJSON(orderJSON) {
   let rules = {
     name: [

@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import i18n from '../i18n'
 import axios from 'axios';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
@@ -136,6 +137,19 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async cancelDisplayedOrder({ state, dispatch }) {
+      const orderID = state.displayedOrder._id;
+
+      try {
+        await axios.put(`/api/orders/cancel/${orderID}`);
+        await dispatch("refreshUserOrders");
+      } catch (err) {
+        dispatch("setMessage", {
+          title: i18n.t("error"),
+          content: i18n.t("could_not_cancel_order")
+        })
+      }
+    },
     setMessage({ commit }, message) {
       commit("setMessage", message);
       commit("setMessageDialogOpened", true);

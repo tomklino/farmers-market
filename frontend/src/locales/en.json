@@ -65,5 +65,11 @@
   "short_description": "Short description",
   "i_am_not_done": "I'm not done",
   "looks_good": "Looks good",
-  "your_order_was_not_submitted_yet": "Your order was not submitted yet"
+  "your_order_was_not_submitted_yet": "Your order was not submitted yet",
+  "cancel_order": "Cancel order",
+  "are_you_sure_you_want_to_cancel_order": "Are you sure you want to cancel the order?",
+  "yes_cancel_order": "Yes - Cancel order",
+  "no_cancel_order": "No - Leave order as is",
+  "error": "Error",
+  "could_not_cancel_order": "Could not cancel order"
 }

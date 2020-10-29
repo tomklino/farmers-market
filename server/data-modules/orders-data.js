@@ -19,7 +19,17 @@ module.exports = {
   findOrders,
   findOrdersByUser,
   markAsPayed,
-  unmarkAsPayed
+  unmarkAsPayed,
+  cancelOrder
+}
+
+async function cancelOrder(orderID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
+  if(err) { throw err; }
+
+  return collection.updateOne(
+      { _id: ObjectId(orderID) },
+      { $set: { "cancelled": "true" }});
 }
 
 async function markAsPayed(orderID) {
@@ -101,23 +111,44 @@ async function insertOrder(orderJSON) {
   }
 }
 
-async function findOrder(orderID) {
+async function findOrder(orderID, options) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) { throw err; }
 
-  return collection.findOne({ _id: new ObjectId(orderID) });
+  if(typeof options === 'object' && options.includeCancelled) {
+    return collection.findOne({ _id: new ObjectId(orderID) });
+  } else {
+    return collection.findOne({
+      _id: new ObjectId(orderID),
+      cancelled: { "$ne": "true" }
+    });
+  }
 }
 
-async function findOrders(farmerID) {
+async function findOrders(farmerID, options) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) { throw err; }
 
-  return collection.find({ farmerID: farmerID }).toArray();
+  if(typeof options === 'object' && options.includeCancelled) {
+    return collection.find({ farmerID: farmerID }).toArray();
+  } else {
+    return collection.find({
+      farmerID: farmerID,
+      cancelled: { "$ne": "true" }
+    }).toArray();
+  }
 }
 
-async function findOrdersByUser(username) {
+async function findOrdersByUser(username, options) {
   const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
   if(err) { throw err; }
 
-  return collection.find({ created_by: username }).toArray();
+  if(typeof options === 'object' && options.includeCancelled) {
+    return collection.find({ created_by: username }).toArray();
+  } else {
+    return collection.find({
+      created_by: username,
+      cancelled: { "$ne": "true" }
+    }).toArray();
+  }
 }

@@ -59,6 +59,30 @@
         v-on:approved="approve()"
       />
     </v-dialog>
+    <v-dialog
+      width="500"
+      :persistent="cancelButtonsLoading"
+      v-model="verifyCancellationDialogOpened">
+      <v-card width="100%">
+        <v-card-title>{{ $t("are_you_sure_you_want_to_cancel_order") }}</v-card-title>
+        <v-card-actions>
+          <v-btn
+            color="grey-lighten-2"
+            class="ma-2"
+            :disabled="cancelButtonsLoading"
+            @click="verifyCancellationDialogOpened = false"
+          >{{ $t("no_cancel_order") }}</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="red"
+            class="ma-2"
+            :loading="cancelButtonsLoading"
+            :disabled="cancelButtonsLoading"
+            @click="cancelOrder()"
+          >{{ $t("yes_cancel_order") }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-container grid-list-md text-xs-center>
       <v-skeleton-loader
         v-if="loading"
@@ -150,6 +174,13 @@
               :disabled="completeButtonDisabled"
               @click="completeButtonClicked"
               >{{completeButtonText}}</v-btn>
+
+            <v-btn v-if="modifyingFlag"
+              large text
+              color="red"
+              :disabled="cancelOrderButtonDisabled"
+              @click="verifyCancellationDialogOpened = true"
+            >{{ $t('cancel_order') }}</v-btn>
           </v-form>
         </v-card-text>
       </v-card>
@@ -185,6 +216,12 @@ export default {
     store.dispatch("clearDisplayedOrder");
   },
   methods: {
+    async cancelOrder() {
+      this.cancelButtonsLoading = true;
+      await store.dispatch("cancelDisplayedOrder");
+      this.cancelButtonsLoading = false;
+      this.$router.go(-1);
+    },
     pushToDisplayedOrder() {
       if(this.displayedOrder && typeof this.displayedOrder._id === "string") {
         return store.dispatch('pushToDisplayedOrder', {
@@ -366,7 +403,8 @@ export default {
     checkbox: false,
     completedDialogOpened: false,
     valid: false,
-    quantity: 1,
+    verifyCancellationDialogOpened: false,
+    cancelButtonsLoading: false
   }),
   computed: {
     ...mapState([
@@ -426,6 +464,9 @@ export default {
         sum += Number.parseFloat(p.price) * Number.parseInt(p.quantity || 0)
       });
       return sum;
+    },
+    cancelOrderButtonDisabled() {
+      return this.displayedFarmer.orderLock === 'true';
     }
   },
   watch: {
