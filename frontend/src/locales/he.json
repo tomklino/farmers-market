@@ -71,5 +71,6 @@
   "yes_cancel_order": "כן, בטל הזמנה",
   "no_cancel_order": "לא, השאר הזמנה",
   "error": "שגיאה",
-  "could_not_cancel_order": "שגיאה בביטול ההזמנה"
+  "could_not_cancel_order": "שגיאה בביטול ההזמנה",
+  "modify_farmer": "ערוך חקלאי"
 }

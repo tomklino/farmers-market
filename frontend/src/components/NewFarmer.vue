@@ -86,9 +86,9 @@
             class="ma-3"
             color="green"
             :disabled="productButtonDisabled"
-            @click="addProduce()"
+            @click="editingProduct ? editProduct() : addProduce()"
           >
-            {{ $t('add') }}
+            {{ editingProduct ? $t('okay') : $t('add') }}
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
@@ -151,36 +151,6 @@
                 type="number"
               />
             </v-row>
-
-            <v-row>
-              <v-container>
-                <v-row>
-                  <v-col
-                    class="d-flex justify-start"
-                  >
-                    <v-btn class="mx-2" rounded dark color="indigo"
-                      @click="newProduceDialogOpened = true"
-                    >
-                      <v-icon dark>mdi-plus</v-icon>{{ $t('product') }}
-                    </v-btn>
-                  </v-col>
-                  <v-col
-                    v-for="(produce, i) in displayedFarmer.products"
-                    :key="produce.text"
-                    class="shrink d-flex justify-start"
-                  >
-                    <v-chip
-                      close
-                      @click:close="products.splice(i, 1)"
-                    >
-
-                      {{ produce.text }}
-                    </v-chip>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-row>
-
             <v-row>
               <v-file-input accept="image/*" :label="$t('upload_an_image')" @change="uploadImage"></v-file-input>
               <v-layout row wrap>
@@ -200,14 +170,27 @@
           </v-flex>
           <v-flex md6 xs12>
             <v-row justify="center">
-              <v-card>
-                <v-card-title>{{ $t('when_can_you_arrive') }}</v-card-title>
-                <v-date-picker
-                  v-model="arrivalDates"
-                  :disabled="isDisabled"
-                  multiple
+              <v-card width="400">
+                <v-toolbar dark color="indigo">
+                  <v-toolbar-title>{{ $t('products') }}</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-btn icon @click="newProduceDialogOpened = true"><v-icon>mdi-plus</v-icon></v-btn>
+                </v-toolbar>
+                <v-list width="100%" two-line>
+                  <v-list-item v-for="produce in displayedFarmer.products"
+                    :key="produce.name"
+                    link
+                    @click="openEditProduceDialog(produce.name)"
                   >
-                </v-date-picker>
+                    <v-list-item-avatar>
+                      <v-img :src="produce.image"></v-img>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title style="text-align: start;">{{ produce.name }}</v-list-item-title>
+                      <v-list-item-subtitle style="text-align: start;">{{ produce.text }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
               </v-card>
             </v-row>
           </v-flex>
@@ -230,16 +213,21 @@
 import axios from 'axios';
 import { mapState, mapActions } from 'vuex';
 
+function uniq(item, pos, ary) {
+  return !pos || item != ary[pos - 1];
+}
+
 export default {
   name: 'NewFarmer',
   data: () => ({
+    editingProduct: "",
     shortProductDescription: "",
     selectedProductPicture: "",
     produceValid: false,
     newProduceDialogOpened: false,
     createdDialogOpened: false,
     isDisabled: false,
-    imageChoices: [],
+    uploadedImages: [],
     produceName: "",
     areaOptions: [ "חרוזים" ], // TODO should be queried from server
     price: 50,
@@ -249,6 +237,13 @@ export default {
   }),
   computed: {
     ...mapState([ 'displayedFarmer' ]),
+    imageChoices() {
+      return [
+        this.uploadedImages,
+        this.displayedFarmer.image,
+        this.displayedFarmer.products.map(p => p.image)
+      ].flat().sort().filter(uniq);
+    },
     name: {
       ...mapState({ get: state => state.displayedFarmer.name }),
       ...mapActions({ set: 'setDisplayedFarmerName' })
@@ -268,10 +263,6 @@ export default {
     orderMinimum: {
       ...mapState({ get: state => state.displayedFarmer.orderMinimum }),
       ...mapActions({ set: 'setDisplayedFarmerOrderMinimum' })
-    },
-    arrivalDates: {
-      ...mapState({ get: state => state.displayedFarmer.arrivalDates }),
-      ...mapActions({ set: 'setDisplayedFarmerArrivalDates' })
     },
     editMode() {
       return typeof this.displayedFarmer._id === 'string';
@@ -318,8 +309,6 @@ export default {
     complete() {
       return this.valid &&
         this.displayedFarmer.image &&
-        this.displayedFarmer.arrivalDates instanceof Array &&
-        this.displayedFarmer.arrivalDates.length > 0 &&
         this.displayedFarmer.products instanceof Array &&
         this.displayedFarmer.products.length > 0
     }
@@ -331,7 +320,17 @@ export default {
           'Content-Type': file.type
         }
       });
-      this.imageChoices.push(response.data.imageRelativeLink);
+      this.uploadedImages.push(response.data.imageRelativeLink);
+    },
+    clearProduceDialog() {
+      this.produceName = "";
+      this.packageSize = 1;
+      this.packageUnit = "Kg";
+      this.price = 50;
+      this.selectedProductPicture = "";
+      this.shortProductDescription = "";
+
+      this.editingProduct = "";
     },
     addProduce() {
       if(!this.produceValid) {
@@ -352,13 +351,49 @@ export default {
       }
       this.displayedFarmer.products.push(produce);
 
-      //clear and close dialog
-      this.produceName = "";
-      this.packageSize = 1;
-      this.packageUnit = "Kg";
-      this.price = 50;
-      this.selectedProductPicture = "";
-      this.shortProductDescription = "";
+      this.newProduceDialogOpened = false;
+    },
+    openEditProduceDialog(productName) {
+      const product = this.displayedFarmer.products.find(p => p.name === productName);
+      if(!product) {
+        return;
+      }
+
+      this.editingProduct = productName;
+
+      this.produceName = product.name;
+      this.packageSize = product.packageSize;
+      this.packageUnit = product.packageUnit;
+      this.price       = product.price;
+      this.selectedProductPicture = product.image;
+      this.shortProductDescription = product.description;
+      this.newProduceDialogOpened = true;
+    },
+    editProduct() {
+      if(!this.produceValid) {
+        return;
+      }
+      const productIndex = this.displayedFarmer.products.findIndex(p => p.name === this.editingProduct);
+      if(productIndex === -1) {
+        return;
+      }
+
+      let name = this.produceName;
+      let packageSize = this.packageSize;
+      let packageUnit = this.packageUnit;
+      let price = this.price;
+      let image = this.selectedProductPicture;
+      let description = this.shortProductDescription;
+
+      let produce = { name, packageSize, packageUnit, price, image, description };
+
+      produce.text = `${name} - ${packageSize}${packageUnit} - ${price}₪`
+      if(!this.displayedFarmer.products) {
+        this.displayedFarmer.products = [];
+      }
+
+      this.displayedFarmer.products[productIndex] = produce;
+
       this.newProduceDialogOpened = false;
     },
     async apply() {
@@ -377,6 +412,13 @@ export default {
     },
     selectProductPicture(img) {
       this.selectedProductPicture = img;
+    }
+  },
+  watch: {
+    newProduceDialogOpened(value, oldValue) {
+      if(oldValue === true && value === false) {
+        this.clearProduceDialog();
+      }
     }
   }
 }

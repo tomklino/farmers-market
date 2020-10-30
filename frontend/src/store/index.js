@@ -18,6 +18,7 @@ export default new Vuex.Store({
       description: "",
       shipmentArea: "",
       paymentLink: "",
+      image: "",
       orderMinimum: 0,
       arrivalDates: [],
       products: []
