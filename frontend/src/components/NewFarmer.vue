@@ -177,7 +177,7 @@
                   <v-btn icon @click="newProduceDialogOpened = true"><v-icon>mdi-plus</v-icon></v-btn>
                 </v-toolbar>
                 <v-list width="100%" two-line>
-                  <v-list-item v-for="produce in displayedFarmer.products"
+                  <v-list-item v-for="(produce, index) in displayedFarmer.products"
                     :key="produce.name"
                     link
                     @click="openEditProduceDialog(produce.name)"
@@ -189,6 +189,9 @@
                       <v-list-item-title style="text-align: start;">{{ produce.name }}</v-list-item-title>
                       <v-list-item-subtitle style="text-align: start;">{{ produce.text }}</v-list-item-subtitle>
                     </v-list-item-content>
+                    <v-list-item-action>
+                      <v-btn icon @click="deleteProduct(index)"><v-icon>mdi-delete</v-icon></v-btn>
+                    </v-list-item-action>
                   </v-list-item>
                 </v-list>
               </v-card>
@@ -314,6 +317,9 @@ export default {
     }
   },
   methods: {
+    deleteProduct(index) {
+      this.$store.commit("removeDisplayedFarmerProduct", index);
+    },
     async uploadImage(file) {
       let response = await axios.post('/images/upload', file, {
         headers: {

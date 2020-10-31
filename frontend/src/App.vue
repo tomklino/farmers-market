@@ -49,7 +49,7 @@
             </router-link>
           </v-row>
           <router-link style="text-decoration: none; color: inherit;" to="/myorders">
-            <v-btn class="ma-2" text>{{ $vuetify.breakpoint.mdAndUp ? $t('my_orders') : "" }}<v-icon :right="$vuetify.breakpoint.mdAndUp">mdi-basket-outline</v-icon>
+            <v-btn class="ma-2" text>{{ $vuetify.breakpoint.mdAndUp ? $t('my_orders') : "" }}<v-icon :right="$vuetify.breakpoint.mdAndUp">mdi-cart</v-icon>
             </v-btn>
           </router-link>
           <v-btn text

@@ -46,6 +46,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    removeDisplayedFarmerProduct(state, index) {
+      state.displayedFarmer.products.splice(index, 1);
+    },
     setMessage(state, { title, content }) {
       state.message.title = title;
       state.message.content = content
