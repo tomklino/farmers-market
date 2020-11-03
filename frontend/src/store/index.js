@@ -56,6 +56,11 @@ export default new Vuex.Store({
     setMessageDialogOpened(state, isOpened) {
       state.messageDialogOpened = isOpened;
     },
+    setDisplayedFarmerProductQuantity(state, { i, quantity }) {
+      const product = state.displayedFarmer.products[i]
+      product.quantity = quantity;
+      Vue.set(state.displayedFarmer.products, i, product);
+    },
     setDisplayedFarmerAttribute(state, attribute) {
       Vue.set(state.displayedFarmer, attribute.key, attribute.value);
     },
@@ -360,6 +365,9 @@ export default new Vuex.Store({
         displayedFarmer = state.farmersList.find(f => f._id === farmer_id);
       }
       if(displayedFarmer) {
+        displayedFarmer.products.forEach((p, i) => {
+          displayedFarmer.products[i].quantity = 0;
+        });
         commit('displayedFarmer', displayedFarmer);
       }
     },

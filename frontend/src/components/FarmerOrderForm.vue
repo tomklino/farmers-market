@@ -112,7 +112,16 @@
         </v-card-text>
         <v-card-text class="my-3">
           <v-form class="px-3" v-model="valid">
-            <v-row v-for="(produce, i) in displayedFarmer.products" :key="produce.name"
+            <v-card v-for="(produce, i) in displayedFarmer.products" :key="produce.name">
+              <v-card-title>{{produceLabel(produce)}}</v-card-title>
+              <v-img height="200px" :src="displayedFarmer.products[i].image"></v-img>
+              <QuantitySelector
+                :text="` x ${displayedFarmer.products[i].price}₪`"
+                @input="$store.commit('setDisplayedFarmerProductQuantity', { i, quantity: $event })"
+                :value="displayedFarmer.products[i].quantity"
+              />
+            </v-card>
+            <!-- <v-row v-for="(produce, i) in displayedFarmer.products" :key="produce.name"
               class="product-row py-3"
             >
               <v-layout row wrap>
@@ -160,7 +169,7 @@
                   </v-layout>
                 </v-flex>
               </v-layout>
-            </v-row>
+            </v-row> -->
             <v-layout row>
               <v-flex md12>
                 <v-chip color="orange" large>{{ $t('your_order_total') }} {{orderTotal}}&#8362;</v-chip>
@@ -195,13 +204,15 @@ import axios from 'axios';
 import UserInfoForm from '@/components/UserInfoForm.vue';
 import OfferLogin from '@/components/OfferLogin.vue';
 import OrderSummary from '@/components/OrderSummary.vue';
+import QuantitySelector from '@/components/QuantitySelector.vue';
 
 export default {
   name: 'FarmerOrderForm',
   components: {
     UserInfoForm,
     OfferLogin,
-    OrderSummary
+    OrderSummary,
+    QuantitySelector
   },
   created() {
     store.dispatch("refreshUserOrders");
@@ -395,6 +406,8 @@ export default {
     }
   },
   data: () => ({
+    quantities: [],
+    quantityTest: 0,
     approvedResolve: null,
     completeButtonLoading: false,
     offerLoginDialogOpened: false,
