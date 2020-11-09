@@ -5,6 +5,8 @@ var router = express.Router();
 
 const ordersData = require('../../data-modules/orders-data');
 const farmersData = require('../../data-modules/farmers-data');
+const ac = require('../../rbac/index.js');
+const { getRole } = require('../../rbac/utils');
 
 router.put('/lockorders/:id', async function(req, res) {
   if(req.session['admin'] !== "true") {
@@ -41,6 +43,12 @@ router.put('/unlockorders/:id', async function(req, res) {
 });
 
 router.post('/', async function(req, res, next) {
+  const userRole = getRole(req.session);
+  const permission = await ac.can(userRole).execute('create').on('farmer')
+  if(!permission.granted) {
+    return res.status(401).json({ message: "not allowed" });
+  }
+
   let payload = req.body;
   debug("got request for a new farmer");
   let [ validated, violations ] = validateFarmerJSON(payload);
@@ -79,14 +87,15 @@ router.put('/:id', async function(req, res, next) {
 
 router.delete('/:id', async function(req, res, next) {
   let id = req.params.id;
-  let err = await farmersData.deleteFarmer(id);
   debug("requesting to delete", id);
-  if (err) {
+
+  try {
+    await farmersData.deleteFarmer(id);
+    res.send("Done");
+  } catch (err) {
     debug("encountered an error while trying to delete farmer", err);
-    res.status(500).json({ message: "Internal Server Error" });
-    return;
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-  res.send("Done");
 });
 
 router.get('/', async function(req, res, next) {

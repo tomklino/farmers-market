@@ -16,7 +16,8 @@
     "google-auth-library": "^6.0.6",
     "mongodb": "^3.5.7",
     "morgan": "~1.9.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "role-acl": "^4.5.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

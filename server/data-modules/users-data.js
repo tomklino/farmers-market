@@ -44,6 +44,18 @@ async function findUser(username) {
   }
 }
 
+async function setUserRole(username, role) {
+  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
+  if(err) {
+    return err;
+  }
+
+  return collection.updateOne(
+    { username },
+    { $set: { role }}
+  )
+}
+
 async function setAdminPrivilege(username) {
   const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
   if(err) {
@@ -52,7 +64,7 @@ async function setAdminPrivilege(username) {
 
   return collection.updateOne(
     { username },
-    { $set: { admin: "true" }});
+    { $set: { admin: "true", role: "admin" }});
 }
 
 async function revokeAdminPrivilege(username) {
@@ -63,7 +75,7 @@ async function revokeAdminPrivilege(username) {
 
   return collection.updateOne(
     { username },
-    { $set: { admin: "false" }});
+    { $set: { admin: "false", role: "user" }});
 }
 
 async function setUserInfo(username, userInfo) {

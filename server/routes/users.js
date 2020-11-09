@@ -53,6 +53,7 @@ router.post('/logout', function(req, res, next) {
   req.session.logged_in = false;
   req.session.user = "";
   req.session.admin = false;
+  req.session.role = "";
   req.session.with_google = false;
 
   let payload = {};
@@ -101,6 +102,7 @@ router.post('/google-signin', async function(req, res, next) {
     userJSON.username = userEmail;
     userJSON.user_email = userEmail;
     userJSON.admin = false;
+    userJSON.role = "user";
     userJSON.with_google = true;
     await usersData.insertUser(userJSON);
     userEntry = userJSON;
@@ -118,6 +120,7 @@ router.post('/google-signin', async function(req, res, next) {
   req.session.user  = userEntry.username;
   req.session.email = userEntry.user_email;
   req.session.admin = userEntry.admin;
+  req.session.role  = userEntry.role;
   req.session.with_google = true;
 
   let payload = {};
@@ -144,6 +147,7 @@ if(process.env["ENVIRONMENT"] === "DEV") {
       req.session.logged_in = true;
       req.session.user = username;
       req.session.admin = "true";
+      req.session.role = "admin"
 
       let payload = {};
       payload.message = "logged in as devadmin";
@@ -152,7 +156,7 @@ if(process.env["ENVIRONMENT"] === "DEV") {
     }
 
     payload.message = "cannot login as devadmin";
-    req.status(405).json(payload);
+    return res.status(405).json(payload);
   })
 }
 
