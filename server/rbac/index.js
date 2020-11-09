@@ -39,11 +39,11 @@ const grants = {
       {
         resource: 'farmer',
         action: ['modify'],
-        attributes: ['*'],
+        attributes: ['*', '!owner'],
         condition: {
           Fn: 'EQUALS',
           args: {
-            'requester': '$.created_by'
+            'requester': '$.owner'
           }
         }
       },

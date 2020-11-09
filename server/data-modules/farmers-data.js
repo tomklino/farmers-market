@@ -11,6 +11,8 @@ const {
 
 module.exports = {
   validateFarmerID,
+  getFarmer,
+  getFarmerOwner,
   findFarmers,
   insertFarmer,
   modifyFarmer,
@@ -19,6 +21,21 @@ module.exports = {
   lockFarmerForOrders,
   unlockFarmerForOrders,
   isFarmerLockedForOrders
+}
+
+async function getFarmerOwner(farmerID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) { throw err; }
+
+  const farmer = await collection.findOne({ _id: new ObjectId(farmerID) });
+  return farmer.owner;
+}
+
+async function getFarmer(farmerID) {
+  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
+  if(err) { throw err; }
+
+  return await collection.findOne({ _id: new ObjectId(farmerID) });
 }
 
 async function isFarmerLockedForOrders(farmerID) {

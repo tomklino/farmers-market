@@ -9,9 +9,12 @@ const ac = require('../../rbac/index.js');
 const { getRole } = require('../../rbac/utils');
 
 router.put('/lockorders/:id', async function(req, res) {
-  if(req.session['admin'] !== "true") {
+  const userRole = getRole(req.session);
+  const permission = await ac.can(userRole).execute('lock').on('farmer')
+  if(!permission.granted) {
     return res.status(401).json({ message: "not allowed" });
   }
+
   if(typeof req.params['id'] !== "string") {
     return res.status(400).json({ message: "farmer id not set correctly" });
   }
@@ -26,9 +29,12 @@ router.put('/lockorders/:id', async function(req, res) {
 });
 
 router.put('/unlockorders/:id', async function(req, res) {
-  if(req.session['admin'] !== "true") {
+  const userRole = getRole(req.session);
+  const permission = await ac.can(userRole).execute('unlock').on('farmer')
+  if(!permission.granted) {
     return res.status(401).json({ message: "not allowed" });
   }
+
   if(typeof req.params['id'] !== "string") {
     return res.status(400).json({ message: "farmer id not set correctly" });
   }
@@ -45,6 +51,7 @@ router.put('/unlockorders/:id', async function(req, res) {
 router.post('/', async function(req, res, next) {
   const userRole = getRole(req.session);
   const permission = await ac.can(userRole).execute('create').on('farmer')
+  debug("permission", permission, "role", userRole);
   if(!permission.granted) {
     return res.status(401).json({ message: "not allowed" });
   }
@@ -57,18 +64,33 @@ router.post('/', async function(req, res, next) {
     res.status(400).json({ message: "invalid JSON: " + violations });
     return;
   }
-  let err = await farmersData.insertFarmer(payload);
-  if (err instanceof Error) {
+
+  payload.created_by = req.session['user'];
+
+  try {
+    await farmersData.insertFarmer(payload);
+    res.json({ message: "done" });
+  } catch (err) {
     debug("encountered error while trying to insert farmer", err);
-    res.status(500).json({ message: "Internal Server Error" });
-    return;
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-  res.send("Done");
 });
 
 router.put('/:id', async function(req, res, next) {
+  const userRole = getRole(req.session);
+  const owner = await farmersData.getFarmerOwner(req.params['id']);
+  const context = { requester: req.session['user'], owner };
+  const permission = await ac.can(userRole).context(context).execute('modify').on('farmer');
+  if(!permission.granted) {
+    return res.status(401).json({ message: "not allowed" });
+  }
+
   let payload = req.body;
   delete payload._id;
+  delete payload.created_by;
+
+  payload = permission.filter(payload);
+
   debug("got request to edit farmer");
   let [ validated, violations ] = validateFarmerJSON(payload);
   if(!validated) {

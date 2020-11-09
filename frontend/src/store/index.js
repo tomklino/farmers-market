@@ -18,6 +18,7 @@ export default new Vuex.Store({
       description: "",
       shipmentArea: "",
       paymentLink: "",
+      owner: "",
       image: "",
       orderMinimum: 0,
       arrivalDates: [],
@@ -172,6 +173,9 @@ export default new Vuex.Store({
     },
     setDisplayedFarmerPaymentLink({ commit }, paymentLink) {
       commit('setDisplayedFarmerAttribute', { key: 'paymentLink', value: paymentLink });
+    },
+    setDisplayedFarmerOwner({ commit }, owner) {
+      commit('setDisplayedFarmerAttribute', { key: 'owner', value: owner });
     },
     setDisplayedFarmerOrderMinimum({ commit }, orderMinimum) {
       commit('setDisplayedFarmerAttribute', { key: 'orderMinimum', value: orderMinimum });
@@ -369,6 +373,7 @@ export default new Vuex.Store({
         description: "",
         shipmentArea: "",
         paymentLink: "",
+        owner: "",
         orderMinimum: 0,
         arrivalDates: [],
         products: []

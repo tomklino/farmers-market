@@ -138,6 +138,13 @@
             </v-row>
             <v-row class="mx-4">
               <v-text-field
+                v-model="owner"
+                :disabled="isDisabled"
+                :label="$t('owner')"
+                />
+            </v-row>
+            <v-row class="mx-4">
+              <v-text-field
                 v-model="paymentLink"
                 :disabled="isDisabled"
                 :label="$t('payment_link')"
@@ -262,6 +269,10 @@ export default {
     paymentLink: {
       ...mapState({ get: state => state.displayedFarmer.paymentLink }),
       ...mapActions({ set: 'setDisplayedFarmerPaymentLink' })
+    },
+    owner: {
+      ...mapState({ get: state => state.displayedFarmer.owner }),
+      ...mapActions({ set: 'setDisplayedFarmerOwner' })
     },
     orderMinimum: {
       ...mapState({ get: state => state.displayedFarmer.orderMinimum }),
