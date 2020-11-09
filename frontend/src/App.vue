@@ -170,7 +170,7 @@ li a {
 }
 
 #nav {
-  padding: 30px;
+  padding: 0px;
 }
 
 #nav a {
