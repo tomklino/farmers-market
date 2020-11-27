@@ -2,6 +2,7 @@ const debug = require('debug')('data:orders');
 
 const mongo = require('./mongo');
 const { ObjectId } = require('mongodb');
+const { getFarmer } = require('./farmers-data');
 
 const {
   db_name,
@@ -9,7 +10,12 @@ const {
   farmers_collection_name
 } = require('./mongo-constants');
 
-module.exports = {
+const withOrdersCollection = mongo.generateWithCollectionFunction(db_name, orders_collection_name);
+
+[
+  cancelOrder,
+  markAsPayed,
+  unmarkAsPayed,
   isOrderComplete,
   completeOrder,
   unCompleteOrder,
@@ -17,85 +23,55 @@ module.exports = {
   insertOrder,
   findOrder,
   findOrders,
-  findOrdersByUser,
-  markAsPayed,
-  unmarkAsPayed,
-  cancelOrder
-}
+  findOrdersByUser
+].forEach((f) => {
+  module.exports[f.name] = withOrdersCollection(f)
+});
 
-async function cancelOrder(orderID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function cancelOrder(collection, orderID) {
   return collection.updateOne(
-      { _id: ObjectId(orderID) },
-      { $set: { "cancelled": "true" }});
+    { _id: ObjectId(orderID) },
+    { $set: { "cancelled": "true" }});
 }
 
-async function markAsPayed(orderID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function markAsPayed(collection, orderID) {
   return collection.updateOne(
-      { _id: ObjectId(orderID) },
-      { $set: { "payed": "true" }});
+    { _id: ObjectId(orderID) },
+    { $set: { "payed": "true" }});
 }
 
-async function unmarkAsPayed(orderID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function unmarkAsPayed(collection, orderID) {
   return collection.updateOne(
-      { _id: ObjectId(orderID) },
-      { $set: { "payed": "false" }});
+    { _id: ObjectId(orderID) },
+    { $set: { "payed": "false" }});
 }
 
-async function isOrderComplete(orderID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function isOrderComplete(collection, orderID) {
   const order = await collection.findOne({ _id: new ObjectId(orderID) });
   return order['completed'] === "true";
 }
 
-async function completeOrder(orderID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function completeOrder(collection, orderID) {
   return collection.updateOne(
-      { _id: ObjectId(orderID) },
-      { $set: { "completed": "true" }});
+    { _id: ObjectId(orderID) },
+    { $set: { "completed": "true" }});
 }
 
-async function unCompleteOrder(orderID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function unCompleteOrder(collection, orderID) {
   return collection.updateOne(
-      { _id: ObjectId(orderID) },
-      { $set: { "completed": "false" }});
+    { _id: ObjectId(orderID) },
+    { $set: { "completed": "false" }});
 }
 
-async function modifyOrder(orderJSON) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function modifyOrder(collection, orderJSON) {
   return collection.updateOne(
-      { _id: ObjectId(orderJSON.orderID) },
-      { $set: orderJSON });
+    { _id: ObjectId(orderJSON.orderID) },
+    { $set: orderJSON });
 }
 
-async function insertOrder(orderJSON) {
-  const [ err, db ] = await mongo.getDB(db_name);
-  if(err) {
-    return [ err, null ];
-  }
-
-  const ordersCollection = db.collection(orders_collection_name);
-  const farmersCollection = db.collection(farmers_collection_name);
-
+async function insertOrder(collection, orderJSON) {
   try {
-    const farmer = await farmersCollection.findOne({ _id: ObjectId(orderJSON['farmerID'])});
+    const farmer = await getFarmer(orderJSON['farmerID']);
     orderJSON.farmerName = farmer.name;
     orderJSON.farmerImage = farmer.image;
   } catch (err) {
@@ -103,7 +79,7 @@ async function insertOrder(orderJSON) {
   }
 
   try {
-    const result = await ordersCollection.insertOne(orderJSON)
+    const result = await collection.insertOne(orderJSON)
     debug("order inserted successfully");
     return [ null, result.insertedId ];
   } catch (err) {
@@ -111,10 +87,7 @@ async function insertOrder(orderJSON) {
   }
 }
 
-async function findOrder(orderID, options) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function findOrder(collection, orderID, options) {
   if(typeof options === 'object' && options.includeCancelled) {
     return collection.findOne({ _id: new ObjectId(orderID) });
   } else {
@@ -125,10 +98,7 @@ async function findOrder(orderID, options) {
   }
 }
 
-async function findOrders(farmerID, options) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function findOrders(collection, farmerID, options) {
   if(typeof options === 'object' && options.includeCancelled) {
     return collection.find({ farmerID: farmerID }).toArray();
   } else {
@@ -139,10 +109,7 @@ async function findOrders(farmerID, options) {
   }
 }
 
-async function findOrdersByUser(username, options) {
-  const [ err, collection ] = await mongo.getCollection(db_name, orders_collection_name);
-  if(err) { throw err; }
-
+async function findOrdersByUser(collection, username, options) {
   if(typeof options === 'object' && options.includeCancelled) {
     return collection.find({ created_by: username }).toArray();
   } else {
