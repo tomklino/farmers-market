@@ -1,6 +1,6 @@
 const debug = require('debug')('data:users');
 
-const mongo = require('./mongo');
+const { generateWithCollectionFunction } = require('./mongo');
 const { ObjectId } = require('mongodb');
 
 const {
@@ -8,20 +8,19 @@ const {
   users_collection_name
 } = require('./mongo-constants');
 
-module.exports = {
+const withUsersCollection = generateWithCollectionFunction(db_name, users_collection_name);
+
+[
   insertUser,
   findUser,
   setAdminPrivilege,
   revokeAdminPrivilege,
   setUserInfo
-};
+].forEach((f) => {
+  module.exports[f.name] = withUsersCollection(f)
+});
 
-async function insertUser(userJSON) {
-  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
-  if(err) {
-    return err;
-  }
-
+async function insertUser(collection, userJSON) {
   return new Promise((resolve) => {
     collection.insertOne(userJSON, (err, r) => {
       debug("user inserted successfully", r);
@@ -30,12 +29,7 @@ async function insertUser(userJSON) {
   });
 }
 
-async function findUser(username) {
-  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
-  if(err) {
-    return err;
-  }
-
+async function findUser(collection, username) {
   debug("trying to find user with username", username);
   try {
     return collection.findOne({ username });
@@ -44,46 +38,26 @@ async function findUser(username) {
   }
 }
 
-async function setUserRole(username, role) {
-  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
-  if(err) {
-    return err;
-  }
-
+async function setUserRole(collection, username, role) {
   return collection.updateOne(
     { username },
     { $set: { role }}
   )
 }
 
-async function setAdminPrivilege(username) {
-  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
-  if(err) {
-    return err;
-  }
-
+async function setAdminPrivilege(collection, username) {
   return collection.updateOne(
     { username },
     { $set: { admin: "true", role: "admin" }});
 }
 
-async function revokeAdminPrivilege(username) {
-  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
-  if(err) {
-    return err;
-  }
-
+async function revokeAdminPrivilege(collection, username) {
   return collection.updateOne(
     { username },
     { $set: { admin: "false", role: "user" }});
 }
 
-async function setUserInfo(username, userInfo) {
-  const [ err, collection ] = await mongo.getCollection(db_name, users_collection_name);
-  if(err) {
-    return err;
-  }
-
+async function setUserInfo(collection, username, userInfo) {
   return collection.updateOne(
     { username },
     { $set: { userInfo }});
