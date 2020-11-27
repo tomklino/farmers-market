@@ -1,6 +1,6 @@
 const debug = require('debug')('data:orders');
 
-const mongo = require('./mongo');
+const { generateWithCollectionFunction } = require('./mongo');
 const { ObjectId } = require('mongodb');
 const { getFarmer } = require('./farmers-data');
 
@@ -10,7 +10,7 @@ const {
   farmers_collection_name
 } = require('./mongo-constants');
 
-const withOrdersCollection = mongo.generateWithCollectionFunction(db_name, orders_collection_name);
+const withOrdersCollection = generateWithCollectionFunction(db_name, orders_collection_name);
 
 [
   cancelOrder,
