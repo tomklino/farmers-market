@@ -31,4 +31,13 @@ async function getCollection(db_name, collection_name) {
   return [ null, db.collection(collection_name) ];
 }
 
-module.exports = { getClient, getDB, getCollection }
+function generateWithCollectionFunction(dbName, collectionName) {
+  return function (func) {
+    return async (...args) => {
+      const [ err, collection ] = await getCollection(dbName, collectionName);
+      if(err) { throw err; }
+      return await func(collection, ...args);
+    }
+  }
+}
+module.exports = { getClient, getDB, getCollection, generateWithCollectionFunction }
