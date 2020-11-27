@@ -1,112 +1,82 @@
 const debug = require('debug')('data:farmers');
 
-const mongo = require('./mongo');
+const { generateWithCollectionFunction } = require('./mongo');
 const { ObjectId } = require('mongodb');
 
 const {
   db_name,
-  orders_collection_name,
   farmers_collection_name
 } = require('./mongo-constants');
 
-module.exports = {
-  validateFarmerID,
-  getFarmer,
+const withFarmersCollection = generateWithCollectionFunction(db_name, farmers_collection_name);
+
+[
   getFarmerOwner,
+  getFarmer,
+  isFarmerLockedForOrders,
+  lockFarmerForOrders,
+  unlockFarmerForOrders,
+  validateFarmerID,
   findFarmers,
   insertFarmer,
   modifyFarmer,
   deleteFarmer,
-  getFarmerImage,
-  lockFarmerForOrders,
-  unlockFarmerForOrders,
-  isFarmerLockedForOrders
-}
+  getFarmerImage
+].forEach((f) => {
+  module.exports[f.name] = withFarmersCollection(f)
+});
 
-async function getFarmerOwner(farmerID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function getFarmerOwner(collection, farmerID) {
   const farmer = await collection.findOne({ _id: new ObjectId(farmerID) });
   return farmer.owner;
 }
 
-async function getFarmer(farmerID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function getFarmer(collection, farmerID) {
   return await collection.findOne({ _id: new ObjectId(farmerID) });
 }
 
-async function isFarmerLockedForOrders(farmerID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function isFarmerLockedForOrders(collection, farmerID) {
   const farmer = await collection.findOne({ _id: new ObjectId(farmerID) });
   return farmer['orderLock'] === "true";
 }
 
-async function lockFarmerForOrders(farmerID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function lockFarmerForOrders(collection, farmerID) {
   return collection.updateOne(
     { _id: new ObjectId(farmerID) },
     { $set: { "orderLock": "true" }}
   );
 }
 
-async function unlockFarmerForOrders(farmerID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function unlockFarmerForOrders(collection, farmerID) {
   return collection.updateOne(
     { _id: new ObjectId(farmerID) },
     { $set: { "orderLock": "false" }}
   );
 }
 
-async function validateFarmerID(farmerID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function validateFarmerID(collection, farmerID) {
   return collection.findOne({ _id: new ObjectId(farmerID) });
 }
 
-async function findFarmers() {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function findFarmers(collection) {
   return collection.find({}).toArray();
 }
 
-async function insertFarmer(farmerJSON) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function insertFarmer(collection, farmerJSON) {
   return collection.insertOne(farmerJSON);
 }
 
-async function modifyFarmer(id, farmerJSON) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function modifyFarmer(collection, id, farmerJSON) {
   return collection.updateOne(
       { _id: ObjectId(id) },
       { $set: farmerJSON });
 }
 
-async function deleteFarmer(id) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function deleteFarmer(collection, id) {
   return collection.findOneAndDelete({ _id: new ObjectId(id) });
 }
 
-async function getFarmerImage(farmerID) {
-  const [ err, collection ] = await mongo.getCollection(db_name, farmers_collection_name);
-  if(err) { throw err; }
-
+async function getFarmerImage(collection, farmerID) {
   try {
     const farmer = await collection.findOne({ _id: new ObjectId(farmerID) });
     return typeof farmer['image'] === 'string' ?
