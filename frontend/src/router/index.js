@@ -8,6 +8,7 @@ import ManageOrdersView from '../views/ManageOrdersView'
 import UserOrdersView from '../views/UserOrdersView'
 import OrderSummaryView from '../views/OrderSummaryView'
 import EditFarmerView from '../views/EditFarmerView'
+import ManagePermissionsView from '../views/ManagePermissionsView'
 
 Vue.use(VueRouter)
 
@@ -56,6 +57,11 @@ Vue.use(VueRouter)
     path: '/myorders',
     name: 'MyOrders',
     component: UserOrdersView
+  },
+  {
+    path: '/permissions',
+    name: 'ManagePermissions',
+    component: ManagePermissionsView
   },
   {
     path: '/about',

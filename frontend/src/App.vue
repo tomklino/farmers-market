@@ -125,6 +125,10 @@ export default {
           title: this.$t("manage_farmers"),
           to: "/manage"
         });
+        menuItems.push({
+          title: this.$t("permissions"),
+          to: "/permissions"
+        })
       }
       return menuItems;
     },

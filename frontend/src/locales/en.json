@@ -72,5 +72,6 @@
   "no_cancel_order": "No - Leave order as is",
   "error": "Error",
   "could_not_cancel_order": "Could not cancel order",
-  "modify_farmer": "Modify farmer"
+  "modify_farmer": "Modify farmer",
+  "permissions": "Permissions"
 }
