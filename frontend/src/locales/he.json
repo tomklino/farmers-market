@@ -73,5 +73,11 @@
   "error": "שגיאה",
   "could_not_cancel_order": "שגיאה בביטול ההזמנה",
   "modify_farmer": "ערוך חקלאי",
-  "permissions": "הרשאות"
+  "permissions": "הרשאות",
+  "add_permission": "הוסף הרשאה",
+  "username": "שם משתמש",
+  "resource": "סוג",
+  "read_permission": "קריאה",
+  "modify_permission": "עריכה",
+  "delete_permission": "מחיקה"
 }

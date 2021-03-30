@@ -20,6 +20,10 @@ const withPermissionsCollection = generateWithCollectionFunction(db_name, permis
   module.exports[f.name] = withPermissionsCollection(f)
 });
 
+function findPermissions(collection) {
+  return collection.find().toArray();
+}
+
 function insertPermission(collection, permissionObject) {
   //example permissionObject: { role: 'admin', resource: 'video', action: 'create', attributes: ['*'] }
   //example permissionObject: { role: 'admin', resource: 'video', action: ['create', 'modify'], attributes: ['*'] },

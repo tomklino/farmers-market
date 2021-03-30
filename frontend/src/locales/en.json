@@ -73,5 +73,11 @@
   "error": "Error",
   "could_not_cancel_order": "Could not cancel order",
   "modify_farmer": "Modify farmer",
-  "permissions": "Permissions"
+  "permissions": "Permissions",
+  "add_permission": "Add permission",
+  "username": "username",
+  "resource": "resource",
+  "read_permission": "read",
+  "modify_permission": "modify",
+  "delete_permission": "delete"
 }

@@ -11,6 +11,12 @@ export default new Vuex.Store({
       title: "",
       content: ""
     },
+    permissions: [],
+    displayedPermission: {
+      username: "",
+      resource: "",
+      actions: []
+    },
     messageDialogOpened: false,
     displayedFarmer: {
       // NOTE if something changes here - change the action clearDisplayedFarmer as well
@@ -25,6 +31,7 @@ export default new Vuex.Store({
       products: []
     },
     loadingDisplayedFarmer: false,
+    loadingPermissions: false,
     displayedOrder: {},
     loadingDisplayedOrder: false,
     sendingOrderToServer: false,
@@ -67,6 +74,9 @@ export default new Vuex.Store({
       let farmer = state.farmersList.find(f => f._id === farmerID);
       Vue.set(farmer, "isLoading", isLoading);
     },
+    setPermissionsLoading(state, isLoading) {
+
+    },
     setLoadingDisplayedFarmer(state, isLoading) {
       state.loadingDisplayedFarmer = isLoading;
     },
@@ -87,6 +97,15 @@ export default new Vuex.Store({
     },
     displayedFarmer(state, farmer) {
       state.displayedFarmer = farmer;
+    },
+    updatePermissions(state, permissions) {
+      state.permissions = permissions;
+    },
+    displayedPermission(state, permission) {
+      state.displayedPermission = permission;
+    },
+    setDisplayedPermissionAttribute(state, attribute) {
+      Vue.set(state.displayedPermission, attribute.key, attribute.value);
     },
     updateOrders(state, { orders, farmerID }) {
       orders.forEach((order) => { // explicitly setting the completed state of each order
@@ -142,6 +161,25 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async loadPermissions({ commit, dispatch }) {
+      commit('loadingPermissions', true);
+
+      try {
+        let permissions = await axios.get(`/api/permissions`);
+        commit('updatePermissions', permissions);
+      } catch(err) {
+        dispatch("setMessage", {
+          title: i18n.t("error"),
+          content: i18n.t("could_not_fetch_permissions")
+        });
+      } finally {
+        commit('loadingPermissions', false);
+      }
+    },
+    setDisplayedPermission({ commit, state }, permissionID) {
+      let permission = state.permissions.find(p => p.ID === permissionID);
+      commit('displayedPermission', permission);
+    },
     async cancelDisplayedOrder({ state, dispatch }) {
       const orderID = state.displayedOrder._id;
 
@@ -154,6 +192,15 @@ export default new Vuex.Store({
           content: i18n.t("could_not_cancel_order")
         })
       }
+    },
+    setDisplayedPermissionUsername({ commit }, username) {
+      commit('setDisplayedPermissionAttribute', { key: 'username', value: username });
+    },
+    setDisplayedPermissionResource({ commit }, resource) {
+      commit('setDisplayedPermissionAttribute', { key: 'resource', value: resource });
+    },
+    setDisplayedPermissionActions({ commit }, actions) {
+      commit('setDisplayedPermissionAttribute', { key: 'actions', value: actions });
     },
     setMessage({ commit }, message) {
       commit("setMessage", message);
@@ -366,6 +413,9 @@ export default new Vuex.Store({
       if(displayedFarmer) {
         commit('displayedFarmer', displayedFarmer);
       }
+    },
+    clearDisplayedPermission({ commit }) {
+      commit('disply')
     },
     clearDisplayedFarmer({ commit }) {
       commit('displayedFarmer', {
