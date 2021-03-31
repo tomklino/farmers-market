@@ -47,6 +47,6 @@ spec:
             claimName: farmers-images
         - name: image-server
           hostPath:
-            path: /hosthome/tomk/workspace/farmers-market/image-server
+            path: /workspace/image-server
             type: Directory
       dnsPolicy: ClusterFirst

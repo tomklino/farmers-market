@@ -43,7 +43,7 @@ spec:
       volumes:
         - name: frontend
           hostPath:
-            path: /hosthome/tomk/workspace/farmers-market/frontend
+            path: /workspace/frontend
             type: Directory
       dnsPolicy: ClusterFirst
 status: {}

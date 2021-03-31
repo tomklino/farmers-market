@@ -42,7 +42,7 @@ spec:
       volumes:
         - name: mailer
           hostPath:
-            path: /hosthome/tomk/workspace/farmers-market/mailer
+            path: /workspace/mailer
             type: Directory
       dnsPolicy: ClusterFirst
 status: {}

@@ -58,7 +58,7 @@ spec:
       volumes:
         - name: server
           hostPath:
-            path: /hosthome/tomk/workspace/farmers-market/server
+            path: /workspace/server
             type: Directory
       dnsPolicy: ClusterFirst
 status: {}
